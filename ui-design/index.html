@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ReelCraft — Ek prompt, ek viral reel 🚀</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700;900&family=Noto+Sans+Devanagari:wght@400;600;800;900&family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-body, 'Plus Jakarta Sans'), system-ui, sans-serif;
+    background: var(--bg, #FDF4E3);
+    color: var(--ink, #1A1410);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  :root {
+    --bg: #FDF4E3;
+    --bg-2: #FAE8C8;
+    --card: #FFFFFF;
+    --ink: #1A1410;
+    --ink-2: #5C4A3A;
+    --muted: #9A8773;
+    --orange: #FF5722;
+    --orange-dark: #D9430E;
+    --saffron: #FF9800;
+    --pink: #F4358D;
+    --green: #1F8A5B;
+    --line: rgba(26,20,16,0.10);
+    --line-strong: rgba(26,20,16,0.20);
+    --shadow: 0 2px 0 rgba(26,20,16,0.92);
+    --shadow-lift: 0 8px 0 rgba(26,20,16,0.92);
+    --font-display: 'Anton';
+    --font-body: 'Plus Jakarta Sans';
+    --font-hindi: 'Noto Sans Devanagari';
+    --font-mono: 'JetBrains Mono';
+    --r-sm: 10px;
+    --r-md: 16px;
+    --r-lg: 24px;
+    --pad: 1;
+  }
+  body[data-theme="cream"] {
+    --bg: #FDF4E3; --bg-2: #FAE8C8; --card: #FFFFFF;
+    --ink: #1A1410; --ink-2: #5C4A3A; --muted: #9A8773;
+    --orange: #FF5722; --orange-dark: #D9430E; --saffron: #FF9800; --pink: #F4358D;
+  }
+  body[data-theme="saffron"] {
+    --bg: #FFF8E1; --bg-2: #FFE9B0; --card: #FFFFFF;
+    --ink: #2A1B00; --ink-2: #6B4F1A; --muted: #B59B66;
+    --orange: #E65100; --orange-dark: #B33A00; --saffron: #FFB300; --pink: #C2185B;
+  }
+  body[data-theme="mint"] {
+    --bg: #F0F5EE; --bg-2: #DDEAD8; --card: #FFFFFF;
+    --ink: #11241A; --ink-2: #3E5446; --muted: #7E9286;
+    --orange: #E64A19; --orange-dark: #B23B14; --saffron: #FFA726; --pink: #EC407A;
+  }
+  body[data-theme="ink"] {
+    --bg: #14110D; --bg-2: #221C14; --card: #1F1A12;
+    --ink: #FDF4E3; --ink-2: #C9B89A; --muted: #7B6E5A;
+    --orange: #FF6E40; --orange-dark: #FF3D00; --saffron: #FFB300; --pink: #F4358D;
+    --line: rgba(255,244,227,0.10); --line-strong: rgba(255,244,227,0.22);
+    --shadow: 0 2px 0 rgba(0,0,0,0.85);
+    --shadow-lift: 0 8px 0 rgba(0,0,0,0.85);
+  }
+  ::selection { background: var(--orange); color: #fff; }
+  img { display: block; max-width: 100%; }
+  button { font-family: inherit; cursor: pointer; }
+  a { color: inherit; }
+
+  /* utility */
+  .hindi { font-family: var(--font-hindi), sans-serif; font-weight: 800; }
+  .display { font-family: var(--font-display), 'Archivo Black', sans-serif; letter-spacing: -0.01em; line-height: 0.95; text-transform: uppercase; }
+  .mono { font-family: var(--font-mono), monospace; }
+  .caveat { font-family: 'Caveat', cursive; }
+
+  /* Sticker / chip */
+  .sticker {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 999px;
+    background: var(--card); border: 2px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    font-weight: 700; font-size: 13px;
+    transform: rotate(-2deg);
+  }
+  .sticker--orange { background: var(--orange); color: #fff; }
+  .sticker--saffron { background: var(--saffron); color: var(--ink); }
+  .sticker--pink { background: var(--pink); color: #fff; }
+  .sticker--green { background: var(--green); color: #fff; }
+
+  /* Hard button */
+  .btn-hard {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 22px; border-radius: 14px;
+    background: var(--orange); color: #fff;
+    border: 2px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    font-weight: 800; font-size: 16px;
+    transition: transform .08s ease, box-shadow .08s ease;
+    text-decoration: none;
+  }
+  .btn-hard:hover { transform: translate(-1px,-1px); box-shadow: 6px 6px 0 var(--ink); }
+  .btn-hard:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+  .btn-hard.ghost { background: var(--card); color: var(--ink); }
+
+  /* Reel placeholder gradient (used for visual mocks) */
+  .reel-grad-1 { background: linear-gradient(135deg,#FF5722 0%, #F4358D 60%, #7B2CBF 100%); }
+  .reel-grad-2 { background: linear-gradient(160deg,#FF9800 0%, #FF5722 50%, #C2185B 100%); }
+  .reel-grad-3 { background: linear-gradient(180deg,#1F8A5B 0%, #FFB300 100%); }
+  .reel-grad-4 { background: linear-gradient(135deg,#7B2CBF 0%, #2196F3 100%); }
+  .reel-grad-5 { background: linear-gradient(135deg,#0D1B2A 0%, #FF5722 100%); }
+  .reel-grad-6 { background: linear-gradient(135deg,#D32F2F 0%, #FFB300 100%); }
+  .reel-grad-7 { background: linear-gradient(135deg,#1A1410 0%, #5C4A3A 100%); }
+
+  /* Diagonal stripes for placeholder reels */
+  .stripes {
+    background-image: repeating-linear-gradient(45deg,
+      rgba(255,255,255,0.06) 0 12px,
+      rgba(255,255,255,0) 12px 24px);
+  }
+
+  /* Marquee */
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .marquee {
+    display: flex; overflow: hidden; gap: 0;
+    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  }
+  .marquee__track { display: flex; gap: 18px; flex-shrink: 0; animation: marquee var(--speed,40s) linear infinite; padding-right: 18px; }
+  .marquee:hover .marquee__track { animation-play-state: paused; }
+
+  /* Spin */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 1.4s linear infinite; }
+
+  /* Pulse dot */
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: .6; }
+  }
+  .pulse-dot::before {
+    content: ''; display: inline-block; width: 8px; height: 8px;
+    border-radius: 50%; background: #ff3b30; margin-right: 6px;
+    animation: pulse-dot 1.2s infinite;
+  }
+
+  /* Wiggle */
+  @keyframes wiggle { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+  .wiggle { animation: wiggle 2s ease-in-out infinite; transform-origin: center; }
+
+  /* Fade in up */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fade-up .5s ease both; }
+
+  /* Page transition */
+  @keyframes page-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .page-in { animation: page-in .35s cubic-bezier(.2,.7,.3,1) both; }
+
+  /* Live counter ticker */
+  @keyframes count-tick {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  /* Confetti / stars decoration */
+  .star {
+    position: absolute; pointer-events: none;
+    font-size: 24px; animation: wiggle 3s ease-in-out infinite;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+
+  /* Responsive container */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* Phone frame look */
+  .phone {
+    width: 320px; height: 640px; border-radius: 44px;
+    background: #0e0a06; padding: 12px;
+    box-shadow:
+      inset 0 0 0 2px rgba(255,255,255,.06),
+      0 30px 60px rgba(26,20,16,.28),
+      0 12px 24px rgba(255,87,34,.18);
+    position: relative;
+  }
+  .phone__notch {
+    position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+    width: 110px; height: 28px; background: #000; border-radius: 16px; z-index: 4;
+  }
+  .phone__screen {
+    width: 100%; height: 100%; border-radius: 32px; overflow: hidden;
+    position: relative; background: #000;
+  }
+
+  /* The "TV scanlines" effect for hero reel */
+  .scanlines::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.06) 0 2px, transparent 2px 4px);
+  }
+  /* Hide overrides block */
+</style>
+</head>
+<body data-theme="cream">
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="screens-landing.jsx"></script>
+<script type="text/babel" src="screens-auth.jsx"></script>
+<script type="text/babel" src="screens-app.jsx"></script>
+<script type="text/babel" src="app.jsx"></script>
+</body>
+</html>

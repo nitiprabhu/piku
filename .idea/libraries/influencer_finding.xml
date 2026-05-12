@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="influencer-finding">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/influencer-finding.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

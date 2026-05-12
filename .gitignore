@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js
+.next/
+out/
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+.pytest_cache/
+
+# Env files — never commit real credentials
+.env
+.env.local
+.env.*.local
+backend/.env
+frontend/.env.local
+
+# Claude Code session data
+.claude/
+
+# Misc
+.DS_Store
+*.log
+coverage/
+.nyc_output/
+
+# Alembic
+backend/alembic/versions/__pycache__/
+
+# Uploads / temp
+backend/app/static/videos/
+*.mp4
+*.mp3
+*.wav
