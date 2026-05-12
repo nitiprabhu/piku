@@ -1,0 +1,379 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* ── Color tokens (exact ui-design values) ── */
+    --bg:          #FDF4E3;
+    --bg-2:        #FAE8C8;
+    --card:        #FFFFFF;
+    --ink:         #1A1410;
+    --ink-2:       #5C4A3A;
+    --muted:       #9A8773;
+    --orange:      #FF5722;
+    --orange-dark: #D9430E;
+    --orange-lt:   #FFF0EB;
+    --saffron:     #FF9800;
+    --pink:        #F4358D;
+    --green:       #1F8A5B;
+    --purple:      #7B2CBF;
+    --line:        rgba(26,20,16,0.10);
+    --line-strong: rgba(26,20,16,0.20);
+
+    /* ── Radius ── */
+    --r-sm: 10px;
+    --r-md: 16px;
+    --r-lg: 24px;
+
+    /* ── Hard shadows (offset style matching ui-design components) ── */
+    --shadow-sm: 3px 3px 0 var(--ink);
+    --shadow-md: 5px 5px 0 var(--ink);
+    --shadow-lg: 8px 8px 0 var(--ink);
+
+    /* ── Font vars ── */
+    --font-display:    "Anton", sans-serif;
+    --font-body:       "Plus Jakarta Sans", sans-serif;
+    --font-devanagari: "Noto Sans Devanagari", sans-serif;
+    --font-mono:       "JetBrains Mono", monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--orange);
+    color: #fff;
+  }
+}
+
+/* ─── Typography helpers ──────────────────────────────────────────────────── */
+
+.font-display    { font-family: var(--font-display); }
+.font-body       { font-family: var(--font-body); }
+.font-mono       { font-family: var(--font-mono); }
+.font-devanagari { font-family: var(--font-devanagari); font-weight: 800; }
+.hindi           { font-family: var(--font-devanagari); font-weight: 800; }
+.display         { font-family: var(--font-display); letter-spacing: -0.01em; line-height: 0.95; text-transform: uppercase; }
+.mono            { font-family: var(--font-mono), monospace; }
+
+/* ─── Card ────────────────────────────────────────────────────────────────── */
+
+.card {
+  background: var(--card);
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
+  padding: 24px;
+}
+
+.card-sm {
+  background: var(--card);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+}
+
+/* keep .glass as alias so old code doesn't break */
+.glass {
+  background: var(--card);
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
+  padding: 24px;
+}
+
+/* ─── Buttons ──────────────────────────────────────────────────────────────── */
+
+.btn-hard {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--orange);
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 16px;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 14px 22px;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+}
+.btn-hard:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+.btn-hard:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+.btn-hard:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+/* ghost variant */
+.btn-hard.ghost {
+  background: var(--card);
+  color: var(--ink);
+}
+.btn-hard.ghost:hover { background: var(--bg-2); }
+
+/* keep aliases */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--orange);
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 16px;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 14px 22px;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+}
+.btn-primary:hover  { transform: translate(-1px,-1px); box-shadow: 6px 6px 0 var(--ink); }
+.btn-primary:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 16px;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 14px 22px;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  text-decoration: none;
+  text-align: center;
+}
+.btn-ghost:hover  { background: var(--bg-2); transform: translate(-1px,-1px); box-shadow: 6px 6px 0 var(--ink); }
+.btn-ghost:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 16px;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 14px 22px;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  text-decoration: none;
+  text-align: center;
+}
+.btn-secondary:hover  { background: var(--bg-2); }
+.btn-secondary:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+
+/* ─── Sticker badge ────────────────────────────────────────────────────────── */
+
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 var(--ink);
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  transform: rotate(-2deg);
+  white-space: nowrap;
+}
+
+.sticker--orange { background: var(--orange);  color: #fff; }
+.sticker--saffron{ background: var(--saffron); color: var(--ink); }
+.sticker--pink   { background: var(--pink);    color: #fff; }
+.sticker--green  { background: var(--green);   color: #fff; }
+
+/* ─── Input field ──────────────────────────────────────────────────────────── */
+
+.input-field {
+  background: var(--card);
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: var(--ink);
+  width: 100%;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 16px;
+  transition: box-shadow 0.1s ease, border-color 0.1s ease;
+  outline: none;
+}
+.input-field::placeholder { color: var(--muted); }
+.input-field:focus {
+  border-color: var(--orange);
+  box-shadow: 3px 3px 0 var(--orange);
+}
+
+/* ─── Reel gradients (exact ui-design values) ──────────────────────────────── */
+
+.reel-grad-1 { background: linear-gradient(135deg, #FF5722 0%, #F4358D 60%, #7B2CBF 100%); }
+.reel-grad-2 { background: linear-gradient(160deg, #FF9800 0%, #FF5722 50%, #C2185B 100%); }
+.reel-grad-3 { background: linear-gradient(180deg, #1F8A5B 0%, #FFB300 100%); }
+.reel-grad-4 { background: linear-gradient(135deg, #7B2CBF 0%, #2196F3 100%); }
+.reel-grad-5 { background: linear-gradient(135deg, #0D1B2A 0%, #FF5722 100%); }
+.reel-grad-6 { background: linear-gradient(135deg, #D32F2F 0%, #FFB300 100%); }
+.reel-grad-7 { background: linear-gradient(135deg, #1A1410 0%, #5C4A3A 100%); }
+
+/* ─── Section label ────────────────────────────────────────────────────────── */
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--orange-dark);
+}
+
+/* ─── Gradient text (marketing only) ──────────────────────────────────────── */
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--orange), var(--pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Stripes overlay ──────────────────────────────────────────────────────── */
+
+.stripes {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255,255,255,0.06) 0 12px,
+    rgba(255,255,255,0) 12px 24px
+  );
+}
+
+/* ─── Animations ───────────────────────────────────────────────────────────── */
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.5s ease both; }
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-in { animation: pageIn 0.35s cubic-bezier(.2,.7,.3,1) both; }
+
+@keyframes wiggle {
+  0%,100% { transform: rotate(-2deg); }
+  50%      { transform: rotate(2deg); }
+}
+.wiggle { animation: wiggle 2s ease-in-out infinite; }
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee { display: flex; overflow: hidden; gap: 0; mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
+.marquee__track { display: flex; gap: 18px; flex-shrink: 0; animation: marquee var(--speed,40s) linear infinite; padding-right: 18px; }
+
+@keyframes pulseDot {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.4); opacity: 0.6; }
+}
+.pulse-dot::before {
+  content: "";
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  margin-right: 6px;
+  animation: pulseDot 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, var(--bg-2) 0%, var(--card) 50%, var(--bg-2) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spin { animation: spin 0.8s linear infinite; }
+
+/* ─── Phone frame (exact ui-design .phone spec) ────────────────────────────── */
+
+.phone-frame {
+  width: 320px;
+  height: 640px;
+  border-radius: 44px;
+  background: #0e0a06;
+  padding: 12px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 0 2px rgba(255,255,255,.06),
+    0 30px 60px rgba(26,20,16,.28),
+    0 12px 24px rgba(255,87,34,.18);
+}
+
+.phone-notch {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 28px;
+  background: #000;
+  border-radius: 16px;
+  z-index: 4;
+}
+
+/* ─── Scrollbar ────────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 10px; }
