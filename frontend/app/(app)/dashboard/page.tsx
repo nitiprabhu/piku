@@ -55,6 +55,44 @@ export default function DashboardPage() {
           <p style={{ color: "var(--ink-2)", fontSize: 15 }}>Your reels dashboard</p>
         </div>
 
+        {/* Marketplace banner */}
+        <div style={{
+          background: "var(--orange)", border: "2px solid var(--ink)",
+          borderRadius: "var(--r-lg)", boxShadow: "var(--shadow-md)",
+          padding: "24px 28px", marginBottom: 28,
+          display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16,
+        }}>
+          <div>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 22, color: "#fff", marginBottom: 4 }}>
+              Brand deals chahiye? 💼
+            </div>
+            <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 14, fontWeight: 600, maxWidth: 480 }}>
+              Set up your creator profile. Brands matching your niche send briefs directly.
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <Link href="/marketplace" style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              background: "#fff", color: "var(--ink)",
+              fontFamily: "var(--font-body)", fontWeight: 800, fontSize: 14,
+              border: "2px solid var(--ink)", borderRadius: 12,
+              boxShadow: "3px 3px 0 var(--ink)", padding: "10px 18px",
+              textDecoration: "none",
+            }}>
+              Set up creator profile →
+            </Link>
+            <Link href="/marketplace/search" style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              background: "transparent", color: "#fff",
+              fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 14,
+              border: "2px solid rgba(255,255,255,0.6)", borderRadius: 12,
+              padding: "10px 18px", textDecoration: "none",
+            }}>
+              Peek at marketplace
+            </Link>
+          </div>
+        </div>
+
         {/* Stat cards */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16, marginBottom: 32 }}>
           {[
@@ -114,6 +152,16 @@ export default function DashboardPage() {
                 >
                   {project.thumbnail_url ? (
                     <img src={project.thumbnail_url} alt={project.title || "Reel"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : project.video_url && project.status === "completed" ? (
+                    <video
+                      src={project.video_url}
+                      muted
+                      playsInline
+                      preload="metadata"
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play()}
+                      onMouseLeave={(e) => { const v = e.currentTarget as HTMLVideoElement; v.pause(); v.currentTime = 0; }}
+                    />
                   ) : (
                     <div className={GRAD_CLASSES[idx % 7]} style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 8 }}>
                       {project.status === "processing" ? (

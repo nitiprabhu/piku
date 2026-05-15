@@ -6,7 +6,8 @@ class Settings(BaseSettings):
     # App
     APP_ENV: str = "development"
     SECRET_KEY: str = "change-me-to-a-random-32-char-string"
-    FRONTEND_URL: str = "http://localhost:3000"
+    FRONTEND_URL: str = "http://localhost:3001"
+    BACKEND_URL: str = "http://localhost:8005"
 
     # Database
     DATABASE_URL: str = "postgresql+asyncpg://reelcraft:password@postgres:5432/reelcraft"

@@ -1,15 +1,38 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, createContext, useContext } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { clearAuth, getStoredUser } from "@/lib/api";
 import api from "@/lib/api";
-import { useEffect } from "react";
+
+const LANG_OPTIONS = [
+  { value: "all",      flag: "🌍", label: "All" },
+  { value: "hi",       flag: "🇮🇳", label: "हिंदी" },
+  { value: "en",       flag: "🌐", label: "English" },
+  { value: "hinglish", flag: "✨", label: "Hinglish" },
+];
+
+export const LangContext = createContext<{ lang: string; setLang: (l: string) => void }>({ lang: "all", setLang: () => {} });
+export function useLang() { return useContext(LangContext); }
+
+export function LangProvider({ children }: { children: React.ReactNode }) {
+  const [lang, setLangState] = useState("all");
+  useEffect(() => {
+    const saved = typeof window !== "undefined" ? localStorage.getItem("rc_lang") : null;
+    if (saved) setLangState(saved);
+  }, []);
+  const setLang = (l: string) => {
+    setLangState(l);
+    if (typeof window !== "undefined") localStorage.setItem("rc_lang", l);
+  };
+  return <LangContext.Provider value={{ lang, setLang }}>{children}</LangContext.Provider>;
+}
 
 const NAV = [
-  { href: "/dashboard", emoji: "🏠", label: "Dashboard" },
-  { href: "/create",    emoji: "✨", label: "Create" },
-  { href: "/templates", emoji: "🎬", label: "Templates" },
+  { href: "/dashboard",   emoji: "🏠", label: "Dashboard",   badge: "" },
+  { href: "/create",      emoji: "✨", label: "Create",       badge: "" },
+  { href: "/templates",   emoji: "🎬", label: "Templates",    badge: "" },
+  { href: "/marketplace", emoji: "💼", label: "Marketplace",  badge: "NEW" },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -18,6 +41,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const user = getStoredUser();
   const [credits, setCredits] = useState<{ remaining: number; plan: string } | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { lang, setLang } = useLang();
 
   useEffect(() => {
     api.get("/user/credits").then((r) => setCredits(r.data)).catch(() => {});
@@ -81,6 +105,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             >
               <span style={{ fontSize: 18 }}>{item.emoji}</span>
               {item.label}
+              {item.badge && (
+                <span style={{
+                  marginLeft: "auto", background: "var(--pink)", color: "#fff",
+                  fontSize: 9, fontWeight: 800, border: "1.5px solid var(--ink)",
+                  borderRadius: 999, padding: "1px 6px", letterSpacing: "0.05em",
+                }}>
+                  {item.badge}
+                </span>
+              )}
             </Link>
           );
         })}
@@ -100,6 +133,31 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <span style={{ fontSize: 18 }}>💎</span>Plans
         </Link>
       </nav>
+
+      {/* Language picker */}
+      <div style={{ marginTop: 8 }}>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--muted)", marginBottom: 8, paddingLeft: 4 }}>
+          Content Language
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+          {LANG_OPTIONS.map((l) => {
+            const active = lang === l.value;
+            return (
+              <button key={l.value} onClick={() => setLang(l.value)} style={{
+                padding: "7px 6px", borderRadius: "var(--r-sm)", cursor: "pointer",
+                fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 12,
+                border: "2px solid var(--ink)",
+                background: active ? "var(--orange)" : "var(--bg-2)",
+                color: active ? "#fff" : "var(--ink)",
+                boxShadow: active ? "2px 2px 0 var(--ink)" : "none",
+                transition: "all 0.08s ease",
+              }}>
+                {l.flag} {l.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Credits card */}
       {credits && (

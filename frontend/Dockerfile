@@ -5,6 +5,11 @@ FROM base AS deps
 COPY package*.json ./
 RUN npm ci
 
+FROM deps AS dev
+COPY . .
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
+
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .

@@ -23,13 +23,20 @@ class VerifyPaymentRequest(BaseModel):
 
 
 PLAN_PRICES = {
-    "pro": 49900,      # ₹499 in paise
-    "business": 199900,  # ₹1999 in paise
+    "starter": 9900,     # ₹99 one-time in paise
+    "pro": 49900,        # ₹499/mo in paise
+    "business": 199900,  # ₹1,999/mo in paise
 }
 
 PLAN_CREDITS = {
-    "pro": 9999,       # "unlimited"
-    "business": 9999,
+    "starter": 10,
+    "pro": 60,
+    "business": 300,
+}
+
+OVERAGE_PRICE_PAISE = {
+    "pro": 800,      # ₹8/video
+    "business": 600, # ₹6/video
 }
 
 
@@ -73,9 +80,21 @@ async def verify_payment(
         raise HTTPException(status_code=400, detail="Invalid payment signature")
 
     # Determine plan from order (store in notes during create-order; here we detect from amount)
-    # For MVP: just upgrade to pro
-    current_user.plan = "pro"
-    current_user.credits = PLAN_CREDITS["pro"]
+    # Determine plan from order notes; fallback to pro
+    import razorpay as rzp
+    client = rzp.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    try:
+        order = client.order.fetch(body.razorpay_order_id)
+        plan = order.get("notes", {}).get("plan", "pro")
+    except Exception:
+        plan = "pro"
+
+    credits = PLAN_CREDITS.get(plan, 60)
+    if plan == "starter":
+        current_user.credits = (current_user.credits or 0) + credits
+    else:
+        current_user.plan = plan
+        current_user.credits = credits
     await db.flush()
 
     return {"success": True, "plan": current_user.plan}

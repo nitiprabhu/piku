@@ -121,14 +121,18 @@ def process_video_job(
 
         # ── Step 5: Thumbnail + Upload ─────────────────────────────────
         thumbnail_path = str(tmp_dir / "thumbnail.jpg")
-        extract_thumbnail(output_path, thumbnail_path, at_second=2)
+        try:
+            extract_thumbnail(output_path, thumbnail_path, at_second=2)
+        except Exception as thumb_err:
+            print(f"⚠️ Thumbnail extraction failed, continuing without it: {thumb_err}")
+            thumbnail_path = None
 
         video_url = asyncio.run(
             upload_to_r2(output_path, f"videos/{project_id}/final.mp4")
         )
         thumbnail_url = asyncio.run(
             upload_to_r2(thumbnail_path, f"videos/{project_id}/thumb.jpg")
-        )
+        ) if thumbnail_path else None
 
         # ── Step 6: Viral Score + Save ─────────────────────────────────
         viral_score = calculate_viral_score(script, duration, style)

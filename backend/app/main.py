@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import init_db
-from app.api import auth, user, projects, generate, websocket, social, payments, templates, inspire
+from app.api import auth, user, projects, generate, websocket, social, payments, templates, inspire, marketplace
 
 
 @asynccontextmanager
@@ -201,6 +201,7 @@ app.include_router(social.router, prefix=API_PREFIX)
 app.include_router(payments.router, prefix=API_PREFIX)
 app.include_router(templates.router, prefix=API_PREFIX)
 app.include_router(inspire.router, prefix=API_PREFIX)
+app.include_router(marketplace.router, prefix=API_PREFIX)
 app.include_router(websocket.router, prefix=API_PREFIX)
 
 

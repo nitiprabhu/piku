@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import api, { getStoredUser } from "@/lib/api";
-import AppShell from "@/components/AppShell";
+import AppShell, { useLang } from "@/components/AppShell";
 
 const CATEGORY_META: Record<string, { emoji: string; label: string; gradClass: string }> = {
   funny:       { emoji: "😂", label: "Funny & Comedy",        gradClass: "reel-grad-6" },
@@ -37,6 +37,7 @@ type InspirationVideo = {
 export default function TemplatesPage() {
   const router = useRouter();
   const user = getStoredUser();
+  const { lang } = useLang();
   const [templates, setTemplates] = useState<any[]>([]);
   const [inspirations, setInspirations] = useState<InspirationVideo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,7 +67,8 @@ export default function TemplatesPage() {
     })}`);
   };
 
-  const filteredInspirations = active === "all" ? inspirations : inspirations.filter((v) => v.category === active);
+  const langMatch = (itemLang: string) => lang === "all" || itemLang === lang || (lang === "hi" && itemLang === "hi") || (lang === "hinglish" && itemLang === "hinglish") || (lang === "en" && itemLang === "en");
+  const filteredInspirations = inspirations.filter((v) => (active === "all" || v.category === active) && langMatch(v.language));
 
   const useCharacter = (char: typeof CHARACTER_TEMPLATES[0]) => {
     router.push(`/create?${new URLSearchParams({
@@ -77,7 +79,7 @@ export default function TemplatesPage() {
     })}`);
   };
 
-  const filteredTemplates = active === "all" ? templates : templates.filter((t) => t.category === active);
+  const filteredTemplates = templates.filter((t) => (active === "all" || t.category === active) && langMatch(t.language || "hi"));
   const filteredChars = active === "all" ? CHARACTER_TEMPLATES : CHARACTER_TEMPLATES.filter((c) => c.category === active);
 
   return (

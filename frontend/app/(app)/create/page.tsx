@@ -63,9 +63,11 @@ function CreatePageInner() {
   const searchParams = useSearchParams();
   const user = getStoredUser();
 
+  const savedLang = typeof window !== "undefined" ? localStorage.getItem("rc_lang") : null;
+  const defaultLang = searchParams.get("language") || (savedLang && savedLang !== "all" ? savedLang : "hi");
   const [form, setForm] = useState({
     prompt:      searchParams.get("prompt") || "",
-    language:    searchParams.get("language") || "hi",
+    language:    defaultLang,
     style:       searchParams.get("style") || "motivation",
     voice_id:    "rohit_m",
     duration:    60,
@@ -211,7 +213,7 @@ function CreatePageInner() {
           <SectionCard label="Language">
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {LANGUAGES.map((l) => (
-                <button key={l.value} onClick={() => { setForm({ ...form, language: l.value, template_id: "" }); setSelectedTplId(""); }}
+                <button key={l.value} onClick={() => { setForm({ ...form, language: l.value, template_id: "" }); setSelectedTplId(""); if (typeof window !== "undefined") localStorage.setItem("rc_lang", l.value); }}
                   style={{ padding: "10px 12px", borderRadius: "var(--r-sm)", textAlign: "left", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: 14, fontWeight: 700, transition: "all 0.08s ease", ...sel(form.language === l.value) }}>
                   {l.flag} {l.label}
                 </button>

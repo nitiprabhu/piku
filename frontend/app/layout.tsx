@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Anton, Plus_Jakarta_Sans, Noto_Sans_Devanagari, JetBrains_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
+import { LangProvider } from "@/components/AppShell";
 
 const anton = Anton({
   subsets: ["latin"],
@@ -49,7 +51,8 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased">
-        {children}
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+        <LangProvider>{children}</LangProvider>
       </body>
     </html>
   );

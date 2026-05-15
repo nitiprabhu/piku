@@ -3,8 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "ReelCraft — Viral Reels in 60 Seconds | AI Video Creator for India",
-  description:
-    "Create viral Instagram Reels and YouTube Shorts in Hindi, English, or Hinglish. AI writes the script, voices it, and edits the video. Free to start.",
+  description: "Create viral Instagram Reels and YouTube Shorts in Hindi, English, or Hinglish. AI writes the script, voices it, and edits the video. Free to start.",
 };
 
 const FEATURES = [
@@ -22,15 +21,6 @@ const STEPS = [
   { n: "03", emoji: "🚀", title: "Download & Share", desc: "Get a 9:16 MP4 ready for Instagram Reels, YouTube Shorts, or WhatsApp Status." },
 ];
 
-const TESTIMONIALS = [
-  { name: "Rahul K.", handle: "@rahul_creates", text: "Yaar ye tool ne meri life badal di. 10 reels per week with zero editing stress.", score: "🔥 94" },
-  { name: "Priya Sharma", handle: "@priya.motivates", text: "Hindi voice quality is unbelievable. My followers think I have a full production team!", score: "🔥 88" },
-  { name: "Dev Bhaiya", handle: "@devstartup_in", text: "Best investment for any Indian creator. Rs 999/month and I'm posting daily.", score: "🔥 91" },
-  { name: "Anjali M.", handle: "@anjali.vibes", text: "The GPT script writing is so good — it nails the hook every single time.", score: "🔥 86" },
-  { name: "Ravi T.", handle: "@ravi_digital", text: "From 200 to 12,000 followers in 2 months. ReelCraft is the secret weapon.", score: "🔥 95" },
-  { name: "Sunita Gupta", handle: "@sunita.wellness", text: "Perfect for my devotional content. Even generates bhajan-style music!", score: "🔥 79" },
-];
-
 const PLANS = [
   { name: "FREE", price: "₹0", period: "forever", credits: 5, features: ["5 reels / month", "WAN2.1 video model", "Hindi + English voices", "HD download"], highlight: false },
   { name: "PRO", price: "₹999", period: "/ month", credits: 60, features: ["60 reels / month", "VEO3 premium model", "All languages + Hinglish", "1-click Instagram & YouTube publish", "Priority generation"], highlight: true },
@@ -45,14 +35,16 @@ const FAQS = [
   { q: "What happens if generation fails?", a: "Your credit is refunded automatically. Failures are rare (<2%) but covered." },
 ];
 
+
 export default function LandingPage() {
+
   return (
     <div style={{ background: "var(--bg)", fontFamily: "var(--font-body)", minHeight: "100vh" }}>
 
       {/* Header */}
       <header style={{
         position: "sticky", top: 0, zIndex: 50,
-        background: "rgba(253,244,227,0.85)", backdropFilter: "blur(12px)",
+        background: "rgba(253,244,227,0.92)", backdropFilter: "blur(12px)",
         borderBottom: "2px solid var(--ink)",
         height: 68, display: "flex", alignItems: "center",
       }}>
@@ -67,19 +59,55 @@ export default function LandingPage() {
             }}>🎬</span>
             <span style={{ fontFamily: "var(--font-display)", fontSize: 24, color: "var(--ink)" }}>ReelCraft</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <nav style={{ display: "flex", alignItems: "center", gap: 20 }}>
+            <Link href="/marketplace/search" style={{ color: "var(--ink-2)", fontSize: 13, fontWeight: 700, textDecoration: "none", display: "flex", alignItems: "center", gap: 5 }}>
+              💼 Marketplace
+              <span style={{ background: "var(--pink)", color: "#fff", fontSize: 9, fontWeight: 900, borderRadius: 999, border: "1.5px solid var(--ink)", padding: "1px 5px" }}>NEW</span>
+            </Link>
+            <Link href="/marketplace/search" style={{ color: "var(--ink-2)", fontSize: 13, fontWeight: 700, textDecoration: "none" }}>For Brands</Link>
+            <Link href="#pricing" style={{ color: "var(--ink-2)", fontSize: 13, fontWeight: 700, textDecoration: "none" }}>Pricing</Link>
             <Link href="/login" style={{ color: "var(--ink-2)", fontSize: 14, fontWeight: 700, textDecoration: "none" }}>Log in</Link>
-            <Link href="/login" className="btn-hard" style={{ fontSize: 14, padding: "8px 20px" }}>Try Free →</Link>
-          </div>
+            <Link href="/login" className="btn-hard" style={{ fontSize: 13, padding: "8px 18px" }}>Try Free →</Link>
+          </nav>
         </div>
       </header>
+
+      {/* Dark announcement strip */}
+      <div style={{
+        background: "var(--ink)", color: "#fff",
+        padding: "14px 24px",
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
+        flexWrap: "wrap",
+      }}>
+        <span style={{
+          background: "var(--orange)", color: "#fff",
+          fontSize: 10, fontWeight: 900, borderRadius: 999,
+          border: "1.5px solid rgba(255,255,255,0.3)", padding: "2px 8px",
+          letterSpacing: "0.05em",
+        }}>NEW</span>
+        <span style={{ fontSize: 14, fontWeight: 700 }}>ReelCraft Marketplace is live — get paid to create reels for brands →</span>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Link href="/marketplace" style={{
+            background: "var(--orange)", color: "#fff",
+            border: "2px solid rgba(255,255,255,0.3)", borderRadius: 8,
+            padding: "6px 14px", fontSize: 12, fontWeight: 800,
+            textDecoration: "none",
+          }}>I'm a Creator</Link>
+          <Link href="/marketplace/search" style={{
+            background: "transparent", color: "#fff",
+            border: "2px solid rgba(255,255,255,0.4)", borderRadius: 8,
+            padding: "6px 14px", fontSize: 12, fontWeight: 800,
+            textDecoration: "none",
+          }}>Find Creators</Link>
+        </div>
+      </div>
 
       {/* Hero */}
       <section style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 24px 60px", display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 48, alignItems: "center" }}>
         <div>
           {/* Badge */}
-          <div className="sticker" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--orange)", color: "#fff", padding: "6px 16px", fontSize: 13, fontWeight: 800, marginBottom: 28 }}>
-            🔥 5 FREE credits on signup
+          <div className="sticker" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--saffron)", color: "var(--ink)", padding: "6px 16px", fontSize: 13, fontWeight: 800, marginBottom: 28 }}>
+            🚀 Early access · onboarding first creators
           </div>
 
           <h1 style={{
@@ -99,18 +127,17 @@ export default function LandingPage() {
             <Link href="/login" className="btn-hard" style={{ fontSize: 16, padding: "14px 28px" }}>
               🚀 Start Free — No CC
             </Link>
-            <Link href="#how-it-works" style={{
+            <Link href="/marketplace" style={{
               display: "flex", alignItems: "center", gap: 8,
               padding: "14px 28px", fontSize: 16, fontWeight: 700,
               border: "2px solid var(--ink)", borderRadius: "var(--r-sm)",
               color: "var(--ink)", textDecoration: "none",
-              background: "transparent",
+              background: "transparent", boxShadow: "3px 3px 0 var(--ink)",
             }}>
-              See How It Works ↓
+              💼 I&apos;m a brand →
             </Link>
           </div>
 
-          {/* Social proof */}
           <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 32 }}>
             <div style={{ display: "flex" }}>
               {["🧑‍💻","👩","🧑"].map((e, i) => (
@@ -123,7 +150,7 @@ export default function LandingPage() {
               ))}
             </div>
             <div style={{ fontSize: 13, color: "var(--ink-2)", fontWeight: 600 }}>
-              <span style={{ color: "var(--ink)", fontWeight: 800 }}>2,400+</span> creators already using ReelCraft
+              Be among the first creators on ReelCraft
             </div>
           </div>
         </div>
@@ -137,15 +164,104 @@ export default function LandingPage() {
                 YOUR NEXT VIRAL REEL
               </div>
               <div style={{ background: "rgba(0,0,0,0.4)", borderRadius: 999, padding: "4px 14px", fontSize: 12, color: "#fff", fontWeight: 800 }}>
-                🔥 94 VIRAL SCORE
+                ⚡ AI-GENERATED IN 45s
               </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Marketplace section */}
+      <section style={{ background: "var(--bg-2)", borderTop: "2px solid var(--ink)", borderBottom: "2px solid var(--ink)", padding: "80px 24px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <div className="sticker" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--pink)", color: "#fff", padding: "6px 16px", fontSize: 13, fontWeight: 900, marginBottom: 16 }}>
+              💼 MARKETPLACE
+            </div>
+            <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(32px,4vw,52px)", color: "var(--ink)", marginBottom: 8 }}>
+              CREATORS MEET BRANDS
+            </h2>
+            <p style={{ color: "var(--ink-2)", fontSize: 16, maxWidth: 560, margin: "0 auto" }}>
+              Get paid to create reels for top Indian brands. Or find the perfect creator for your campaign — with AI matching, escrow payments, and zero hassle.
+            </p>
+          </div>
+
+          {/* Two-sided cards */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 32 }}>
+            {/* Creator card */}
+            <div className="card" style={{ padding: 28, background: "var(--orange-lt)", border: "2px solid var(--ink)", boxShadow: "4px 4px 0 var(--ink)" }}>
+              <div style={{ fontSize: 36, marginBottom: 12 }}>🧑‍🎨</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 26, color: "var(--ink)", marginBottom: 8 }}>FOR CREATORS</div>
+              <p style={{ color: "var(--ink-2)", fontSize: 14, lineHeight: 1.6, marginBottom: 20 }}>
+                Brands post briefs. You accept deals you like. Get paid through secure escrow. Keep 86% of every deal.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 24 }}>
+                {["86% take-home on every deal", "Escrow-secured payments", "AI-match with best-fit brands", "Build your creator profile"].map((f) => (
+                  <div key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, color: "var(--ink)" }}>
+                    <span style={{ width: 20, height: 20, borderRadius: "50%", background: "var(--green)", border: "2px solid var(--ink)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "#fff", flexShrink: 0 }}>✓</span>
+                    {f}
+                  </div>
+                ))}
+              </div>
+              <Link href="/marketplace" className="btn-hard" style={{ display: "block", textAlign: "center", fontSize: 14, padding: "12px 20px" }}>
+                Join as Creator →
+              </Link>
+            </div>
+
+            {/* Brand card */}
+            <div className="card" style={{ padding: 28, background: "#EEF2FF", border: "2px solid var(--ink)", boxShadow: "4px 4px 0 var(--ink)" }}>
+              <div style={{ fontSize: 36, marginBottom: 12 }}>🏢</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 26, color: "var(--ink)", marginBottom: 8 }}>FOR BRANDS</div>
+              <p style={{ color: "var(--ink-2)", fontSize: 14, lineHeight: 1.6, marginBottom: 20 }}>
+                Search verified creators by niche, language, and budget. Post a brief, review pitches, release payment only when satisfied.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 24 }}>
+                {["AI-matched creators for your brief", "Niche × language × budget filters", "50% upfront, 50% on delivery", "Review before releasing payment"].map((f) => (
+                  <div key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, color: "var(--ink)" }}>
+                    <span style={{ width: 20, height: 20, borderRadius: "50%", background: "var(--orange)", border: "2px solid var(--ink)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "#fff", flexShrink: 0 }}>✓</span>
+                    {f}
+                  </div>
+                ))}
+              </div>
+              <Link href="/marketplace/search" style={{
+                display: "block", textAlign: "center", fontSize: 14, fontWeight: 800, padding: "12px 20px",
+                background: "var(--ink)", color: "#fff", borderRadius: "var(--r-sm)",
+                border: "2px solid var(--ink)", boxShadow: "3px 3px 0 var(--orange)", textDecoration: "none",
+              }}>
+                Find Creators →
+              </Link>
+            </div>
+          </div>
+
+          {/* Join CTA */}
+          <div style={{
+            background: "var(--card)", border: "2px solid var(--ink)",
+            borderRadius: "var(--r-md)", boxShadow: "4px 4px 0 var(--ink)",
+            padding: "32px", textAlign: "center",
+          }}>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>🚀</div>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 22, color: "var(--ink)", marginBottom: 8 }}>
+              MARKETPLACE OPENING SOON
+            </div>
+            <p style={{ color: "var(--ink-2)", fontSize: 14, marginBottom: 24, maxWidth: 480, margin: "0 auto 24px" }}>
+              Sign up now to be among the first creators onboarded — or post your first brand brief.
+            </p>
+            <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+              <Link href="/login" className="btn-hard" style={{ fontSize: 14, padding: "12px 24px" }}>Join as Creator →</Link>
+              <Link href="/login" style={{
+                display: "inline-flex", alignItems: "center",
+                fontSize: 14, fontWeight: 800, padding: "12px 24px",
+                background: "var(--ink)", color: "#fff",
+                border: "2px solid var(--ink)", borderRadius: "var(--r-sm)",
+                boxShadow: "3px 3px 0 var(--orange)", textDecoration: "none",
+              }}>Post a Brief →</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* How it works */}
-      <section id="how-it-works" style={{ background: "var(--bg-2)", borderTop: "2px solid var(--ink)", borderBottom: "2px solid var(--ink)", padding: "80px 24px" }}>
+      <section id="how-it-works" style={{ padding: "80px 24px" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(32px,4vw,52px)", color: "var(--ink)", marginBottom: 8 }}>HOW IT WORKS</h2>
@@ -172,7 +288,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section style={{ padding: "80px 24px" }}>
+      <section style={{ background: "var(--bg-2)", borderTop: "2px solid var(--ink)", borderBottom: "2px solid var(--ink)", padding: "80px 24px" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(32px,4vw,52px)", color: "var(--ink)", marginBottom: 8 }}>EVERYTHING INCLUDED</h2>
@@ -192,32 +308,6 @@ export default function LandingPage() {
                   <div style={{ fontFamily: "var(--font-display)", fontSize: 18, color: "var(--ink)", marginBottom: 4 }}>{f.title.toUpperCase()}</div>
                   <p style={{ color: "var(--ink-2)", fontSize: 13, lineHeight: 1.6 }}>{f.desc}</p>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section style={{ background: "var(--bg-2)", borderTop: "2px solid var(--ink)", borderBottom: "2px solid var(--ink)", padding: "80px 24px" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(32px,4vw,52px)", color: "var(--ink)", marginBottom: 8 }}>CREATORS LOVE IT</h2>
-          </div>
-          <div style={{ columns: "3 280px", gap: 20 }}>
-            {TESTIMONIALS.map((t, i) => (
-              <div key={t.handle} className="card" style={{
-                breakInside: "avoid", marginBottom: 20, padding: 20,
-                transform: `rotate(${[-1, 1.5, -0.5, 1, -1.5, 0.5][i % 6]}deg)`,
-              }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: 14, color: "var(--ink)" }}>{t.name}</div>
-                    <div style={{ fontSize: 12, color: "var(--muted)" }}>{t.handle}</div>
-                  </div>
-                  <div className="sticker" style={{ background: "var(--orange-lt)", fontSize: 12, fontWeight: 800, padding: "4px 10px" }}>{t.score}</div>
-                </div>
-                <p style={{ fontSize: 14, color: "var(--ink-2)", lineHeight: 1.6 }}>"{t.text}"</p>
               </div>
             ))}
           </div>
@@ -305,16 +395,28 @@ export default function LandingPage() {
           <p style={{ fontSize: 18, color: "rgba(255,255,255,0.85)", marginBottom: 36 }}>
             5 free reels. No credit card. Hindi + English + Hinglish.
           </p>
-          <Link href="/login" style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            background: "#fff", color: "var(--orange-dark)",
-            border: "2px solid var(--ink)", borderRadius: "var(--r-sm)",
-            boxShadow: "5px 5px 0 var(--ink)",
-            padding: "16px 36px", fontSize: 18, fontWeight: 900,
-            textDecoration: "none",
-          }}>
-            🚀 Create Your First Reel Free
-          </Link>
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            <Link href="/login" style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              background: "#fff", color: "var(--orange-dark)",
+              border: "2px solid var(--ink)", borderRadius: "var(--r-sm)",
+              boxShadow: "5px 5px 0 var(--ink)",
+              padding: "16px 36px", fontSize: 18, fontWeight: 900,
+              textDecoration: "none",
+            }}>
+              🚀 Create Your First Reel Free
+            </Link>
+            <Link href="/marketplace/search" style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              background: "var(--ink)", color: "#fff",
+              border: "2px solid var(--ink)", borderRadius: "var(--r-sm)",
+              boxShadow: "5px 5px 0 rgba(255,255,255,0.3)",
+              padding: "16px 36px", fontSize: 18, fontWeight: 900,
+              textDecoration: "none",
+            }}>
+              💼 Browse Marketplace
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -331,8 +433,13 @@ export default function LandingPage() {
             }}>🎬</span>
             <span style={{ fontFamily: "var(--font-display)", fontSize: 20, color: "#fff" }}>ReelCraft</span>
           </div>
+          <div style={{ display: "flex", gap: 20 }}>
+            <Link href="/marketplace" style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", textDecoration: "none", fontWeight: 700 }}>Marketplace</Link>
+            <Link href="/marketplace/search" style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", textDecoration: "none", fontWeight: 700 }}>For Brands</Link>
+            <Link href="#pricing" style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", textDecoration: "none", fontWeight: 700 }}>Pricing</Link>
+          </div>
           <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}>
-            © 2025 ReelCraft. Built for Indian creators.
+            © 2026 ReelCraft. Built for Indian creators.
           </div>
         </div>
       </footer>
