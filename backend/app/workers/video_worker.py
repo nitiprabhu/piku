@@ -159,6 +159,12 @@ def process_video_job(
         if 'project' in dir():
             project.status = "failed"
             project.error_message = err[:1000]
+            # Refund the credit that was deducted before enqueue
+            from sqlalchemy import text as sa_text
+            db.execute(
+                sa_text("UPDATE users SET credits = credits + 1 WHERE id = :id"),
+                {"id": str(project.user_id)},
+            )
             db.commit()
         publish_progress(job_id, "failed", 0, event="failed", error=str(e))
         raise

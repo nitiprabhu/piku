@@ -89,27 +89,33 @@ async def instagram_connect(
     db: AsyncSession = Depends(get_db),
 ):
     current_user = await get_current_user_from_token(token, db)
-    scope = "instagram_basic,instagram_content_publish,pages_read_engagement"
     state = str(current_user.id)
     redirect_uri = f"{settings.BACKEND_URL}/api/v1/social/instagram/callback"
+    scope = "instagram_business_basic,instagram_business_content_publish"
     url = (
-        f"https://www.facebook.com/v18.0/dialog/oauth"
+        f"https://www.instagram.com/oauth/authorize"
         f"?client_id={settings.INSTAGRAM_APP_ID}"
         f"&redirect_uri={redirect_uri}"
-        f"&scope={scope}"
         f"&response_type=code"
+        f"&scope={scope}"
         f"&state={state}"
     )
+    print(f"[IG CONNECT] authorize url: {url}")
     return RedirectResponse(url)
 
 
 @router.get("/instagram/callback")
 async def instagram_callback(
+    request: Request,
     code: str,
-    state: str,
     db: AsyncSession = Depends(get_db),
+    state: str | None = None,
 ):
-    # Resolve user from state (user_id passed in connect)
+    if not state:
+        return HTMLResponse(
+            content="<html><body><p>Missing state. Please connect Instagram from the ReelCraft app.</p></body></html>",
+            status_code=400,
+        )
     try:
         user_id = uuid.UUID(state)
     except ValueError:
@@ -121,18 +127,26 @@ async def instagram_callback(
         raise HTTPException(status_code=404, detail="User not found")
 
     redirect_uri = f"{settings.BACKEND_URL}/api/v1/social/instagram/callback"
+    print(f"[IG CALLBACK] redirect_uri={redirect_uri!r} client_id={settings.INSTAGRAM_APP_ID!r}")
 
     async with httpx.AsyncClient() as client:
         resp = await client.post(
-            "https://graph.facebook.com/v18.0/oauth/access_token",
+            "https://api.instagram.com/oauth/access_token",
             data={
                 "client_id": settings.INSTAGRAM_APP_ID,
                 "client_secret": settings.INSTAGRAM_APP_SECRET,
+                "grant_type": "authorization_code",
                 "redirect_uri": redirect_uri,
                 "code": code,
             },
         )
-        resp.raise_for_status()
+        print(f"[IG TOKEN] status={resp.status_code} body={resp.text!r}")
+        if resp.status_code != 200:
+            error_detail = resp.text
+            return HTMLResponse(
+                content=f"<html><body><p>Instagram token exchange failed: {error_detail}</p><p>Please close this window and try connecting again.</p></body></html>",
+                status_code=400,
+            )
         token_data = resp.json()
         access_token = token_data["access_token"]
 
@@ -152,6 +166,7 @@ async def instagram_callback(
             "https://graph.instagram.com/me",
             params={"fields": "id,username", "access_token": access_token},
         )
+        me_data = me_resp.json()
         me_data = me_resp.json()
 
     # Upsert social_account row
@@ -224,6 +239,22 @@ async def instagram_publish(
             container_id = container_data.get("id")
             if not container_id:
                 raise Exception(f"Failed to create IG container: {container_data}")
+
+            # Poll until container is FINISHED (required for Reels)
+            import asyncio as _asyncio
+            for _ in range(30):
+                status_resp = await client.get(
+                    f"https://graph.instagram.com/v18.0/{container_id}",
+                    params={"fields": "status_code,status", "access_token": access_token},
+                )
+                status_data = status_resp.json()
+                if status_data.get("status_code") == "FINISHED":
+                    break
+                if status_data.get("status_code") == "ERROR":
+                    raise Exception(f"IG container processing failed: {status_data}")
+                await _asyncio.sleep(5)
+            else:
+                raise Exception("IG container timed out (150s)")
 
             publish_resp = await client.post(
                 f"https://graph.instagram.com/v18.0/{acct.platform_user_id}/media_publish",

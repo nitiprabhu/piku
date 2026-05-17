@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     # Social APIs
     INSTAGRAM_APP_ID: str = ""
     INSTAGRAM_APP_SECRET: str = ""
+    INSTAGRAM_PARENT_APP_ID: str = ""
     YOUTUBE_CLIENT_ID: str = ""
     YOUTUBE_CLIENT_SECRET: str = ""
 

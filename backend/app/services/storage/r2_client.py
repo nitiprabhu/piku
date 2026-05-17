@@ -33,7 +33,7 @@ async def upload_to_r2(local_path: str, r2_key: str) -> str:
         dest_path = Path("app/static") / r2_key
         os.makedirs(dest_path.parent, exist_ok=True)
         shutil.copy2(local_path, dest_path)
-        return f"http://localhost:8005/static/{r2_key}"
+        return f"{settings.BACKEND_URL}/static/{r2_key}"
 
     try:
         client = get_r2_client()
@@ -59,5 +59,5 @@ async def upload_to_r2(local_path: str, r2_key: str) -> str:
         dest_path = Path("app/static") / r2_key
         os.makedirs(dest_path.parent, exist_ok=True)
         shutil.copy2(local_path, dest_path)
-        return f"http://localhost:8005/static/{r2_key}"
+        return f"{settings.BACKEND_URL}/static/{r2_key}"
 
