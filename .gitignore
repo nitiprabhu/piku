@@ -19,6 +19,9 @@ env/
 dist/
 .pytest_cache/
 
+# Deployment notes (contains credentials)
+DEPLOY.md
+
 # Env files — never commit real credentials
 .env
 .env.local
