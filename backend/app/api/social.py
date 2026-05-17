@@ -365,6 +365,27 @@ async def youtube_callback(
     )
 
 
+async def _refresh_youtube_token(acct: SocialAccount, db: AsyncSession) -> str:
+    """Return valid access token, refreshing if needed."""
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(
+            "https://oauth2.googleapis.com/token",
+            data={
+                "client_id": settings.YOUTUBE_CLIENT_ID,
+                "client_secret": settings.YOUTUBE_CLIENT_SECRET,
+                "refresh_token": decrypt_token(acct.refresh_token),
+                "grant_type": "refresh_token",
+            },
+        )
+        data = resp.json()
+        if "access_token" not in data:
+            raise Exception(f"YouTube token refresh failed: {data}")
+        new_token = data["access_token"]
+        acct.access_token = encrypt_token(new_token)
+        await db.flush()
+        return new_token
+
+
 @router.post("/youtube/publish")
 async def youtube_publish(
     body: PublishRequest,
@@ -395,8 +416,83 @@ async def youtube_publish(
     db.add(publish_job)
     await db.flush()
 
-    return {
-        "publish_job_id": str(publish_job.id),
-        "status": "pending",
-        "message": "YouTube publish queued",
-    }
+    try:
+        import tempfile, os
+        access_token = await _refresh_youtube_token(acct, db)
+
+        title = (body.title or body.caption)[:100]
+        if "#shorts" not in title.lower():
+            title = title[:93] + " #Shorts"
+        hashtag_str = " ".join(body.hashtags)
+        description = f"{body.caption}\n\n{hashtag_str}\n\n#Shorts"
+
+        # Download video to temp file
+        async with httpx.AsyncClient(timeout=120) as client:
+            video_resp = await client.get(project.video_url)
+            if video_resp.status_code != 200:
+                raise Exception(f"Failed to download video: {video_resp.status_code}")
+
+            with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
+                tmp.write(video_resp.content)
+                tmp_path = tmp.name
+
+            try:
+                file_size = os.path.getsize(tmp_path)
+
+                # Initiate resumable upload
+                init_resp = await client.post(
+                    "https://www.googleapis.com/upload/youtube/v3/videos",
+                    params={"uploadType": "resumable", "part": "snippet,status"},
+                    headers={
+                        "Authorization": f"Bearer {access_token}",
+                        "Content-Type": "application/json",
+                        "X-Upload-Content-Type": "video/mp4",
+                        "X-Upload-Content-Length": str(file_size),
+                    },
+                    json={
+                        "snippet": {
+                            "title": title,
+                            "description": description,
+                            "categoryId": "22",
+                        },
+                        "status": {
+                            "privacyStatus": "public",
+                            "selfDeclaredMadeForKids": False,
+                        },
+                    },
+                )
+                if init_resp.status_code != 200:
+                    raise Exception(f"YouTube upload init failed: {init_resp.text}")
+
+                upload_url = init_resp.headers["Location"]
+
+                # Upload video bytes
+                with open(tmp_path, "rb") as f:
+                    upload_resp = await client.put(
+                        upload_url,
+                        content=f.read(),
+                        headers={
+                            "Content-Type": "video/mp4",
+                            "Content-Length": str(file_size),
+                        },
+                    )
+
+                upload_data = upload_resp.json()
+                if "id" not in upload_data:
+                    raise Exception(f"YouTube upload failed: {upload_data}")
+
+                video_id = upload_data["id"]
+            finally:
+                os.unlink(tmp_path)
+
+        from datetime import datetime, timezone
+        publish_job.status = "published"
+        publish_job.platform_post_id = video_id
+        publish_job.published_at = datetime.now(timezone.utc)
+
+    except Exception as e:
+        publish_job.status = "failed"
+        publish_job.error_message = str(e)
+
+    await db.flush()
+    return {"publish_job_id": str(publish_job.id), "status": publish_job.status}
