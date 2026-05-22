@@ -11,11 +11,11 @@ const PLANS = [
     price: "₹0",
     period: "",
     credits: 5,
-    creditLabel: "5 videos/mo",
+    creditLabel: "5 videos total",
     overage: null,
     highlight: false,
     badge: null,
-    features: ["WAN2.1 video model", "Watermarked output", "Hindi / English / Hinglish", "Community support"],
+    features: ["AI-generated video (2 scenes)", "Hindi / English / Hinglish", "Auto captions", "Watermarked output"],
     cta: "Current Plan",
     disabled: true,
   },
@@ -29,7 +29,7 @@ const PLANS = [
     overage: null,
     highlight: false,
     badge: "TOP UP",
-    features: ["10 video credits", "No expiry", "WAN2.1 model", "No watermark"],
+    features: ["10 video credits", "No expiry", "AI-generated video (2 scenes)", "No watermark", "Download & publish"],
     cta: "Buy Pack",
     disabled: false,
   },
@@ -43,7 +43,7 @@ const PLANS = [
     overage: "₹8/video after",
     highlight: true,
     badge: "POPULAR",
-    features: ["60 videos/month", "VEO3 premium model", "No watermark", "Priority queue", "₹8/video overage"],
+    features: ["60 videos/month", "Enhanced AI video (3 scenes)", "No watermark", "Auto-publish to Instagram & YouTube", "Priority queue", "₹8/video overage"],
     cta: "Go Pro",
     disabled: false,
   },
@@ -53,13 +53,13 @@ const PLANS = [
     price: "₹1,999",
     period: "/mo",
     credits: 300,
-    creditLabel: "10 videos/day",
-    overage: "₹6/video after",
+    creditLabel: "Coming Soon",
+    overage: null,
     highlight: false,
-    badge: null,
-    features: ["300 videos/month", "VEO3 premium model", "No watermark", "Fastest queue", "₹6/video overage", "API access"],
-    cta: "Go Business",
-    disabled: false,
+    badge: "SOON",
+    features: ["Everything in Pro", "300 videos/month", "4 scenes per reel", "Team access", "Priority support"],
+    cta: "Notify Me",
+    disabled: true,
   },
 ];
 
@@ -109,7 +109,7 @@ export default function PricingPage() {
             PICK YOUR PLAN
           </h1>
           <p style={{ color: "var(--ink-2)", fontSize: 16 }}>
-            Generous but capped — 2 videos/day feels unlimited to 95% of creators
+            Type your idea in Hindi or English — get a reel in 45 seconds
           </p>
         </div>
 
@@ -211,10 +211,10 @@ export default function PricingPage() {
           <span style={{ fontSize: 28 }}>💡</span>
           <div>
             <div style={{ fontFamily: "var(--font-display)", fontSize: 18, color: "var(--ink)", marginBottom: 4 }}>
-              THE FRAMING TRICK
+              WHY PRO?
             </div>
             <p style={{ fontFamily: "var(--font-body)", fontSize: 14, color: "var(--ink-2)", margin: 0 }}>
-              Pro gives you <strong>2 videos/day</strong> — feels unlimited to 95% of creators. Power users self-select into Business. Average Pro user makes ~20 reels/month = <strong>₹25/video</strong>.
+              Pro gives you <strong>2 reels/day</strong> with 3 AI-generated scenes, auto-published to Instagram & YouTube. Average creator posts 20 reels/month = <strong>₹25/reel</strong>. Saves 2+ hours per reel.
             </p>
           </div>
         </div>

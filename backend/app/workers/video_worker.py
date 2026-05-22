@@ -112,7 +112,7 @@ def process_video_job(
             scene_durations.append(5)
 
         video_clips = asyncio.run(
-            generate_all_clips(visual_keywords, scene_durations, use_premium, style, image_style)
+            generate_all_clips(visual_keywords, scene_durations, use_premium, style, image_style, user_plan)
         )
         publish_progress(job_id, "visuals_done", 70)
 

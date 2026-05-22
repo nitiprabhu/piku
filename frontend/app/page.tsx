@@ -437,6 +437,8 @@ export default function LandingPage() {
             <Link href="/marketplace" style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", textDecoration: "none", fontWeight: 700 }}>Marketplace</Link>
             <Link href="/marketplace/search" style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", textDecoration: "none", fontWeight: 700 }}>For Brands</Link>
             <Link href="#pricing" style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", textDecoration: "none", fontWeight: 700 }}>Pricing</Link>
+            <Link href="/privacy" style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", textDecoration: "none", fontWeight: 700 }}>Privacy</Link>
+            <Link href="/terms" style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", textDecoration: "none", fontWeight: 700 }}>Terms</Link>
           </div>
           <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}>
             © 2026 ReelCraft. Built for Indian creators.

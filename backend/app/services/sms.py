@@ -3,36 +3,32 @@ from app.config import settings
 
 
 async def send_sms_otp(phone: str, otp: str) -> bool:
-    """
-    Sends an OTP SMS via Twilio if configured.
-    Otherwise, mocks the delivery by printing to console.
-    """
-    message = f"Your ReelCraft OTP code is: {otp}. Valid for 5 minutes. Please do not share this code."
-
-    # If Twilio is configured
-    if settings.TWILIO_ACCOUNT_SID and settings.TWILIO_AUTH_TOKEN and settings.TWILIO_SENDER_NUMBER:
-        url = f"https://api.twilio.com/2010-04-01/Accounts/{settings.TWILIO_ACCOUNT_SID}/Messages.json"
-        auth = (settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-        data = {
-            "To": phone,
-            "From": settings.TWILIO_SENDER_NUMBER,
-            "Body": message,
+    if settings.MSG91_AUTH_KEY and settings.MSG91_TEMPLATE_ID:
+        # MSG91 Send OTP API
+        # Phone must be in E.164 without '+' for MSG91 (e.g. 919876543210)
+        mobile = phone.lstrip("+")
+        url = "https://control.msg91.com/api/v5/otp"
+        params = {
+            "template_id": settings.MSG91_TEMPLATE_ID,
+            "mobile": mobile,
+            "authkey": settings.MSG91_AUTH_KEY,
+            "otp": otp,
         }
         try:
-            async with httpx.AsyncClient() as client:
-                response = await client.post(url, data=data, auth=auth)
-                if response.status_code in [200, 201]:
+            async with httpx.AsyncClient(timeout=10) as client:
+                response = await client.post(url, params=params)
+                data = response.json()
+                if data.get("type") == "success":
                     return True
-                else:
-                    print(f"Twilio error: {response.status_code} - {response.text}")
-                    return False
+                print(f"MSG91 error: {data}")
+                return False
         except Exception as e:
-            print(f"Exception sending SMS: {e}")
+            print(f"Exception sending SMS via MSG91: {e}")
             return False
 
-    # Development Fallback
+    # Development fallback — log OTP to console
     print("\n" + "=" * 60)
-    print(f"📱 [SMS MOCK] To: {phone}")
-    print(f"💬 Message: {message}")
+    print(f"[SMS MOCK] To: {phone}")
+    print(f"OTP: {otp}")
     print("=" * 60 + "\n")
     return True

@@ -46,3 +46,6 @@ backend/app/static/videos/
 *.mp4
 *.mp3
 *.wav
+
+# Local action items / notes (not for repo)
+action-items/

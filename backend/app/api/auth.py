@@ -1,8 +1,13 @@
 import random
+import base64
+import hashlib
+import hmac
+import json
+import uuid as uuid_module
 from redis import asyncio as aioredis
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Form, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete, and_
 from app.database import get_db
 from app.models.user import User
 from app.schemas.user import (
@@ -137,3 +142,81 @@ async def logout():
 @router.get("/me", response_model=UserResponse)
 async def me(current_user: User = Depends(get_current_user)):
     return UserResponse.model_validate(current_user)
+
+
+def _verify_meta_signed_request(signed_request: str, app_secret: str) -> dict:
+    try:
+        encoded_sig, encoded_payload = signed_request.split(".", 1)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid signed_request format")
+
+    def b64url_decode(s: str) -> bytes:
+        s += "=" * (4 - len(s) % 4)
+        return base64.urlsafe_b64decode(s)
+
+    try:
+        sig = b64url_decode(encoded_sig)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid signature encoding")
+
+    expected = hmac.new(
+        app_secret.encode("utf-8"),
+        encoded_payload.encode("utf-8"),
+        hashlib.sha256,
+    ).digest()
+
+    if not hmac.compare_digest(sig, expected):
+        raise HTTPException(status_code=400, detail="Invalid signature")
+
+    try:
+        payload = json.loads(b64url_decode(encoded_payload))
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid payload encoding")
+
+    if payload.get("algorithm", "").upper() != "HMAC-SHA256":
+        raise HTTPException(status_code=400, detail="Unsupported algorithm")
+
+    return payload
+
+
+@router.post("/data-deletion")
+async def meta_data_deletion(
+    signed_request: str = Form(...),
+    db: AsyncSession = Depends(get_db),
+):
+    """Meta data deletion callback. Called when a user removes the app from Instagram."""
+    from app.models.social_account import SocialAccount
+
+    payload = _verify_meta_signed_request(signed_request, settings.INSTAGRAM_APP_SECRET)
+    instagram_user_id = payload.get("user_id")
+
+    confirmation_code = str(uuid_module.uuid4())
+
+    if instagram_user_id:
+        result = await db.execute(
+            select(SocialAccount).where(
+                and_(
+                    SocialAccount.platform == "instagram",
+                    SocialAccount.platform_user_id == instagram_user_id,
+                )
+            )
+        )
+        social = result.scalar_one_or_none()
+
+        if social:
+            user_id = social.user_id
+            await db.execute(
+                delete(SocialAccount).where(SocialAccount.user_id == user_id)
+            )
+            result2 = await db.execute(select(User).where(User.id == user_id))
+            user = result2.scalar_one_or_none()
+            if user:
+                user.phone = f"deleted_{confirmation_code[:8]}"
+                user.name = "Deleted User"
+                user.instagram_handle = None
+                user.youtube_handle = None
+                user.razorpay_sub_id = None
+            await db.flush()
+
+    status_url = f"{settings.FRONTEND_URL}/data-deletion?id={confirmation_code}"
+    return {"url": status_url, "confirmation_code": confirmation_code}

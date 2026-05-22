@@ -30,7 +30,14 @@ class Settings(BaseSettings):
 
     # AI APIs
     OPENAI_API_KEY: str = ""
+
+    # Video provider: auto | muapi | kling | falai
+    # auto = cheapest viable model per plan (WAN1.3B free, Kling std paid)
+    VIDEO_PROVIDER: str = "auto"
     MUAPI_API_KEY: str = ""
+    KLING_ACCESS_KEY_ID: str = ""
+    KLING_ACCESS_KEY_SECRET: str = ""
+    FALAI_API_KEY: str = ""
 
     # Cloudflare R2
     R2_ACCOUNT_ID: str = ""
@@ -51,10 +58,10 @@ class Settings(BaseSettings):
     RAZORPAY_KEY_SECRET: str = ""
     RAZORPAY_WEBHOOK_SECRET: str = ""
 
-    # SMS/OTP
-    TWILIO_ACCOUNT_SID: str = ""
-    TWILIO_AUTH_TOKEN: str = ""
-    TWILIO_SENDER_NUMBER: str = ""
+    # SMS/OTP (MSG91)
+    MSG91_AUTH_KEY: str = ""
+    MSG91_TEMPLATE_ID: str = ""
+    MSG91_SENDER_ID: str = "RCRAFT"
 
     # Tokens
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15

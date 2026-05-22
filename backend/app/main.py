@@ -12,6 +12,8 @@ async def lifespan(app: FastAPI):
     await init_db()
     await seed_templates()
     await seed_inspiration_videos()
+    from app.services.ai.music_service import warm_music_cache
+    await warm_music_cache()
     from app.services.scheduler import scheduler, check_series_schedules
     scheduler.add_job(check_series_schedules, "interval", minutes=1, id="series_scheduler", replace_existing=True)
     scheduler.start()
