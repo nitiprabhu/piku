@@ -25,18 +25,18 @@ class VerifyPaymentRequest(BaseModel):
 PLAN_PRICES = {
     "starter": 9900,     # ₹99 one-time in paise
     "pro": 49900,        # ₹499/mo in paise
-    "business": 199900,  # ₹1,999/mo in paise
+    "business": 399900,  # ₹3,999/mo in paise — 100 videos × Kling ~₹13.50 = ₹1,350 COGS, 66% margin
 }
 
 PLAN_CREDITS = {
     "starter": 10,
     "pro": 60,
-    "business": 300,
+    "business": 100,  # 300 was loss-making (300 × ₹13.50 = ₹4,050 COGS > ₹1,999 revenue)
 }
 
 OVERAGE_PRICE_PAISE = {
-    "pro": 800,      # ₹8/video
-    "business": 600, # ₹6/video
+    "pro": 800,       # ₹8/video
+    "business": 1500, # ₹15/video overage
 }
 
 
@@ -124,7 +124,8 @@ async def razorpay_webhook(request: Request, db: AsyncSession = Depends(get_db))
         result = await db.execute(select(User).where(User.razorpay_sub_id == sub_id))
         user = result.scalar_one_or_none()
         if user:
-            user.credits = 9999  # Reset for pro
+            plan = user.plan or "pro"
+            user.credits = PLAN_CREDITS.get(plan, 60)
             await db.flush()
 
     return {"status": "ok"}

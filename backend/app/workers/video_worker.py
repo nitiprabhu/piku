@@ -119,7 +119,7 @@ def process_video_job(
         # ── Step 4: FFmpeg Composition ─────────────────────────────────
         publish_progress(job_id, "composing", 75)
         output_path = str(tmp_dir / "final_video.mp4")
-        watermark_path = str(Path(__file__).parent.parent.parent / "assets" / "watermark.png")
+        _wm_asset = Path(__file__).parent.parent.parent / "assets" / "watermark.png"
 
         from app.models.user import User as UserModel
         user_obj = db.query(UserModel).filter(UserModel.id == project.user_id).first()
@@ -127,13 +127,17 @@ def process_video_job(
         ig_handle = user_obj.instagram_handle if (user_obj and show_overlay) else None
         yt_handle = user_obj.youtube_handle if (user_obj and show_overlay) else None
 
+        # Watermark only on free plan — conversion nudge to upgrade
+        is_free = not user_obj or (user_obj.plan or "free") == "free"
+        effective_watermark = str(_wm_asset) if (is_free and _wm_asset.exists()) else None
+
         compose_video(
             video_clips=video_clips,
             voice_path=voice_path,
             music_path=music_path,
             script=script,
             output_path=output_path,
-            watermark_path=watermark_path if Path(watermark_path).exists() else None,
+            watermark_path=effective_watermark,
             style=style,
             instagram_handle=ig_handle,
             youtube_handle=yt_handle,
