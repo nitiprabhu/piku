@@ -33,6 +33,9 @@ export default function DashboardPage() {
   const [stats, setStats]       = useState({ total: 0 });
   const [loading, setLoading]   = useState(true);
   const [userName, setUserName] = useState("CREATOR");
+  const [userCredits, setUserCredits] = useState<number | null>(null);
+  const [userPlan, setUserPlan] = useState<string>("free");
+  const [firstVideoPurchased, setFirstVideoPurchased] = useState(false);
 
   // Branding state
   const [igHandle, setIgHandle]         = useState("");
@@ -48,6 +51,9 @@ export default function DashboardPage() {
     if (user.instagram_handle) setIgHandle(user.instagram_handle);
     if (user.youtube_handle) setYtHandle(user.youtube_handle);
     if (user.show_social_overlay !== undefined) setShowOverlay(user.show_social_overlay);
+    if (user.credits !== undefined) setUserCredits(user.credits);
+    if (user.plan) setUserPlan(user.plan);
+    if (user.first_video_purchased !== undefined) setFirstVideoPurchased(user.first_video_purchased);
     api.get("/projects?limit=20")
       .then((r) => { setProjects(r.data.items); setStats({ total: r.data.total ?? r.data.items.length }); })
       .catch(() => router.push("/login"))
@@ -86,6 +92,36 @@ export default function DashboardPage() {
           </h1>
           <p style={{ color: "var(--ink-2)", fontSize: 15 }}>Your reels dashboard</p>
         </div>
+
+        {/* Upgrade nudge — free plan with low/zero credits */}
+        {userPlan === "free" && userCredits !== null && userCredits <= 1 && (
+          <div style={{
+            background: userCredits === 0 ? "#fef2f2" : "#fffbeb",
+            border: `2px solid ${userCredits === 0 ? "#ef4444" : "var(--orange)"}`,
+            borderRadius: "var(--r-md)", padding: "16px 20px", marginBottom: 24,
+            display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12,
+          }}>
+            <div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 18, color: "var(--ink)", marginBottom: 2 }}>
+                {userCredits === 0 ? "Videos khatam ho gaye 😅" : "Sirf 1 video bacha hai"}
+              </div>
+              <div style={{ fontSize: 13, color: "var(--ink-2)", fontWeight: 600 }}>
+                {!firstVideoPurchased
+                  ? "₹29 mein 1 clean reel — no watermark, post today"
+                  : "Starter Pack ₹99 — 10 clean videos, no expiry"}
+              </div>
+            </div>
+            <Link href="/pricing" style={{
+              background: userCredits === 0 ? "#ef4444" : "var(--orange)",
+              color: "#fff", fontFamily: "var(--font-body)", fontWeight: 800,
+              fontSize: 14, padding: "10px 20px", borderRadius: "var(--r-sm)",
+              border: "2px solid var(--ink)", boxShadow: "3px 3px 0 var(--ink)",
+              textDecoration: "none", whiteSpace: "nowrap",
+            }}>
+              {!firstVideoPurchased ? "Post for ₹29 →" : "Buy 10 videos →"}
+            </Link>
+          </div>
+        )}
 
         {/* Marketplace banner */}
         <div style={{

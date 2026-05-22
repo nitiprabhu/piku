@@ -64,6 +64,7 @@ class UserResponse(BaseModel):
     instagram_handle: str | None = None
     youtube_handle: str | None = None
     show_social_overlay: bool = True
+    first_video_purchased: bool = False
 
     model_config = {"from_attributes": True}
 

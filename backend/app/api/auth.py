@@ -101,7 +101,7 @@ async def verify_otp(body: VerifyOTPRequest, db: AsyncSession = Depends(get_db))
             phone=body.phone,
             name=body.name or f"Creator {body.phone[-4:]}",
             plan="free",
-            credits=5,
+            credits=2,
             language_pref=body.language_pref or "hi",
         )
         db.add(user)

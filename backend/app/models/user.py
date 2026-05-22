@@ -14,8 +14,11 @@ class User(Base):
     phone: Mapped[str] = mapped_column(String(20), unique=True, nullable=False, index=True)
     name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     plan: Mapped[str] = mapped_column(String(20), default="free")  # free | pro | starter | business
-    credits: Mapped[int] = mapped_column(Integer, default=5)
-    videos_generated: Mapped[int] = mapped_column(Integer, default=0)  # P3: track for VEO3 first-3 hook
+    credits: Mapped[int] = mapped_column(Integer, default=2)
+    videos_generated: Mapped[int] = mapped_column(Integer, default=0)
+
+    # ₹29 first-video offer: one-time, grants 1 clean video credit
+    first_video_purchased: Mapped[bool] = mapped_column(Boolean, default=False)
     language_pref: Mapped[str] = mapped_column(String(10), default="hi")
     category_pref: Mapped[str | None] = mapped_column(String(50), nullable=True)
 

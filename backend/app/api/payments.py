@@ -39,6 +39,28 @@ OVERAGE_PRICE_PAISE = {
     "business": 1500, # ₹15/video overage
 }
 
+FIRST_VIDEO_PRICE_PAISE = 2900  # ₹29 — one clean video, no watermark, one-time
+
+
+@router.post("/first-video-order")
+async def first_video_order(
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.first_video_purchased:
+        raise HTTPException(status_code=400, detail="First video offer already used")
+
+    try:
+        import razorpay
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        order = client.order.create({
+            "amount": FIRST_VIDEO_PRICE_PAISE,
+            "currency": "INR",
+            "notes": {"plan": "first_video", "user_id": str(current_user.id)},
+        })
+        return {"razorpay_order_id": order["id"], "amount": FIRST_VIDEO_PRICE_PAISE, "currency": "INR"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.post("/create-order")
 async def create_order(
@@ -89,15 +111,21 @@ async def verify_payment(
     except Exception:
         plan = "pro"
 
-    credits = PLAN_CREDITS.get(plan, 60)
-    if plan == "starter":
+    if plan == "first_video":
+        if current_user.first_video_purchased:
+            raise HTTPException(status_code=400, detail="First video offer already used")
+        current_user.first_video_purchased = True
+        current_user.credits = (current_user.credits or 0) + 1
+    elif plan == "starter":
+        credits = PLAN_CREDITS.get(plan, 10)
         current_user.credits = (current_user.credits or 0) + credits
     else:
+        credits = PLAN_CREDITS.get(plan, 60)
         current_user.plan = plan
         current_user.credits = credits
     await db.flush()
 
-    return {"success": True, "plan": current_user.plan}
+    return {"success": True, "plan": current_user.plan, "credits": current_user.credits}
 
 
 @router.post("/webhook")

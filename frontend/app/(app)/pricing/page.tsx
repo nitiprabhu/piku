@@ -10,14 +10,28 @@ const PLANS = [
     name: "Free",
     price: "₹0",
     period: "",
-    credits: 5,
-    creditLabel: "5 videos total",
+    credits: 2,
+    creditLabel: "2 videos total",
     overage: null,
     highlight: false,
     badge: null,
     features: ["AI-generated video (2 scenes)", "Hindi / English / Hinglish", "Auto captions", "Watermarked output"],
     cta: "Current Plan",
     disabled: true,
+  },
+  {
+    id: "first_video",
+    name: "First Reel",
+    price: "₹29",
+    period: "one-time",
+    credits: 1,
+    creditLabel: "1 clean video",
+    overage: null,
+    highlight: false,
+    badge: "TRY IT",
+    features: ["1 video credit", "No watermark", "Download & post today", "2 AI-generated scenes"],
+    cta: "Post Your First Reel",
+    disabled: false,
   },
   {
     id: "starter",
@@ -48,7 +62,6 @@ const PLANS = [
     disabled: false,
   },
   {
-    {
     id: "business",
     name: "Business",
     price: "₹3,999",
@@ -75,13 +88,19 @@ export default function PricingPage() {
   const handleBuy = async (planId: string) => {
     setLoading(planId);
     try {
-      const { data } = await api.post("/payments/create-order", { plan: planId });
+      const endpoint = planId === "first_video"
+        ? "/payments/first-video-order"
+        : "/payments/create-order";
+      const body = planId === "first_video" ? {} : { plan: planId };
+      const { data } = await api.post(endpoint, body);
+
+      const plan = PLANS.find(p => p.id === planId);
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: data.amount,
         currency: data.currency,
         name: "ReelCraft",
-        description: PLANS.find(p => p.id === planId)?.name,
+        description: plan?.name,
         order_id: data.razorpay_order_id,
         handler: async (response: any) => {
           await api.post("/payments/verify", {
@@ -104,7 +123,7 @@ export default function PricingPage() {
 
   return (
     <AppShell>
-      <div style={{ padding: "32px 28px", maxWidth: 1100 }}>
+      <div style={{ padding: "32px 28px", maxWidth: 1200 }}>
         <div style={{ marginBottom: 32, textAlign: "center" }}>
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px,4vw,48px)", color: "var(--ink)", marginBottom: 8 }}>
             PICK YOUR PLAN
@@ -114,7 +133,7 @@ export default function PricingPage() {
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 40 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 20, marginBottom: 40 }}>
           {PLANS.map((plan) => (
             <div
               key={plan.id}
@@ -133,7 +152,7 @@ export default function PricingPage() {
               {plan.badge && (
                 <div style={{
                   position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)",
-                  background: plan.highlight ? "var(--ink)" : "var(--orange)",
+                  background: plan.highlight ? "var(--ink)" : plan.id === "first_video" ? "#16a34a" : "var(--orange)",
                   color: "#fff", fontFamily: "var(--font-mono)", fontSize: 10,
                   fontWeight: 700, letterSpacing: "0.1em", padding: "3px 10px",
                   borderRadius: 999, border: "2px solid var(--ink)",
@@ -190,9 +209,19 @@ export default function PricingPage() {
                   fontFamily: "var(--font-body)", fontWeight: 800, fontSize: 14,
                   cursor: plan.disabled ? "default" : "pointer",
                   border: "2px solid var(--ink)",
-                  background: plan.disabled ? "var(--bg-2)" : plan.highlight ? "#fff" : "var(--ink)",
-                  color: plan.disabled ? "var(--muted)" : plan.highlight ? "var(--orange)" : "#fff",
-                  boxShadow: plan.disabled ? "none" : "3px 3px 0 " + (plan.highlight ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.3)"),
+                  background: plan.disabled
+                    ? "var(--bg-2)"
+                    : plan.highlight
+                    ? "#fff"
+                    : plan.id === "first_video"
+                    ? "#16a34a"
+                    : "var(--ink)",
+                  color: plan.disabled
+                    ? "var(--muted)"
+                    : plan.highlight
+                    ? "var(--orange)"
+                    : "#fff",
+                  boxShadow: plan.disabled ? "none" : "3px 3px 0 rgba(0,0,0,0.3)",
                   opacity: loading && loading !== plan.id ? 0.6 : 1,
                   transition: "all 0.08s ease",
                 }}
