@@ -31,10 +31,13 @@ export default function PublishModal({
   const [hashtags, setHashtags] = useState(initialHashtags.join(" "));
   const [title, setTitle] = useState(videoTitle || "");
   const [loading, setLoading] = useState(false);
+  const [publishStatus, setPublishStatus] = useState<string | null>(null); // queued | processing | published | failed
+  const [publishError, setPublishError] = useState<string | null>(null);
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [statusLoading, setStatusLoading] = useState(true);
   const popupRef = useRef<Window | null>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const isIG = platform === "instagram";
   const platformLabel = isIG ? "Instagram" : "YouTube";
@@ -95,24 +98,47 @@ export default function PublishModal({
   const handlePublish = async () => {
     setLoading(true);
     setError(null);
+    setPublishError(null);
     try {
       const hashtagList = hashtags.split(/\s+/).filter((h) => h.startsWith("#"));
       const endpoint = isIG ? "/social/instagram/publish" : "/social/youtube/publish";
 
-      await api.post(endpoint, {
+      const { data } = await api.post(endpoint, {
         project_id: projectId,
         caption,
         hashtags: hashtagList,
         ...(platform === "youtube" ? { title: title || caption.slice(0, 100) } : {}),
       });
 
-      onSuccess(platform);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "Publish failed. Try again.");
-    } finally {
+      setPublishStatus("queued");
+      const jobId = data.publish_job_id;
+
+      // Poll until published or failed
+      pollRef.current = setInterval(async () => {
+        try {
+          const { data: statusData } = await api.get(`/social/publish/${jobId}`);
+          setPublishStatus(statusData.status);
+          if (statusData.status === "published") {
+            clearInterval(pollRef.current!);
+            setLoading(false);
+            onSuccess(platform);
+          } else if (statusData.status === "failed") {
+            clearInterval(pollRef.current!);
+            setLoading(false);
+            setPublishError(statusData.error_message || "Publish failed.");
+          }
+        } catch {
+          // poll silently
+        }
+      }, 3000);
+    } catch (err: unknown) {
+      setError((err as { response?: { data?: { detail?: string } } })?.response?.data?.detail || "Publish failed. Try again.");
       setLoading(false);
     }
   };
+
+  // Cleanup poll on unmount
+  useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 16px" }}>
@@ -235,9 +261,22 @@ export default function PublishModal({
               />
             </div>
 
-            {error && (
+            {(error || publishError) && (
               <div style={{ background: "rgba(255,50,50,0.1)", border: "2px solid var(--pink)", borderRadius: "var(--r-sm)", padding: "10px 14px", color: "var(--pink)", fontSize: 13 }}>
-                {error}
+                {error || publishError}
+              </div>
+            )}
+
+            {publishStatus && publishStatus !== "published" && (
+              <div style={{
+                display: "flex", alignItems: "center", gap: 10,
+                background: "var(--bg-2)", border: "2px solid var(--ink)",
+                borderRadius: "var(--r-sm)", padding: "10px 14px",
+              }}>
+                <div className="spin" style={{ width: 14, height: 14, border: "2px solid var(--orange-lt)", borderTopColor: "var(--orange)", borderRadius: "50%", flexShrink: 0 }} />
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, textTransform: "uppercase", color: "var(--ink-2)" }}>
+                  {publishStatus === "queued" ? "Queued — waiting for worker..." : "Publishing to " + platformLabel + "..."}
+                </span>
               </div>
             )}
 
@@ -250,10 +289,10 @@ export default function PublishModal({
               </button>
               <button
                 onClick={handlePublish}
-                disabled={loading}
-                style={{ flex: 2, padding: "12px", borderRadius: "var(--r-sm)", fontFamily: "var(--font-body)", fontWeight: 800, fontSize: 14, cursor: loading ? "wait" : "pointer", border: "2px solid var(--ink)", background: "var(--orange)", color: "#fff", boxShadow: "3px 3px 0 var(--ink)", opacity: loading ? 0.7 : 1 }}
+                disabled={loading || !!publishStatus}
+                style={{ flex: 2, padding: "12px", borderRadius: "var(--r-sm)", fontFamily: "var(--font-body)", fontWeight: 800, fontSize: 14, cursor: (loading || !!publishStatus) ? "wait" : "pointer", border: "2px solid var(--ink)", background: "var(--orange)", color: "#fff", boxShadow: "3px 3px 0 var(--ink)", opacity: (loading || !!publishStatus) ? 0.7 : 1 }}
               >
-                {loading ? "Publishing…" : `Post to ${platformLabel} →`}
+                {loading ? "Submitting…" : `Post to ${platformLabel} →`}
               </button>
             </div>
           </div>

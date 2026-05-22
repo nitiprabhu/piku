@@ -31,8 +31,9 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
 const NAV = [
   { href: "/dashboard",   emoji: "🏠", label: "Dashboard",   badge: "" },
   { href: "/create",      emoji: "✨", label: "Create",       badge: "" },
+  { href: "/series",      emoji: "📺", label: "Series",       badge: "NEW" },
   { href: "/templates",   emoji: "🎬", label: "Templates",    badge: "" },
-  { href: "/marketplace", emoji: "💼", label: "Marketplace",  badge: "NEW" },
+  { href: "/marketplace", emoji: "💼", label: "Marketplace",  badge: "" },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {

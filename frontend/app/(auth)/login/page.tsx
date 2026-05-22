@@ -18,7 +18,6 @@ export default function LoginPage() {
   const [otp, setOtp]               = useState(["","","","","",""]);
   const [loading, setLoading]       = useState(false);
   const [error, setError]           = useState<string | null>(null);
-  const [devOtp, setDevOtp]         = useState<string | null>(null);
   const [countdown, setCountdown]   = useState(0);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -39,11 +38,10 @@ export default function LoginPage() {
   const handleSendOtp = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!phone) { setError("Enter a phone number"); return; }
-    setLoading(true); setError(null); setDevOtp(null);
+    setLoading(true); setError(null);
     try {
-      const { data } = await api.post("/auth/send-otp", { phone: formatPhone(phone) });
+      await api.post("/auth/send-otp", { phone: formatPhone(phone) });
       setStep("otp"); setCountdown(30);
-      if (data.otp) setDevOtp(data.otp);
     } catch (err: any) {
       setError(err.response?.data?.detail || "Failed to send OTP");
     } finally { setLoading(false); }
@@ -252,12 +250,6 @@ export default function LoginPage() {
             </form>
           ) : (
             <form onSubmit={handleVerify} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-              {devOtp && (
-                <div style={{ background: "#F0F5EE", border: "2px solid var(--green)", borderRadius: "var(--r-sm)", padding: "10px 14px", fontSize: 14, color: "var(--green)", fontWeight: 700 }}>
-                  Dev OTP: {devOtp}
-                </div>
-              )}
-
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--ink)", marginBottom: 12 }}>
                   6-Digit OTP Code

@@ -1,11 +1,25 @@
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from functools import lru_cache
+
+_DEFAULT_SECRET = "change-me-to-a-random-32-char-string"
 
 
 class Settings(BaseSettings):
     # App
     APP_ENV: str = "development"
-    SECRET_KEY: str = "change-me-to-a-random-32-char-string"
+    SECRET_KEY: str = _DEFAULT_SECRET
+
+    @field_validator("SECRET_KEY")
+    @classmethod
+    def secret_key_must_be_set(cls, v: str, info) -> str:
+        import os
+        env = os.getenv("APP_ENV", "development")
+        if env != "development" and v == _DEFAULT_SECRET:
+            raise ValueError(
+                "SECRET_KEY must be set to a random value in non-development environments"
+            )
+        return v
     FRONTEND_URL: str = "http://localhost:3001"
     BACKEND_URL: str = "http://localhost:8005"
 

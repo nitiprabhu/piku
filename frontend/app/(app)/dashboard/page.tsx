@@ -34,15 +34,47 @@ export default function DashboardPage() {
   const [loading, setLoading]   = useState(true);
   const [userName, setUserName] = useState("CREATOR");
 
+  // Branding state
+  const [igHandle, setIgHandle]         = useState("");
+  const [ytHandle, setYtHandle]         = useState("");
+  const [showOverlay, setShowOverlay]   = useState(true);
+  const [brandingSaving, setBrandingSaving] = useState(false);
+  const [brandingSaved, setBrandingSaved]   = useState(false);
+
   useEffect(() => {
     const user = getStoredUser();
     if (!user) { router.push("/login"); return; }
     if (user.name) setUserName(user.name.toUpperCase());
+    if (user.instagram_handle) setIgHandle(user.instagram_handle);
+    if (user.youtube_handle) setYtHandle(user.youtube_handle);
+    if (user.show_social_overlay !== undefined) setShowOverlay(user.show_social_overlay);
     api.get("/projects?limit=20")
       .then((r) => { setProjects(r.data.items); setStats({ total: r.data.total ?? r.data.items.length }); })
       .catch(() => router.push("/login"))
       .finally(() => setLoading(false));
   }, []);
+
+  const saveBranding = async () => {
+    setBrandingSaving(true);
+    try {
+      const { data } = await api.patch("/user/me", {
+        instagram_handle: igHandle || null,
+        youtube_handle: ytHandle || null,
+        show_social_overlay: showOverlay,
+      });
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        const u = JSON.parse(stored);
+        u.instagram_handle = data.instagram_handle;
+        u.youtube_handle = data.youtube_handle;
+        u.show_social_overlay = data.show_social_overlay;
+        localStorage.setItem("user", JSON.stringify(u));
+      }
+      setBrandingSaved(true);
+      setTimeout(() => setBrandingSaved(false), 2000);
+    } catch {}
+    setBrandingSaving(false);
+  };
 
   return (
     <AppShell>
@@ -114,6 +146,77 @@ export default function DashboardPage() {
               <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--ink-2)", marginTop: 4 }}>{s.label}</div>
             </div>
           ))}
+        </div>
+
+        {/* Video Branding card */}
+        <div style={{
+          background: "var(--card)", border: "2px solid var(--ink)",
+          borderRadius: "var(--r-md)", boxShadow: "var(--shadow-sm)",
+          padding: "20px 24px", marginBottom: 28,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+            <div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 15, color: "var(--ink)" }}>📺 VIDEO BRANDING</div>
+              <div style={{ fontSize: 12, color: "var(--ink-2)", marginTop: 2 }}>Show your social handles on generated videos</div>
+            </div>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+              <span style={{ fontSize: 12, color: "var(--ink-2)", fontWeight: 600 }}>{showOverlay ? "ON" : "OFF"}</span>
+              <div
+                onClick={() => setShowOverlay(!showOverlay)}
+                style={{
+                  width: 40, height: 22, borderRadius: 11, border: "2px solid var(--ink)",
+                  background: showOverlay ? "var(--orange)" : "var(--bg)",
+                  position: "relative", cursor: "pointer", transition: "background 0.15s",
+                }}
+              >
+                <div style={{
+                  width: 14, height: 14, borderRadius: "50%", background: "var(--ink)",
+                  position: "absolute", top: 2,
+                  left: showOverlay ? 20 : 2, transition: "left 0.15s",
+                }} />
+              </div>
+            </label>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: 10, alignItems: "end" }}>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "var(--ink-2)", marginBottom: 4, textTransform: "uppercase" }}>📷 Instagram</div>
+              <input
+                value={igHandle}
+                onChange={(e) => setIgHandle(e.target.value.replace(/^@/, ""))}
+                placeholder="yourhandle"
+                style={{
+                  width: "100%", padding: "8px 12px", border: "2px solid var(--ink)",
+                  borderRadius: 10, fontFamily: "var(--font-body)", fontSize: 14,
+                  background: "var(--bg)", color: "var(--ink)", boxSizing: "border-box",
+                }}
+              />
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "var(--ink-2)", marginBottom: 4, textTransform: "uppercase" }}>▶ YouTube</div>
+              <input
+                value={ytHandle}
+                onChange={(e) => setYtHandle(e.target.value.replace(/^@/, ""))}
+                placeholder="yourchannel"
+                style={{
+                  width: "100%", padding: "8px 12px", border: "2px solid var(--ink)",
+                  borderRadius: 10, fontFamily: "var(--font-body)", fontSize: 14,
+                  background: "var(--bg)", color: "var(--ink)", boxSizing: "border-box",
+                }}
+              />
+            </div>
+            <button
+              onClick={saveBranding}
+              disabled={brandingSaving}
+              style={{
+                padding: "8px 18px", border: "2px solid var(--ink)", borderRadius: 10,
+                background: brandingSaved ? "#22c55e" : "var(--orange)", color: "#fff",
+                fontWeight: 700, fontSize: 13, cursor: "pointer", whiteSpace: "nowrap",
+                boxShadow: "3px 3px 0 var(--ink)",
+              }}
+            >
+              {brandingSaved ? "✓ Saved" : brandingSaving ? "…" : "Save"}
+            </button>
+          </div>
         </div>
 
         {/* Section header */}

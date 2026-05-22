@@ -1,6 +1,5 @@
 import random
-import json
-import redis
+from redis import asyncio as aioredis
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -19,58 +18,79 @@ from app.config import settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-# Synchronous redis connection is fast and standard
-redis_client = redis.Redis.from_url(settings.REDIS_URL, decode_responses=True)
+_redis: aioredis.Redis | None = None
+
+def get_redis() -> aioredis.Redis:
+    global _redis
+    if _redis is None:
+        _redis = aioredis.from_url(settings.REDIS_URL, decode_responses=True)
+    return _redis
+
+_OTP_TTL = 300      # 5 min OTP validity
+_SEND_WINDOW = 600  # 10 min window for send-rate limit
+_MAX_SENDS = 5      # max OTPs per phone per window
+_MAX_ATTEMPTS = 5   # max verify attempts before lockout
 
 
 @router.post("/send-otp", status_code=status.HTTP_200_OK)
 async def send_otp(body: SendOTPRequest):
-    # For testing, we can use a fixed OTP like 123456 on a specific test phone,
-    # or generate a random 6-digit number.
-    if body.phone == "+919999999999":
-        otp = "123456"
-    else:
-        otp = f"{random.randint(100000, 999999)}"
+    rc = get_redis()
+    send_key = f"otp:sends:{body.phone}"
+    sends = await rc.incr(send_key)
+    if sends == 1:
+        await rc.expire(send_key, _SEND_WINDOW)
+    if sends > _MAX_SENDS:
+        ttl = await rc.ttl(send_key)
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Too many OTP requests. Try again in {ttl}s.",
+        )
 
-    # Save OTP to Redis with a 5-minute (300 seconds) expiration
-    redis_client.setex(f"otp:{body.phone}", 300, otp)
+    otp = "123456" if body.phone == "+919999999999" else f"{random.randint(100000, 999999)}"
 
-    # Deliver via SMS service (either actual SMS or console logging)
+    await rc.setex(f"otp:{body.phone}", _OTP_TTL, otp)
+    await rc.delete(f"otp:attempts:{body.phone}")
+
     success = await send_sms_otp(body.phone, otp)
     if not success:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to send SMS OTP. Please try again."
+            detail="Failed to send OTP. Please try again.",
         )
 
-    response = {"success": True, "message": "OTP sent successfully"}
-    
-    # Return OTP in response in dev mode to make manual/e2e testing effortless
+    response: dict = {"success": True, "message": "OTP sent successfully"}
     if settings.APP_ENV == "development":
         response["otp"] = otp
-
     return response
 
 
 @router.post("/verify-otp", response_model=AuthResponse)
 async def verify_otp(body: VerifyOTPRequest, db: AsyncSession = Depends(get_db)):
-    # Retrieve stored OTP from Redis
-    stored_otp = redis_client.get(f"otp:{body.phone}")
-
-    if not stored_otp or stored_otp != body.otp:
+    rc = get_redis()
+    attempt_key = f"otp:attempts:{body.phone}"
+    attempts = int(await rc.get(attempt_key) or 0)
+    if attempts >= _MAX_ATTEMPTS:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired OTP"
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many failed attempts. Request a new OTP.",
         )
 
-    # Clean up OTP so it can't be reused
-    redis_client.delete(f"otp:{body.phone}")
+    stored_otp = await rc.get(f"otp:{body.phone}")
+    if not stored_otp or stored_otp != body.otp:
+        new_attempts = await rc.incr(attempt_key)
+        await rc.expire(attempt_key, _OTP_TTL)
+        remaining = max(_MAX_ATTEMPTS - new_attempts, 0)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid or expired OTP. {remaining} attempt(s) left.",
+        )
 
-    # Check if user already exists
+    await rc.delete(f"otp:{body.phone}")
+    await rc.delete(attempt_key)
+
     result = await db.execute(select(User).where(User.phone == body.phone))
     user = result.scalar_one_or_none()
 
-    # Register user on-the-fly if they don't exist yet (frictionless auth!)
     if not user:
         user = User(
             phone=body.phone,
@@ -80,11 +100,10 @@ async def verify_otp(body: VerifyOTPRequest, db: AsyncSession = Depends(get_db))
             language_pref=body.language_pref or "hi",
         )
         db.add(user)
-        await db.flush()  # gets user.id populated
+        await db.flush()
 
     access_token = create_access_token({"sub": str(user.id)})
     refresh_token = create_refresh_token({"sub": str(user.id)})
-
     await db.commit()
 
     return AuthResponse(
@@ -112,7 +131,6 @@ async def refresh(body: RefreshRequest, db: AsyncSession = Depends(get_db)):
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def logout():
-    # Stateless JWT. Cleared on client side.
     return
 
 

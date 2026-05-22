@@ -178,6 +178,9 @@ async def instagram_callback(
     acct.access_token = encrypt_token(access_token)
     acct.platform_user_id = me_data.get("id")
     acct.platform_username = me_data.get("username")
+    # Auto-populate instagram_handle on user if not already set
+    if me_data.get("username") and not user.instagram_handle:
+        user.instagram_handle = me_data.get("username")
     await db.flush()
 
     # Redirect back to frontend with success
@@ -191,7 +194,7 @@ async def instagram_callback(
     )
 
 
-@router.post("/instagram/publish")
+@router.post("/instagram/publish", status_code=202)
 async def instagram_publish(
     body: PublishRequest,
     db: AsyncSession = Depends(get_db),
@@ -210,69 +213,51 @@ async def instagram_publish(
     if not project or not project.video_url:
         raise HTTPException(status_code=404, detail="Project not found or video not ready")
 
-    publish_job = PublishJob(
+    pj = PublishJob(
         project_id=project.id,
         user_id=current_user.id,
         platform="instagram",
-        status="pending",
+        status="queued",
         caption=body.caption,
         hashtags=body.hashtags,
     )
-    db.add(publish_job)
+    db.add(pj)
     await db.flush()
 
-    try:
-        access_token = decrypt_token(acct.access_token)
-        full_caption = body.caption + "\n" + " ".join(body.hashtags)
+    import redis as sync_redis, rq
+    redis_conn = sync_redis.Redis.from_url(settings.REDIS_URL)
+    queue = rq.Queue("default", connection=redis_conn)
+    queue.enqueue(
+        "app.workers.publish_worker.publish_job",
+        publish_job_id=str(pj.id),
+        job_timeout=300,
+    )
+    return {"publish_job_id": str(pj.id), "status": "queued"}
 
-        async with httpx.AsyncClient(timeout=60) as client:
-            container_resp = await client.post(
-                f"https://graph.instagram.com/v18.0/{acct.platform_user_id}/media",
-                params={
-                    "video_url": project.video_url,
-                    "caption": full_caption,
-                    "media_type": "REELS",
-                    "access_token": access_token,
-                },
-            )
-            container_data = container_resp.json()
-            container_id = container_data.get("id")
-            if not container_id:
-                raise Exception(f"Failed to create IG container: {container_data}")
 
-            # Poll until container is FINISHED (required for Reels)
-            import asyncio as _asyncio
-            for _ in range(30):
-                status_resp = await client.get(
-                    f"https://graph.instagram.com/v18.0/{container_id}",
-                    params={"fields": "status_code,status", "access_token": access_token},
-                )
-                status_data = status_resp.json()
-                if status_data.get("status_code") == "FINISHED":
-                    break
-                if status_data.get("status_code") == "ERROR":
-                    raise Exception(f"IG container processing failed: {status_data}")
-                await _asyncio.sleep(5)
-            else:
-                raise Exception("IG container timed out (150s)")
-
-            publish_resp = await client.post(
-                f"https://graph.instagram.com/v18.0/{acct.platform_user_id}/media_publish",
-                params={"creation_id": container_id, "access_token": access_token},
-            )
-            publish_data = publish_resp.json()
-
-        publish_job.status = "published"
-        publish_job.platform_post_id = publish_data.get("id")
-        from datetime import datetime, timezone
-        publish_job.published_at = datetime.now(timezone.utc)
-
-    except Exception as e:
-        publish_job.status = "failed"
-        publish_job.error_message = str(e)
-
-    await db.flush()
-    return {"publish_job_id": str(publish_job.id), "status": publish_job.status}
+@router.get("/publish/{publish_job_id}")
+async def get_publish_status(
+    publish_job_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    result = await db.execute(
+        select(PublishJob).where(
+            and_(PublishJob.id == publish_job_id, PublishJob.user_id == current_user.id)
+        )
+    )
+    pj = result.scalar_one_or_none()
+    if not pj:
+        raise HTTPException(status_code=404, detail="Publish job not found")
+    return {
+        "id": str(pj.id),
+        "platform": pj.platform,
+        "status": pj.status,
+        "error_message": pj.error_message,
+        "platform_post_id": pj.platform_post_id,
+        "published_at": pj.published_at,
+        "retry_count": pj.retry_count,
+    }
 
 
 # ─── YouTube OAuth ─────────────────────────────────────────────────────────────
@@ -386,7 +371,7 @@ async def _refresh_youtube_token(acct: SocialAccount, db: AsyncSession) -> str:
         return new_token
 
 
-@router.post("/youtube/publish")
+@router.post("/youtube/publish", status_code=202)
 async def youtube_publish(
     body: PublishRequest,
     db: AsyncSession = Depends(get_db),
@@ -405,94 +390,23 @@ async def youtube_publish(
     if not project or not project.video_url:
         raise HTTPException(status_code=404, detail="Project not found or video not ready")
 
-    publish_job = PublishJob(
+    pj = PublishJob(
         project_id=project.id,
         user_id=current_user.id,
         platform="youtube",
-        status="pending",
+        status="queued",
         caption=body.caption,
         hashtags=body.hashtags,
     )
-    db.add(publish_job)
+    db.add(pj)
     await db.flush()
 
-    try:
-        import tempfile, os
-        access_token = await _refresh_youtube_token(acct, db)
-
-        title = (body.title or body.caption)[:100]
-        if "#shorts" not in title.lower():
-            title = title[:93] + " #Shorts"
-        hashtag_str = " ".join(body.hashtags)
-        description = f"{body.caption}\n\n{hashtag_str}\n\n#Shorts"
-
-        # Download video to temp file
-        async with httpx.AsyncClient(timeout=120) as client:
-            video_resp = await client.get(project.video_url)
-            if video_resp.status_code != 200:
-                raise Exception(f"Failed to download video: {video_resp.status_code}")
-
-            with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
-                tmp.write(video_resp.content)
-                tmp_path = tmp.name
-
-            try:
-                file_size = os.path.getsize(tmp_path)
-
-                # Initiate resumable upload
-                init_resp = await client.post(
-                    "https://www.googleapis.com/upload/youtube/v3/videos",
-                    params={"uploadType": "resumable", "part": "snippet,status"},
-                    headers={
-                        "Authorization": f"Bearer {access_token}",
-                        "Content-Type": "application/json",
-                        "X-Upload-Content-Type": "video/mp4",
-                        "X-Upload-Content-Length": str(file_size),
-                    },
-                    json={
-                        "snippet": {
-                            "title": title,
-                            "description": description,
-                            "categoryId": "22",
-                        },
-                        "status": {
-                            "privacyStatus": "public",
-                            "selfDeclaredMadeForKids": False,
-                        },
-                    },
-                )
-                if init_resp.status_code != 200:
-                    raise Exception(f"YouTube upload init failed: {init_resp.text}")
-
-                upload_url = init_resp.headers["Location"]
-
-                # Upload video bytes
-                with open(tmp_path, "rb") as f:
-                    upload_resp = await client.put(
-                        upload_url,
-                        content=f.read(),
-                        headers={
-                            "Content-Type": "video/mp4",
-                            "Content-Length": str(file_size),
-                        },
-                    )
-
-                upload_data = upload_resp.json()
-                if "id" not in upload_data:
-                    raise Exception(f"YouTube upload failed: {upload_data}")
-
-                video_id = upload_data["id"]
-            finally:
-                os.unlink(tmp_path)
-
-        from datetime import datetime, timezone
-        publish_job.status = "published"
-        publish_job.platform_post_id = video_id
-        publish_job.published_at = datetime.now(timezone.utc)
-
-    except Exception as e:
-        publish_job.status = "failed"
-        publish_job.error_message = str(e)
-
-    await db.flush()
-    return {"publish_job_id": str(publish_job.id), "status": publish_job.status}
+    import redis as sync_redis, rq
+    redis_conn = sync_redis.Redis.from_url(settings.REDIS_URL)
+    queue = rq.Queue("default", connection=redis_conn)
+    queue.enqueue(
+        "app.workers.publish_worker.publish_job",
+        publish_job_id=str(pj.id),
+        job_timeout=300,
+    )
+    return {"publish_job_id": str(pj.id), "status": "queued"}

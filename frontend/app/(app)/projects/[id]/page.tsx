@@ -258,6 +258,26 @@ export default function ProjectPage() {
             {viralScore != null && (
               <div className="card" style={{ padding: 20 }}>
                 <ViralScore score={viralScore} />
+                {(project?.view_count != null || project?.like_count != null) && (
+                  <div style={{ display: "flex", gap: 16, marginTop: 14 }}>
+                    {project?.view_count != null && (
+                      <div style={{ textAlign: "center", flex: 1 }}>
+                        <div style={{ fontFamily: "var(--font-display)", fontSize: 22, color: "var(--ink)" }}>
+                          {project.view_count.toLocaleString()}
+                        </div>
+                        <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)", textTransform: "uppercase" }}>Views</div>
+                      </div>
+                    )}
+                    {project?.like_count != null && (
+                      <div style={{ textAlign: "center", flex: 1 }}>
+                        <div style={{ fontFamily: "var(--font-display)", fontSize: 22, color: "var(--ink)" }}>
+                          {project.like_count.toLocaleString()}
+                        </div>
+                        <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)", textTransform: "uppercase" }}>Likes</div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>

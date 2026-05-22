@@ -14,6 +14,9 @@ class UpdateUserRequest(BaseModel):
     name: str | None = None
     language_pref: str | None = None
     category_pref: str | None = None
+    instagram_handle: str | None = None
+    youtube_handle: str | None = None
+    show_social_overlay: bool | None = None
 
 
 class CreditsResponse(BaseModel):
@@ -44,6 +47,13 @@ async def update_me(
         current_user.language_pref = body.language_pref
     if body.category_pref is not None:
         current_user.category_pref = body.category_pref
+    if body.instagram_handle is not None:
+        # strip leading @ if provided
+        current_user.instagram_handle = body.instagram_handle.lstrip("@") or None
+    if body.youtube_handle is not None:
+        current_user.youtube_handle = body.youtube_handle.lstrip("@") or None
+    if body.show_social_overlay is not None:
+        current_user.show_social_overlay = body.show_social_overlay
     await db.flush()
     return UserResponse.model_validate(current_user)
 

@@ -65,6 +65,7 @@ class CreatorProfileIn(BaseModel):
     instagram_handle: Optional[str] = None
     youtube_handle: Optional[str] = None
     follower_count: Optional[int] = None
+    is_active: Optional[bool] = None
 
 class BrandProfileIn(BaseModel):
     company_name: str

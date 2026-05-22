@@ -11,6 +11,8 @@ async def generate_video_clip(
     visual_keyword: str,
     duration: int = 5,
     use_premium: bool = False,
+    style: str = "motivation",
+    image_style: str = "cinematic",  # P3: realistic | anime | illustrated | cinematic
 ) -> str:
     """Generate a single video clip. Returns path to downloaded MP4. Falls back to local colored canvas on failure."""
     import subprocess
@@ -25,7 +27,9 @@ async def generate_video_clip(
     # Map visual keywords/themes to beautiful premium color hexes
     kw = visual_keyword.lower()
     color = "0x1A1A2E" # Slate Navy (Default)
-    if any(x in kw for x in ["funny", "comedy", "joke"]):
+    if style == "storytelling":
+        color = "0x2D1B4E" # Deep Mythological Purple
+    elif any(x in kw for x in ["funny", "comedy", "joke"]):
         color = "0xFF6B35" # Vibrant Orange
     elif any(x in kw for x in ["devotional", "spiritual", "shloka", "temple", "ram"]):
         color = "0xFFD700" # Golden Amber
@@ -56,17 +60,36 @@ async def generate_video_clip(
         client = MuAPIClient()
         model = "veo3-text-to-video" if use_premium else "wan2.1-text-to-video"
 
-        prompt = (
-            f"Cinematic vertical 9:16 video: {visual_keyword}. "
-            "No text, no subtitles, no logos. Smooth camera movement. "
-            f"Indian context preferred. Duration: {duration} seconds. Photorealistic."
-        )
+        style_descriptors = {
+            "anime": "anime art style, cel-shaded, vibrant colors, Studio Ghibli aesthetic",
+            "illustrated": "illustrated storybook art, detailed hand-drawn look, painterly",
+            "realistic": "photorealistic, hyperdetailed, 8K, natural lighting",
+            "cinematic": "cinematic film look, dramatic lighting, shallow depth of field",
+        }
+        visual_descriptor = style_descriptors.get(image_style, style_descriptors["cinematic"])
+
+        if style == "storytelling":
+            prompt = (
+                f"{visual_keyword}. "
+                f"Vertical 9:16, no text, no subtitles, no logos. {visual_descriptor}. "
+                f"Slow cinematic camera pan. Duration: {duration} seconds. "
+                "Mythological Indian aesthetic, dramatic atmospheric lighting."
+            )
+        else:
+            prompt = (
+                f"Vertical 9:16 video: {visual_keyword}. "
+                f"No text, no subtitles, no logos. {visual_descriptor}. "
+                f"Smooth camera movement. Indian context preferred. Duration: {duration} seconds."
+            )
+
+        # WAN2.1 only accepts 5 or 10
+        wan_duration = 10 if duration >= 8 else 5
 
         result = await client.run(
             endpoint=model,
             payload={
                 "prompt": prompt,
-                "duration": duration,
+                "duration": wan_duration,
             },
         )
 
@@ -102,10 +125,12 @@ async def generate_all_clips(
     visual_keywords: list[str],
     scene_durations: list[int],
     use_premium: bool = False,
+    style: str = "motivation",
+    image_style: str = "cinematic",
 ) -> list[str]:
     """Generate all clips in parallel."""
     tasks = [
-        generate_video_clip(kw, dur, use_premium)
+        generate_video_clip(kw, dur, use_premium, style, image_style)
         for kw, dur in zip(visual_keywords, scene_durations)
     ]
     return list(await asyncio.gather(*tasks))

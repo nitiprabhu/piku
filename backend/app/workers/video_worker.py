@@ -29,6 +29,8 @@ def process_video_job(
     duration: int,
     user_plan: str,
     character: str | None = None,
+    image_style: str = "cinematic",    # P3
+    caption_mode: str = "full_sentence",  # P4
 ):
     """Main RQ worker function — orchestrates full video generation pipeline."""
     from app.database import AsyncSessionLocal
@@ -66,7 +68,17 @@ def process_video_job(
         project.job_id = job_id
         db.commit()
 
-        use_premium = user_plan == "pro"
+        # P3: VEO3 for pro users OR first 3 videos for any user (hook on quality)
+        use_premium = user_plan in ("pro", "starter", "business")
+        if not use_premium:
+            videos_done = db.execute(
+                __import__("sqlalchemy", fromlist=["text"]).text(
+                    "SELECT videos_generated FROM users WHERE id = :id"
+                ),
+                {"id": str(project.user_id)},
+            ).scalar() or 0
+            use_premium = videos_done < 3
+
         tmp_dir = Path(tempfile.mkdtemp())
 
         # ── Step 1: Script ─────────────────────────────────────────────
@@ -100,7 +112,7 @@ def process_video_job(
             scene_durations.append(5)
 
         video_clips = asyncio.run(
-            generate_all_clips(visual_keywords, scene_durations, use_premium)
+            generate_all_clips(visual_keywords, scene_durations, use_premium, style, image_style)
         )
         publish_progress(job_id, "visuals_done", 70)
 
@@ -109,6 +121,12 @@ def process_video_job(
         output_path = str(tmp_dir / "final_video.mp4")
         watermark_path = str(Path(__file__).parent.parent.parent / "assets" / "watermark.png")
 
+        from app.models.user import User as UserModel
+        user_obj = db.query(UserModel).filter(UserModel.id == project.user_id).first()
+        show_overlay = user_obj and getattr(user_obj, "show_social_overlay", True)
+        ig_handle = user_obj.instagram_handle if (user_obj and show_overlay) else None
+        yt_handle = user_obj.youtube_handle if (user_obj and show_overlay) else None
+
         compose_video(
             video_clips=video_clips,
             voice_path=voice_path,
@@ -116,6 +134,10 @@ def process_video_job(
             script=script,
             output_path=output_path,
             watermark_path=watermark_path if Path(watermark_path).exists() else None,
+            style=style,
+            instagram_handle=ig_handle,
+            youtube_handle=yt_handle,
+            caption_mode=caption_mode,
         )
         publish_progress(job_id, "composing", 85)
 
@@ -143,6 +165,21 @@ def process_video_job(
         project.viral_score = viral_score
         project.caption_text = script.get("caption", "")
         project.hashtags = script.get("hashtags", [])
+        project.caption_mode = caption_mode
+
+        # Sync series episode status
+        from app.models.series import SeriesEpisode
+        ep = db.query(SeriesEpisode).filter(SeriesEpisode.project_id == project_id).first()
+        if ep:
+            ep.status = "completed"
+
+        # P3: increment videos_generated counter for VEO3 first-3 hook
+        from sqlalchemy import text as sa_text2
+        db.execute(
+            sa_text2("UPDATE users SET videos_generated = videos_generated + 1 WHERE id = :id"),
+            {"id": str(project.user_id)},
+        )
+
         db.commit()
 
         publish_progress(
@@ -165,6 +202,11 @@ def process_video_job(
                 sa_text("UPDATE users SET credits = credits + 1 WHERE id = :id"),
                 {"id": str(project.user_id)},
             )
+            # Sync series episode status
+            from app.models.series import SeriesEpisode
+            ep = db.query(SeriesEpisode).filter(SeriesEpisode.project_id == project_id).first()
+            if ep:
+                ep.status = "failed"
             db.commit()
         publish_progress(job_id, "failed", 0, event="failed", error=str(e))
         raise

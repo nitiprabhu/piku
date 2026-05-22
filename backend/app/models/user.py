@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import String, Integer, TIMESTAMP, func
+from sqlalchemy import String, Integer, Boolean, TIMESTAMP, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from app.database import Base
@@ -15,8 +15,14 @@ class User(Base):
     name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     plan: Mapped[str] = mapped_column(String(20), default="free")  # free | pro | starter | business
     credits: Mapped[int] = mapped_column(Integer, default=5)
+    videos_generated: Mapped[int] = mapped_column(Integer, default=0)  # P3: track for VEO3 first-3 hook
     language_pref: Mapped[str] = mapped_column(String(10), default="hi")
     category_pref: Mapped[str | None] = mapped_column(String(50), nullable=True)
+
+    # Social handles for video overlay
+    instagram_handle: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    youtube_handle: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    show_social_overlay: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Payments
     razorpay_sub_id: Mapped[str | None] = mapped_column(String(100), nullable=True)

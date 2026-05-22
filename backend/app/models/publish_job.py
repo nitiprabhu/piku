@@ -23,6 +23,9 @@ class PublishJob(Base):
     platform_post_id: Mapped[str | None] = mapped_column(String(200), nullable=True)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
     published_at: Mapped[str | None] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
+    # P6: Retry fields
+    retry_count: Mapped[int] = mapped_column(Integer, default=0)
+    retry_at: Mapped[str | None] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
     created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
 
 

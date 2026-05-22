@@ -194,6 +194,30 @@ ONLY JSON return kar:
   "caption": "News summary caption",
   "hashtags": ["#news", "#india", "#breaking", "#update", "#trending", "#viral", "#today", "#khabar"]
 }}""",
+        "storytelling": """Tu ek mythological Hindi short story reel ka expert scriptwriter hai jaise @vedaRahasya style.
+User ka topic: {prompt}
+Duration: {duration} seconds
+
+Teri kahani mein ek clear arc ho — setup, conflict, emotional resolution. Strong hook se shuru kar.
+Visual keywords MUST describe specific 3D animated mythological Indian characters (warrior, sage, king, prince, goddess) in dramatic ancient Indian settings (temple ruins, battlefield, palace, sacred forest). Each keyword = one full cinematic scene description.
+
+ONLY JSON return kar:
+{{
+  "narration": "emotional Hindi story narration with strong arc (Devanagari script, dramatic pauses)",
+  "hook": "intriguing opening line that hooks viewer in 3 seconds",
+  "scenes": [
+    {{"id": 1, "duration": 8, "narration_segment": "...", "visual": "3D animated ancient Indian warrior standing in ruined temple, dramatic storm clouds, cinematic lighting"}},
+    {{"id": 2, "duration": 8, "narration_segment": "...", "visual": "3D animated wise sage reading ancient scripture on rock, golden atmospheric light, ancient ruins background"}},
+    {{"id": 3, "duration": 8, "narration_segment": "...", "visual": "3D animated young Indian prince in royal palace, torchlight, emotional face closeup, ancient India"}}
+  ],
+  "visual_keywords": [
+    "3D animated ancient Indian warrior standing in ruined temple, dramatic storm clouds overhead, cinematic dramatic lighting",
+    "3D animated wise sage reading sacred scripture, golden hour light, ancient Indian ruins, serene atmosphere",
+    "3D animated young prince in candlelit ancient palace, emotional dramatic moment, mythological India"
+  ],
+  "caption": "Story caption with emotional hook in Hindi/Hinglish",
+  "hashtags": ["#MythologicalStory", "#PuranicKatha", "#AncientIndia", "#HindiStory", "#Kahani", "#Viral", "#Reels", "#Shorts"]
+}}""",
     },
     "en": {
         "funny": """You are an expert viral comedy short-form video scriptwriter.
@@ -260,6 +284,30 @@ Return ONLY valid JSON:
   "visual_keywords": ["keyword1", "keyword2"],
   "caption": "News summary",
   "hashtags": ["#news", "#breaking", "#update", "#trending", "#viral", "#today", "#latest", "#shorts"]
+}}""",
+        "storytelling": """You are an expert mythological short-form storytelling scriptwriter (vedaRahasya style).
+Topic: {prompt}
+Duration: {duration} seconds
+
+Craft a story with clear arc: setup → conflict → emotional resolution. Hook in 3 seconds.
+Visual keywords MUST describe specific 3D animated mythological Indian characters (warrior, sage, king, goddess, prince) in dramatic ancient Indian settings (temple ruins, battlefield, palace, sacred forest). Each keyword = one full cinematic scene description for AI video generation.
+
+Return ONLY valid JSON:
+{{
+  "narration": "emotional story narration with a strong arc",
+  "hook": "intriguing opening that hooks viewer in 3 seconds",
+  "scenes": [
+    {{"id": 1, "duration": 8, "narration_segment": "...", "visual": "3D animated ancient Indian warrior in ruined temple, storm clouds, dramatic cinematic lighting"}},
+    {{"id": 2, "duration": 8, "narration_segment": "...", "visual": "3D animated wise sage reading scripture, ancient ruins, golden hour atmospheric light"}},
+    {{"id": 3, "duration": 8, "narration_segment": "...", "visual": "3D animated Indian prince in ancient palace, torchlight, emotional closeup, mythological setting"}}
+  ],
+  "visual_keywords": [
+    "3D animated ancient Indian warrior standing in ruined temple, dramatic storm clouds, cinematic lighting",
+    "3D animated wise sage reading sacred scripture on rock, ancient Indian ruins, golden atmospheric light",
+    "3D animated young Indian prince in candlelit ancient palace, emotional dramatic moment, mythological India"
+  ],
+  "caption": "Story caption with emotional hook",
+  "hashtags": ["#MythologicalStory", "#AncientIndia", "#Storytelling", "#Reels", "#Viral", "#ShortFilm", "#Emotional", "#IndianMythology"]
 }}""",
     },
 }

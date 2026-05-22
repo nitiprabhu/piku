@@ -11,6 +11,10 @@ def compose_video(
     script: dict,
     output_path: str,
     watermark_path: str | None = None,
+    style: str = "motivation",
+    instagram_handle: str | None = None,
+    youtube_handle: str | None = None,
+    caption_mode: str = "full_sentence",  # P4: full_sentence | keyword_pop
 ) -> str:
     """
     Full FFmpeg composition pipeline:
@@ -20,7 +24,7 @@ def compose_video(
     4. Overlay watermark (if provided)
     5. Mix voice (100%) + music (12% ducked)
     """
-    srt_path = generate_srt(script.get("narration", ""), voice_path)
+    srt_path = generate_srt(script.get("narration", ""), voice_path, caption_mode)
     n = len(video_clips)
 
     # Build input flags
@@ -48,14 +52,28 @@ def compose_video(
     # Instagram Reels / YouTube Shorts: 1080x1920, safe zone ~108px sides
     # FFmpeg SRT→ASS uses PlayResY=480, so FontSize px = FontSize * (1920/480) = FontSize * 4
     # FontSize=11 → ~44px on screen (standard reel caption size)
-    caption_filter = (
-        f"[vcat]subtitles={srt_escaped}:"
-        f"force_style='FontName=Noto Sans,FontSize=11,"
-        f"PrimaryColour=&H00FFFFFF,Bold=1,"
-        f"OutlineColour=&H00000000,Outline=3,Shadow=1,"
-        f"Alignment=2,MarginV=20,MarginL=80,MarginR=80,"
-        f"WrapStyle=0'[vcap]"
-    )
+    # ASS color format: ABGR hex — yellow = &H0000FFFF, white = &H00FFFFFF
+    caption_color = "&H0000FFFF" if style == "storytelling" else "&H00FFFFFF"
+
+    if caption_mode == "keyword_pop":
+        # Large centered keyword — FontSize=22 → ~88px on screen
+        caption_filter = (
+            f"[vcat]subtitles={srt_escaped}:"
+            f"force_style='FontName=Noto Sans,FontSize=22,"
+            f"PrimaryColour={caption_color},Bold=1,"
+            f"OutlineColour=&H00000000,Outline=5,Shadow=2,"
+            f"Alignment=5,MarginV=0,MarginL=0,MarginR=0,"
+            f"WrapStyle=1'[vcap]"
+        )
+    else:
+        caption_filter = (
+            f"[vcat]subtitles={srt_escaped}:"
+            f"force_style='FontName=Noto Sans,FontSize=11,"
+            f"PrimaryColour={caption_color},Bold=1,"
+            f"OutlineColour=&H00000000,Outline=3,Shadow=1,"
+            f"Alignment=2,MarginV=20,MarginL=80,MarginR=80,"
+            f"WrapStyle=0'[vcap]"
+        )
 
     # Audio: voice full vol, music ducked to 12%
     audio_filter = (
@@ -76,9 +94,35 @@ def compose_video(
         video_out = "[vcap]"
 
 
+    # Social overlay: "FOLLOW US" box top-right — chained as a single comma-separated filter entry
+    # @ must be escaped as \@ in drawtext text values
+    social_overlay_filter: str | None = None
+    if instagram_handle or youtube_handle:
+        n_handles = sum([bool(instagram_handle), bool(youtube_handle)])
+        box_h = 28 + 22 + n_handles * 24
+        parts = [
+            f"drawbox=x=iw-290:y=10:w=280:h={box_h}:color=black@0.70:t=fill",
+            "drawtext=text='FOLLOW US':x=w-280:y=16:fontsize=18:fontcolor=white",
+        ]
+        y = 42
+        if instagram_handle:
+            parts.append(
+                f"drawtext=text='ig \\@ {instagram_handle}':x=w-280:y={y}:fontsize=17:fontcolor=#E1306C"
+            )
+            y += 24
+        if youtube_handle:
+            parts.append(
+                f"drawtext=text='yt \\@ {youtube_handle}':x=w-280:y={y}:fontsize=17:fontcolor=#FF4444"
+            )
+        # Build as single filter chain entry with in/out labels
+        social_overlay_filter = f"[{video_out.strip('[]')}]" + ",".join(parts) + "[vfinal]"
+        video_out = "[vfinal]"
+
     filter_parts = [*scale_parts, concat_filter, caption_filter]
     if watermark_filter:
         filter_parts.append(watermark_filter)
+    if social_overlay_filter:
+        filter_parts.append(social_overlay_filter)
     filter_parts.append(audio_filter)
     filter_complex = ";".join(filter_parts)
 

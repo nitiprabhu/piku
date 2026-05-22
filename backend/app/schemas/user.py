@@ -61,6 +61,9 @@ class UserResponse(BaseModel):
     credits: int
     language_pref: str
     category_pref: str | None
+    instagram_handle: str | None = None
+    youtube_handle: str | None = None
+    show_social_overlay: bool = True
 
     model_config = {"from_attributes": True}
 

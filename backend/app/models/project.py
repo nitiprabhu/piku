@@ -34,6 +34,9 @@ class Project(Base):
     viral_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     caption_text: Mapped[str | None] = mapped_column(Text, nullable=True)
     hashtags: Mapped[list | None] = mapped_column(ARRAY(Text), nullable=True)
+    caption_mode: Mapped[str] = mapped_column(String(20), default="full_sentence")  # P4
+    view_count: Mapped[int | None] = mapped_column(Integer, nullable=True)          # P5
+    like_count: Mapped[int | None] = mapped_column(Integer, nullable=True)          # P5
 
     # Error tracking
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)

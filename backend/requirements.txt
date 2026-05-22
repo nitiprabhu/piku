@@ -20,3 +20,4 @@ google-auth-oauthlib==1.2.0
 google-api-python-client==2.131.0
 razorpay==1.4.1
 email-validator==2.1.1
+apscheduler==3.10.4

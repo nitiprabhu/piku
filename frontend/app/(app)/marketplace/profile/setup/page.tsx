@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import api from "@/lib/api";
 import AppShell from "@/components/AppShell";
 import { MP_NICHES, MP_LANGUAGES } from "@/lib/marketplace-data";
 
@@ -18,8 +19,29 @@ export default function ProfileSetupPage() {
   const [ytVerified, setYtVerified] = useState(false);
   const [openForWork, setOpenForWork] = useState(true);
 
+  const [saving, setSaving] = useState(false);
+
   const toggleNiche = (n: string) => setNiches((p) => p.includes(n) ? p.filter((x) => x !== n) : [...p, n]);
   const toggleLang = (l: string) => setLanguages((p) => p.includes(l) ? p.filter((x) => x !== l) : [...p, l]);
+
+  const handleGoLive = async () => {
+    setSaving(true);
+    try {
+      await api.put("/marketplace/creator/profile", {
+        bio,
+        niches,
+        languages,
+        rate_per_reel: ratePerVideo,
+        is_active: openForWork,
+      });
+      router.push("/marketplace/creator");
+    } catch (e) {
+      console.error("Profile save failed", e);
+      alert("Failed to save profile. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const chipStyle = (active: boolean, color = "var(--orange)") => ({
     display: "inline-flex", alignItems: "center", padding: "7px 14px",
@@ -243,8 +265,8 @@ export default function ProfileSetupPage() {
           {step < STEPS.length - 1 ? (
             <button onClick={() => setStep(step + 1)} className="btn-hard" style={{ fontSize: 14 }}>Continue →</button>
           ) : (
-            <button onClick={() => router.push("/marketplace/creator")} className="btn-hard" style={{ fontSize: 14, background: "var(--green)" }}>
-              🚀 Go live
+            <button onClick={handleGoLive} disabled={saving} className="btn-hard" style={{ fontSize: 14, background: "var(--green)", opacity: saving ? 0.7 : 1 }}>
+              {saving ? "Saving..." : "🚀 Go live"}
             </button>
           )}
         </div>
