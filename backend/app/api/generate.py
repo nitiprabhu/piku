@@ -50,6 +50,14 @@ async def start_generation(
 ):
     from app.config import settings
 
+    # Duration gate: free plan capped at 30s
+    free_plan = (current_user.plan or "free") == "free"
+    if free_plan and body.duration > 30:
+        raise HTTPException(
+            status_code=403,
+            detail="Free plan is limited to 30-second reels. Upgrade to unlock 60s.",
+        )
+
     # Atomic credit deduction — only deduct if credits > 0
     result = await db.execute(
         text(

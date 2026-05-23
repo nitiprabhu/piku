@@ -117,7 +117,7 @@ export default function LoginPage() {
             fontSize: 13, fontWeight: 800, letterSpacing: "0.05em",
             transform: "rotate(-2deg)",
           }}>
-            🔥 5 FREE credits on signup
+            🔥 2 FREE credits on signup
           </div>
 
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(36px, 4vw, 52px)", lineHeight: 1.05, marginBottom: 16 }}>

@@ -68,16 +68,7 @@ def process_video_job(
         project.job_id = job_id
         db.commit()
 
-        # P3: VEO3 for pro users OR first 3 videos for any user (hook on quality)
-        use_premium = user_plan in ("pro", "starter", "business")
-        if not use_premium:
-            videos_done = db.execute(
-                __import__("sqlalchemy", fromlist=["text"]).text(
-                    "SELECT videos_generated FROM users WHERE id = :id"
-                ),
-                {"id": str(project.user_id)},
-            ).scalar() or 0
-            use_premium = videos_done < 3
+        use_premium = False  # WAN 1.3B for all plans
 
         tmp_dir = Path(tempfile.mkdtemp())
 

@@ -85,7 +85,7 @@ function CreatePageInner() {
     language:    defaultLang,
     style:       searchParams.get("style") || "motivation",
     voice_id:    "rohit_m",
-    duration:    60,
+    duration:    30,
     template_id: searchParams.get("template_id") || "",
   });
   const [templates,         setTemplates]         = useState<any[]>([]);
@@ -93,6 +93,7 @@ function CreatePageInner() {
   const [selectedNiche,     setSelectedNiche]      = useState<string | null>(null);
   const [selectedCharacter, setSelectedCharacter]  = useState<string | null>(searchParams.get("character") || null);
   const [credits,           setCredits]            = useState<number | null>(null);
+  const [userPlan,          setUserPlan]            = useState<string>("free");
   const [loading,           setLoading]            = useState(false);
   const [error,             setError]              = useState<string | null>(null);
   const [showUpgrade,       setShowUpgrade]        = useState(false);
@@ -105,7 +106,8 @@ function CreatePageInner() {
 
   useEffect(() => {
     if (!user) { router.push("/login"); return; }
-    api.get("/user/credits").then((r) => setCredits(r.data.remaining)).catch(() => {});
+    if (user.plan) setUserPlan(user.plan);
+    api.get("/user/credits").then((r) => { setCredits(r.data.remaining); setUserPlan(r.data.plan || "free"); }).catch(() => {});
     api.get("/templates").then((r) => setTemplates(r.data)).catch(() => {});
     return () => { audioRef.current?.pause(); };
   }, []);
@@ -370,13 +372,36 @@ function CreatePageInner() {
 
           <SectionCard label="Duration">
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {DURATIONS.map((d) => (
-                <button key={d.value} onClick={() => setForm({ ...form, duration: d.value })}
-                  style={{ padding: "10px 12px", borderRadius: "var(--r-sm)", textAlign: "left", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: 14, fontWeight: 700, transition: "all 0.08s ease", ...sel(form.duration === d.value) }}>
-                  {d.label} <span style={{ fontWeight: 400, fontSize: 12, opacity: 0.6 }}>{d.desc}</span>
-                </button>
-              ))}
+              {DURATIONS.map((d) => {
+                const isFree = userPlan === "free";
+                const locked = isFree && d.value > 30;
+                return (
+                  <button key={d.value}
+                    onClick={() => { if (!locked) setForm({ ...form, duration: d.value }); }}
+                    style={{
+                      padding: "10px 12px", borderRadius: "var(--r-sm)", textAlign: "left",
+                      cursor: locked ? "default" : "pointer",
+                      fontFamily: "var(--font-body)", fontSize: 14, fontWeight: 700,
+                      transition: "all 0.08s ease", opacity: locked ? 0.5 : 1,
+                      ...(locked ? { background: "var(--bg-2)", color: "var(--muted)", border: "2px solid var(--ink)", boxShadow: "none" } : sel(form.duration === d.value)),
+                    }}>
+                    <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <span>{d.label} <span style={{ fontWeight: 400, fontSize: 12, opacity: 0.6 }}>{d.desc}</span></span>
+                      {locked && (
+                        <span style={{ fontSize: 9, fontWeight: 800, background: "var(--orange)", color: "#fff", borderRadius: 999, padding: "2px 7px", letterSpacing: "0.08em", border: "1.5px solid var(--ink)" }}>
+                          PAID
+                        </span>
+                      )}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
+            {userPlan === "free" && (
+              <p style={{ fontSize: 11, color: "var(--muted)", marginTop: 8, fontWeight: 600 }}>
+                Free plan: 30s max. <a href="/pricing" style={{ color: "var(--orange)", textDecoration: "none", fontWeight: 800 }}>Upgrade →</a>
+              </p>
+            )}
           </SectionCard>
         </div>
 

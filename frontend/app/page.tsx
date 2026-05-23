@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 const FEATURES = [
   { emoji: "🤖", title: "GPT-4o Script", desc: "AI writes a viral hook + narration tailored to your niche and audience." },
   { emoji: "🎙️", title: "Hindi AI Voice", desc: "MiniMax TTS in Hindi, Hinglish, or English. Sounds natural, not robotic." },
-  { emoji: "🎬", title: "Cinematic Clips", desc: "WAN2.1 / VEO3 generates video clips that match each scene of your script." },
+  { emoji: "🎬", title: "AI Video Clips", desc: "WAN 1.3B generates video clips that match each scene of your script." },
   { emoji: "🎵", title: "Background Music", desc: "Suno AI generates custom background music that fits the mood." },
   { emoji: "📝", title: "Auto Captions", desc: "Burned-in SRT subtitles so viewers can follow along even without sound." },
   { emoji: "📤", title: "1-Click Publish", desc: "Post directly to Instagram Reels or YouTube Shorts from the dashboard." },
@@ -22,13 +22,14 @@ const STEPS = [
 ];
 
 const PLANS = [
-  { name: "FREE", price: "₹0", period: "forever", credits: 5, features: ["5 reels / month", "WAN2.1 video model", "Hindi + English voices", "HD download"], highlight: false },
-  { name: "PRO", price: "₹999", period: "/ month", credits: 60, features: ["60 reels / month", "VEO3 premium model", "All languages + Hinglish", "1-click Instagram & YouTube publish", "Priority generation"], highlight: true },
-  { name: "CREATOR", price: "₹2499", period: "/ month", credits: 200, features: ["200 reels / month", "VEO3 + HiDream models", "White-label watermark", "Team access (3 seats)", "API access"], highlight: false },
+  { name: "FREE", price: "₹0", period: "forever", credits: 2, features: ["2 reels to try", "WAN 1.3B video model", "Hindi + English voices", "HD download"], highlight: false },
+  { name: "STARTER", price: "₹99", period: "/ month", credits: 10, features: ["10 reels / month", "WAN 1.3B video model", "All languages + Hinglish", "1-click Instagram & YouTube publish"], highlight: false },
+  { name: "PRO", price: "₹499", period: "/ month", credits: 60, features: ["60 reels / month", "WAN 1.3B video model", "All languages + Hinglish", "1-click Instagram & YouTube publish", "Priority generation"], highlight: true },
+  { name: "BUSINESS", price: "₹3999", period: "/ month", credits: 500, features: ["500 reels / month", "WAN 1.3B video model", "White-label watermark", "Team access", "API access"], highlight: false },
 ];
 
 const FAQS = [
-  { q: "How long does generation take?", a: "Usually 40–60 seconds. Pro plan with VEO3 may take up to 90 seconds for the highest quality clips." },
+  { q: "How long does generation take?", a: "Usually 40–60 seconds. All plans use the same WAN 1.3B model — generation time is consistent across plans." },
   { q: "What languages are supported?", a: "Hindi, English, and Hinglish (mixed). The AI adapts slang, expressions, and pacing per language." },
   { q: "Can I edit the script before generating?", a: "Yes — the create page shows the AI's script draft. You can tweak it before generating audio and video." },
   { q: "Is the video ready for Instagram/YouTube?", a: "Yes. Output is a 9:16 MP4 at 1080×1920 with burned-in captions, voiceover, and music mixed in." },
@@ -393,7 +394,7 @@ export default function LandingPage() {
             START CREATING TODAY
           </h2>
           <p style={{ fontSize: 18, color: "rgba(255,255,255,0.85)", marginBottom: 36 }}>
-            5 free reels. No credit card. Hindi + English + Hinglish.
+            2 free reels. No credit card. Hindi + English + Hinglish.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/login" style={{
