@@ -14,6 +14,8 @@ class TemplateResponse(BaseModel):
     name: str
     category: str | None
     language: str | None
+    description: str | None
+    template_type: str
     prompt_examples: list[str] | None
     style_config: dict | None
     thumbnail_url: str | None

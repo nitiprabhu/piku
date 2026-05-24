@@ -75,6 +75,11 @@ export default function ProjectPage() {
   const [saveMsg, setSaveMsg] = useState("");
   const [publishModal, setPublishModal] = useState<"instagram" | "youtube" | null>(null);
   const [publishSuccess, setPublishSuccess] = useState<string | null>(null);
+  const [userPlan, setUserPlan] = useState<string>("free");
+
+  useEffect(() => {
+    api.get("/user/credits").then((r) => setUserPlan(r.data.plan || "free")).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (progress?.event === "completed" || !jobId) {
@@ -419,6 +424,7 @@ export default function ProjectPage() {
           initialCaption={caption}
           initialHashtags={hashtags.split(/\s+/).filter((h) => h.startsWith("#"))}
           videoTitle={project?.title}
+          userPlan={userPlan}
           onClose={() => setPublishModal(null)}
           onSuccess={(p) => {
             setPublishModal(null);

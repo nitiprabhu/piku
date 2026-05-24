@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "@/lib/api";
 
 interface Props {
@@ -42,6 +42,11 @@ async function loadRazorpay() {
 export default function UpgradeModal({ onClose, onUpgraded }: Props) {
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
 
   const handlePurchase = async (pack: typeof PACKS[0]) => {
     setLoading(pack.id);

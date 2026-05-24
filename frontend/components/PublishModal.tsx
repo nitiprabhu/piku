@@ -13,6 +13,7 @@ interface Props {
   initialCaption: string;
   initialHashtags: string[];
   videoTitle?: string;
+  userPlan?: string;
   onClose: () => void;
   onSuccess: (platform: string) => void;
 }
@@ -23,6 +24,7 @@ export default function PublishModal({
   initialCaption,
   initialHashtags,
   videoTitle,
+  userPlan,
   onClose,
   onSuccess,
 }: Props) {
@@ -53,6 +55,12 @@ export default function PublishModal({
 
   useEffect(() => {
     fetchStatus();
+  }, []);
+
+  // Lock body scroll while modal is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
   }, []);
 
   // Listen for postMessage from OAuth popup callback
@@ -199,6 +207,20 @@ export default function PublishModal({
         ) : (
           /* ── Connected — publish form ── */
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {userPlan === "free" && isIG && (
+              <div style={{
+                display: "flex", alignItems: "center", gap: 10,
+                background: "rgba(255,165,0,0.1)", border: "2px solid var(--orange)",
+                borderRadius: "var(--r-sm)", padding: "10px 14px",
+              }}>
+                <span style={{ fontSize: 16 }}>💧</span>
+                <span style={{ fontSize: 13, color: "var(--ink-2)", lineHeight: 1.4 }}>
+                  <strong style={{ color: "var(--ink)" }}>Free plan:</strong> video will include a ReelCraft watermark.{" "}
+                  <a href="/pricing" style={{ color: "var(--orange)", fontWeight: 700, textDecoration: "none" }}>Upgrade to remove →</a>
+                </span>
+              </div>
+            )}
+
             <div style={{
               display: "flex", alignItems: "center", gap: 8,
               background: "var(--bg-2)", border: "2px solid var(--ink)",
@@ -239,13 +261,13 @@ export default function PublishModal({
 
             <div>
               <label style={{ display: "block", fontFamily: "var(--font-mono)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--muted)", marginBottom: 6 }}>
-                Caption
+                {isIG ? "Caption / Description" : "Description"}
               </label>
               <textarea
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
-                placeholder="Write your caption..."
-                style={{ width: "100%", height: 90, padding: "10px 14px", borderRadius: "var(--r-sm)", border: "2px solid var(--ink)", background: "var(--bg-2)", fontFamily: "var(--font-body)", fontSize: 14, color: "var(--ink)", resize: "none", boxSizing: "border-box" }}
+                placeholder={isIG ? "Write your post caption..." : "Write your video description..."}
+                style={{ width: "100%", height: 100, padding: "10px 14px", borderRadius: "var(--r-sm)", border: "2px solid var(--ink)", background: "var(--bg-2)", fontFamily: "var(--font-body)", fontSize: 14, color: "var(--ink)", resize: "vertical", boxSizing: "border-box" }}
               />
             </div>
 

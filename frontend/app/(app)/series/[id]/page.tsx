@@ -3,6 +3,7 @@ import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import api from "@/lib/api";
 import { useJobProgress } from "@/lib/websocket";
+import AppShell from "@/components/AppShell";
 
 interface Series {
   id: string;
@@ -134,7 +135,7 @@ function SchedulePanel({ series, onSaved }: { series: Series; onSaved: (s: Serie
           </select>
         </div>
         <div>
-          <label style={labelStyle}>Time (UTC)</label>
+          <label style={labelStyle}>Time (IST)</label>
           <input
             type="time"
             style={{ ...selectStyle, width: "100%" }}
@@ -221,22 +222,27 @@ export default function SeriesDetailPage({ params }: { params: Promise<{ id: str
 
   if (loading) {
     return (
-      <div style={{ padding: 60, textAlign: "center", fontFamily: "var(--font-body)", color: "var(--ink-2)" }}>
-        Loading...
-      </div>
+      <AppShell>
+        <div style={{ padding: 60, textAlign: "center", fontFamily: "var(--font-body)", color: "var(--ink-2)" }}>
+          Loading...
+        </div>
+      </AppShell>
     );
   }
 
   if (!series) {
     return (
-      <div style={{ padding: 60, textAlign: "center" }}>
-        <div style={{ fontFamily: "var(--font-body)", color: "var(--ink-2)" }}>Series not found.</div>
-        <Link href="/series" style={{ color: "var(--orange)" }}>← Back to Series</Link>
-      </div>
+      <AppShell>
+        <div style={{ padding: 60, textAlign: "center" }}>
+          <div style={{ fontFamily: "var(--font-body)", color: "var(--ink-2)" }}>Series not found.</div>
+          <Link href="/series" style={{ color: "var(--orange)" }}>← Back to Series</Link>
+        </div>
+      </AppShell>
     );
   }
 
   return (
+    <AppShell>
     <div style={{ padding: "32px 24px", maxWidth: 800, margin: "0 auto" }}>
       <div style={{ marginBottom: 24 }}>
         <Link href="/series" style={{ fontFamily: "var(--font-body)", fontSize: 14, color: "var(--ink-2)", textDecoration: "none" }}>
@@ -380,5 +386,6 @@ export default function SeriesDetailPage({ params }: { params: Promise<{ id: str
         </div>
       )}
     </div>
+    </AppShell>
   );
 }

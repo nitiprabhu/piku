@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import api from "@/lib/api";
+import AppShell from "@/components/AppShell";
 
 interface Series {
   id: string;
@@ -31,6 +32,7 @@ export default function SeriesPage() {
   }, []);
 
   return (
+    <AppShell>
     <div style={{ padding: "32px 24px", maxWidth: 900, margin: "0 auto" }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
@@ -151,5 +153,6 @@ export default function SeriesPage() {
         </div>
       )}
     </div>
+    </AppShell>
   );
 }

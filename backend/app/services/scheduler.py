@@ -3,14 +3,16 @@ APScheduler-based auto-scheduling for Series (P1).
 Runs every minute, finds series with next_run_at <= now, triggers episode generation.
 """
 import logging
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy import select, text
 
 logger = logging.getLogger(__name__)
 
-scheduler = AsyncIOScheduler(timezone="UTC")
+IST = ZoneInfo("Asia/Kolkata")
+scheduler = AsyncIOScheduler(timezone="Asia/Kolkata")
 
 INTERVAL_MAP = {
     "daily": timedelta(days=1),
@@ -24,7 +26,7 @@ async def check_series_schedules():
     from app.database import AsyncSessionLocal
     from app.models.series import Series
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(IST)
 
     async with AsyncSessionLocal() as db:
         result = await db.execute(
@@ -144,7 +146,7 @@ async def _trigger_episode(series, db):
     project.job_id = job.id
     episode.project_id = project.id
     series.episode_count = episode_number
-    series.last_run_at = datetime.now(timezone.utc)
+    series.last_run_at = datetime.now(IST)
     _advance_next_run(series)
 
     logger.info(f"Auto-scheduled episode {episode_number} for series {series.id} (job {job.id})")
@@ -154,7 +156,7 @@ def _advance_next_run(series):
     """Update next_run_at based on schedule_type."""
     delta = INTERVAL_MAP.get(series.schedule_type)
     if delta:
-        series.next_run_at = datetime.now(timezone.utc) + delta
+        series.next_run_at = datetime.now(IST) + delta
 
 
 def compute_next_run_at(schedule_type: str, schedule_time: str) -> datetime | None:
@@ -162,12 +164,12 @@ def compute_next_run_at(schedule_type: str, schedule_time: str) -> datetime | No
     if schedule_type == "manual":
         return None
     delta = INTERVAL_MAP.get(schedule_type, timedelta(days=1))
-    now = datetime.now(timezone.utc)
+    now = datetime.now(IST)
     try:
         h, m = [int(x) for x in schedule_time.split(":")]
     except Exception:
         h, m = 9, 0
-    # Next occurrence of HH:MM UTC
+    # Next occurrence of HH:MM IST
     candidate = now.replace(hour=h, minute=m, second=0, microsecond=0)
     if candidate <= now:
         candidate += timedelta(days=1)

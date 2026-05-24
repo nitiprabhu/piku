@@ -41,6 +41,8 @@ class Template(Base):
         __import__("sqlalchemy.dialects.postgresql", fromlist=["JSONB"]).JSONB, nullable=True
     )
     thumbnail_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    template_type: Mapped[str] = mapped_column(String(20), default="regular", server_default="regular")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
 

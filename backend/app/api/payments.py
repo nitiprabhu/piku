@@ -118,6 +118,7 @@ async def verify_payment(
         current_user.credits = (current_user.credits or 0) + 1
     elif plan == "starter":
         credits = PLAN_CREDITS.get(plan, 10)
+        current_user.plan = "starter"
         current_user.credits = (current_user.credits or 0) + credits
     else:
         credits = PLAN_CREDITS.get(plan, 60)

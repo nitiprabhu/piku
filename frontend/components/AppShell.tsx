@@ -48,6 +48,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     api.get("/user/credits").then((r) => setCredits(r.data)).catch(() => {});
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = sidebarOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [sidebarOpen]);
+
   const handleLogout = () => {
     clearAuth();
     router.push("/login");
@@ -257,7 +262,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <main
-        style={{ flex: 1, minWidth: 0 }}
+        style={{ flex: 1, minWidth: 0, overflowX: "hidden" }}
         className="md:pt-0 pt-[60px]"
       >
         {children}

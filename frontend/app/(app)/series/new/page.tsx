@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import api from "@/lib/api";
+import AppShell from "@/components/AppShell";
 
 const STYLES = ["storytelling", "motivation", "funny", "devotional", "business", "news"];
 const LANGUAGES = [
@@ -61,6 +62,7 @@ export default function NewSeriesPage() {
   };
 
   return (
+    <AppShell>
     <div style={{ padding: "32px 24px", maxWidth: 600, margin: "0 auto" }}>
       <div style={{ marginBottom: 28 }}>
         <Link
@@ -183,5 +185,6 @@ export default function NewSeriesPage() {
         </button>
       </form>
     </div>
+    </AppShell>
   );
 }

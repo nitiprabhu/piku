@@ -21,6 +21,13 @@ export default function LoginPage() {
   const [countdown, setCountdown]   = useState(0);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
+  // Redirect already-logged-in users straight to dashboard
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    api.get("/auth/me").then(() => router.replace("/dashboard")).catch(() => {});
+  }, []);
+
   useEffect(() => {
     if (countdown > 0) {
       const t = setTimeout(() => setCountdown(c => c - 1), 1000);

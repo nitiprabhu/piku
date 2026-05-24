@@ -118,8 +118,10 @@ def process_video_job(
         ig_handle = user_obj.instagram_handle if (user_obj and show_overlay) else None
         yt_handle = user_obj.youtube_handle if (user_obj and show_overlay) else None
 
-        # Watermark only on free plan — conversion nudge to upgrade
-        is_free = not user_obj or (user_obj.plan or "free") == "free"
+        # Watermark only on free plan (excludes ₹29 first-video and ₹99 starter buyers)
+        is_free = not user_obj or (
+            (user_obj.plan or "free") == "free" and not user_obj.first_video_purchased
+        )
         effective_watermark = str(_wm_asset) if (is_free and _wm_asset.exists()) else None
 
         compose_video(

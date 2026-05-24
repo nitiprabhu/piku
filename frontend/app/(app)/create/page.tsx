@@ -308,7 +308,7 @@ function CreatePageInner() {
 
         {/* Niche visual cards (P2) */}
         <SectionCard label="Pick Your Niche" sublabel="Auto-fills style and language for you">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 8 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: 8 }}>
             {NICHES.map((n) => {
               const active = selectedNiche === n.id;
               return (
@@ -346,7 +346,7 @@ function CreatePageInner() {
 
         {/* Style — fine-tune after niche */}
         <SectionCard label="Style" sublabel="Override niche default if needed">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(6,1fr)", gap: 8 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))", gap: 8 }}>
             {STYLES.map((s) => (
               <button key={s.value} onClick={() => { setForm({ ...form, style: s.value, template_id: "" }); setSelectedTplId(""); setSelectedNiche(null); }}
                 style={{ padding: "10px 4px", borderRadius: "var(--r-sm)", textAlign: "center", cursor: "pointer", fontFamily: "var(--font-body)", transition: "all 0.08s ease", ...sel(form.style === s.value) }}>
