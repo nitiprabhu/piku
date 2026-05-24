@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect, useRef, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import api, { getStoredUser } from "@/lib/api";
 import AppShell from "@/components/AppShell";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -70,19 +70,26 @@ function SectionCard({ label, sublabel, children }: { label: string; sublabel?: 
 }
 
 export default function CreatePage() {
-  return <Suspense fallback={null}><CreatePageInner /></Suspense>;
-}
-
-function CreatePageInner() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  // Read searchParams once into refs so useState initializers don't re-run
-  const initPrompt    = searchParams.get("prompt") || "";
-  const initCharacter = searchParams.get("character") || null;
-  const initStyle     = searchParams.get("style") || "motivation";
-  const initLang      = searchParams.get("language") || "";
-  const initTplId     = searchParams.get("template_id") || "";
+  // Read URL search params directly — avoids useSearchParams + Suspense requirement
+  const [initParams] = useState(() => {
+    if (typeof window === "undefined") return { prompt: "", character: null as string | null, style: "motivation", lang: "", tplId: "" };
+    const p = new URLSearchParams(window.location.search);
+    return {
+      prompt:    p.get("prompt") || "",
+      character: p.get("character") || null,
+      style:     p.get("style") || "motivation",
+      lang:      p.get("language") || "",
+      tplId:     p.get("template_id") || "",
+    };
+  });
+
+  const initPrompt    = initParams.prompt;
+  const initCharacter = initParams.character;
+  const initStyle     = initParams.style;
+  const initLang      = initParams.lang;
+  const initTplId     = initParams.tplId;
 
   const [form, setForm] = useState(() => {
     const savedLang = typeof window !== "undefined" ? localStorage.getItem("rc_lang") : null;
