@@ -6,47 +6,47 @@ import AppShell from "@/components/AppShell";
 import UpgradeModal from "@/components/UpgradeModal";
 
 const CHARACTERS = [
-  { id: "raju_bhaiya",      emoji: "🤣", name: "Raju Bhaiya",   desc: "Desi uncle comedy",  lang: "Hindi" },
-  { id: "priya_di",         emoji: "💪", name: "Priya Didi",     desc: "Big sis motivation", lang: "Hinglish" },
-  { id: "professor_sharma", emoji: "🎓", name: "Prof. Sharma",   desc: "Patient teacher",    lang: "Hindi" },
-  { id: "rohit_anchor",     emoji: "📺", name: "Rohit Anchor",   desc: "News dramatic",      lang: "Hindi" },
-  { id: "dev_startup",      emoji: "🚀", name: "Dev Bhai",       desc: "Startup founder",    lang: "Hinglish" },
-  { id: "pandit_gyani",     emoji: "🙏", name: "Pandit Ji",      desc: "Spiritual guru",     lang: "Hindi" },
+  { id: "raju_bhaiya", emoji: "🤣", name: "Raju Bhaiya", desc: "Desi uncle comedy", lang: "Hindi" },
+  { id: "priya_di", emoji: "💪", name: "Priya Didi", desc: "Big sis motivation", lang: "Hinglish" },
+  { id: "professor_sharma", emoji: "🎓", name: "Prof. Sharma", desc: "Patient teacher", lang: "Hindi" },
+  { id: "rohit_anchor", emoji: "📺", name: "Rohit Anchor", desc: "News dramatic", lang: "Hindi" },
+  { id: "dev_startup", emoji: "🚀", name: "Dev Bhai", desc: "Startup founder", lang: "Hinglish" },
+  { id: "pandit_gyani", emoji: "🙏", name: "Pandit Ji", desc: "Spiritual guru", lang: "Hindi" },
 ];
 
 const STYLES = [
-  { value: "funny",       emoji: "😂", label: "Funny" },
-  { value: "devotional",  emoji: "🙏", label: "Devotional" },
-  { value: "motivation",  emoji: "🔥", label: "Motivation" },
-  { value: "business",    emoji: "💼", label: "Business" },
-  { value: "news",        emoji: "📰", label: "News" },
-  { value: "storytelling",emoji: "📖", label: "Story" },
+  { value: "funny", emoji: "😂", label: "Funny" },
+  { value: "devotional", emoji: "🙏", label: "Devotional" },
+  { value: "motivation", emoji: "🔥", label: "Motivation" },
+  { value: "business", emoji: "💼", label: "Business" },
+  { value: "news", emoji: "📰", label: "News" },
+  { value: "storytelling", emoji: "📖", label: "Story" },
 ];
 
 // P2: Visual niche cards — maps to style + suggested language
 const NICHES = [
-  { id: "mythology",    label: "Mythology",      emoji: "⚔️",  style: "storytelling", lang: "hi",       bg: "linear-gradient(135deg,#2D1B4E,#6B21A8)", color: "#E9D5FF" },
-  { id: "devotional",   label: "Devotional",     emoji: "🪔",  style: "devotional",   lang: "hi",       bg: "linear-gradient(135deg,#78350F,#D97706)", color: "#FEF3C7" },
-  { id: "motivation",   label: "Motivation",     emoji: "🔥",  style: "motivation",   lang: "hinglish", bg: "linear-gradient(135deg,#7F1D1D,#DC2626)", color: "#FEE2E2" },
-  { id: "scary",        label: "Scary Stories",  emoji: "👻",  style: "storytelling", lang: "hi",       bg: "linear-gradient(135deg,#111827,#374151)", color: "#D1FAE5" },
-  { id: "business",     label: "Business",       emoji: "💼",  style: "business",     lang: "hinglish", bg: "linear-gradient(135deg,#0C4A6E,#0284C7)", color: "#E0F2FE" },
-  { id: "funny",        label: "Funny / Comedy", emoji: "😂",  style: "funny",        lang: "hi",       bg: "linear-gradient(135deg,#7C2D12,#EA580C)", color: "#FFEDD5" },
-  { id: "anime",        label: "Anime Stories",  emoji: "🗡️", style: "storytelling", lang: "en",       bg: "linear-gradient(135deg,#4C1D95,#7C3AED)", color: "#EDE9FE" },
-  { id: "news",         label: "News / Updates", emoji: "📰",  style: "news",         lang: "hi",       bg: "linear-gradient(135deg,#1E3A5F,#2563EB)", color: "#DBEAFE" },
-  { id: "relationship", label: "Relationships",  emoji: "💕",  style: "funny",        lang: "hinglish", bg: "linear-gradient(135deg,#831843,#DB2777)", color: "#FCE7F3" },
-  { id: "heist",        label: "Heist / Crime",  emoji: "🔫",  style: "storytelling", lang: "en",       bg: "linear-gradient(135deg,#1C1917,#44403C)", color: "#D6D3D1" },
+  { id: "mythology", label: "Mythology", emoji: "⚔️", style: "storytelling", lang: "hi", bg: "linear-gradient(135deg,#2D1B4E,#6B21A8)", color: "#E9D5FF" },
+  { id: "devotional", label: "Devotional", emoji: "🪔", style: "devotional", lang: "hi", bg: "linear-gradient(135deg,#78350F,#D97706)", color: "#FEF3C7" },
+  { id: "motivation", label: "Motivation", emoji: "🔥", style: "motivation", lang: "hinglish", bg: "linear-gradient(135deg,#7F1D1D,#DC2626)", color: "#FEE2E2" },
+  { id: "scary", label: "Scary Stories", emoji: "👻", style: "storytelling", lang: "hi", bg: "linear-gradient(135deg,#111827,#374151)", color: "#D1FAE5" },
+  { id: "business", label: "Business", emoji: "💼", style: "business", lang: "hinglish", bg: "linear-gradient(135deg,#0C4A6E,#0284C7)", color: "#E0F2FE" },
+  { id: "funny", label: "Funny / Comedy", emoji: "😂", style: "funny", lang: "hi", bg: "linear-gradient(135deg,#7C2D12,#EA580C)", color: "#FFEDD5" },
+  { id: "anime", label: "Anime Stories", emoji: "🗡️", style: "storytelling", lang: "en", bg: "linear-gradient(135deg,#4C1D95,#7C3AED)", color: "#EDE9FE" },
+  { id: "news", label: "News / Updates", emoji: "📰", style: "news", lang: "hi", bg: "linear-gradient(135deg,#1E3A5F,#2563EB)", color: "#DBEAFE" },
+  { id: "relationship", label: "Relationships", emoji: "💕", style: "funny", lang: "hinglish", bg: "linear-gradient(135deg,#831843,#DB2777)", color: "#FCE7F3" },
+  { id: "heist", label: "Heist / Crime", emoji: "🔫", style: "storytelling", lang: "en", bg: "linear-gradient(135deg,#1C1917,#44403C)", color: "#D6D3D1" },
 ];
 
 const VOICES = [
-  { id: "rohit_m",  label: "Rohit",  emoji: "👨",    lang: "Hindi",   gender: "Male",   speechText: "नमस्कार! मैं रोहित हूँ।" },
-  { id: "priya_f",  label: "Priya",  emoji: "👩",    lang: "Hindi",   gender: "Female", speechText: "नमस्ते! मैं प्रिया हूँ।" },
-  { id: "arjun_m",  label: "Arjun",  emoji: "👨‍💼",  lang: "English", gender: "Male",   speechText: "Hello! I am Arjun." },
-  { id: "ananya_f", label: "Ananya", emoji: "👩‍💼",  lang: "English", gender: "Female", speechText: "Hi! I am Ananya." },
+  { id: "rohit_m", label: "Rohit", emoji: "🧔", lang: "Hindi", gender: "Heavy Male", speechText: "नमस्कार! मैं रोहित हूँ।" },
+  { id: "priya_f", label: "Priya", emoji: "👩", lang: "Hindi", gender: "Female", speechText: "नमस्ते! मैं प्रिया हूँ।" },
+  { id: "arjun_m", label: "Arjun", emoji: "🧔", lang: "English", gender: "Heavy Male", speechText: "Hello! I am Arjun." },
+  { id: "ananya_f", label: "Ananya", emoji: "👩‍💼", lang: "English", gender: "Female", speechText: "Hi! I am Ananya." },
 ];
 
 const LANGUAGES = [
-  { value: "hi",       label: "हिंदी",   flag: "🇮🇳" },
-  { value: "en",       label: "English",  flag: "🌐" },
+  { value: "hi", label: "हिंदी", flag: "🇮🇳" },
+  { value: "en", label: "English", flag: "🌐" },
   { value: "hinglish", label: "Hinglish", flag: "✨" },
 ];
 
@@ -67,6 +67,19 @@ function SectionCard({ label, sublabel, children }: { label: string; sublabel?: 
       {children}
     </div>
   );
+}
+
+interface Template {
+  id: string;
+  name: string;
+  category: string | null;
+  language: string | null;
+  prompt_examples: string[] | null;
+}
+
+function getRandomPrompt(examples: string[] | null) {
+  if (!examples || examples.length === 0) return "";
+  return examples[Math.floor(Math.random() * examples.length)];
 }
 
 export default function CreatePage() {
@@ -95,28 +108,28 @@ export default function CreatePage() {
     const savedLang = typeof window !== "undefined" ? localStorage.getItem("rc_lang") : null;
     const defaultLang = initLang || (savedLang && savedLang !== "all" ? savedLang : "hi");
     return {
-      prompt:      initPrompt,
-      language:    defaultLang,
-      style:       initStyle,
-      voice_id:    "rohit_m",
-      duration:    30,
+      prompt: initPrompt,
+      language: defaultLang,
+      style: initStyle,
+      voice_id: "rohit_m",
+      duration: 30,
       template_id: initTplId,
     };
   });
-  const [templates,         setTemplates]         = useState<any[]>([]);
-  const [selectedTplId,     setSelectedTplId]      = useState(initTplId);
-  const [selectedNiche,     setSelectedNiche]      = useState<string | null>(null);
-  const [selectedCharacter, setSelectedCharacter]  = useState<string | null>(initCharacter);
-  const [credits,           setCredits]            = useState<number | null>(null);
-  const [userPlan,          setUserPlan]            = useState<string>("free");
-  const [loading,           setLoading]            = useState(false);
-  const [error,             setError]              = useState<string | null>(null);
-  const [showUpgrade,       setShowUpgrade]        = useState(false);
-  const [playingVoice,      setPlayingVoice]       = useState<string | null>(null);
-  const [aiIdeas,           setAiIdeas]            = useState<string[]>([]);
-  const [ideasLoading,      setIdeasLoading]       = useState(false);
-  const [generatingPrompt,  setGeneratingPrompt]   = useState(false);
-  const [ideaMode,          setIdeaMode]           = useState<"ai" | "type">("type");
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [selectedTplId, setSelectedTplId] = useState(initTplId);
+  const [selectedNiche, setSelectedNiche] = useState<string | null>(null);
+  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(initCharacter);
+  const [credits, setCredits] = useState<number | null>(null);
+  const [userPlan, setUserPlan] = useState<string>("free");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [playingVoice, setPlayingVoice] = useState<string | null>(null);
+  const [aiIdeas, setAiIdeas] = useState<string[]>([]);
+  const [ideasLoading, setIdeasLoading] = useState(false);
+  const [generatingPrompt, setGeneratingPrompt] = useState(false);
+  const [ideaMode, setIdeaMode] = useState<"ai" | "type">("type");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const didInit = useRef(false);
 
@@ -126,15 +139,17 @@ export default function CreatePage() {
 
     const user = getStoredUser();
     if (!user) { router.push("/login"); return; }
-    if (user.plan) setUserPlan(user.plan);
-    api.get("/user/credits").then((r) => { setCredits(r.data.remaining); setUserPlan(r.data.plan || "free"); }).catch(() => {});
-    api.get("/templates").then((r) => setTemplates(r.data)).catch(() => {});
-    return () => { audioRef.current?.pause(); };
-  }, []);
+    setTimeout(() => {
+      if (user.plan) setUserPlan(user.plan);
+    }, 0);
+    api.get("/user/credits").then((r) => { setCredits(r.data.remaining); setUserPlan(r.data.plan || "free"); }).catch(() => { });
+    api.get("/templates").then((r) => setTemplates(r.data)).catch(() => { });
+    const audio = audioRef.current;
+    return () => { audio?.pause(); };
+  }, [router]);
 
-  const selectTemplate = (tpl: any) => {
-    const ex = tpl.prompt_examples || [];
-    const prompt = ex.length ? ex[Math.floor(Math.random() * ex.length)] : "";
+  const selectTemplate = (tpl: Template) => {
+    const prompt = getRandomPrompt(tpl.prompt_examples);
     setSelectedTplId(tpl.id);
     setAiIdeas([]);
     setForm({ ...form, style: tpl.category || "motivation", language: tpl.language || "hi", prompt, template_id: tpl.id });
@@ -176,7 +191,63 @@ export default function CreatePage() {
       window.speechSynthesis?.cancel();
       setPlayingVoice(v.id);
       const u = new SpeechSynthesisUtterance(v.speechText);
-      u.lang = v.lang === "Hindi" ? "hi-IN" : "en-US";
+      const isHindi = v.lang === "Hindi";
+      u.lang = isHindi ? "hi-IN" : "en-US";
+
+      if (typeof window !== "undefined" && window.speechSynthesis) {
+        const voices = window.speechSynthesis.getVoices();
+        const langCode = isHindi ? "hi" : "en";
+        const langVoices = voices.filter(voice =>
+          voice.lang.toLowerCase().startsWith(langCode)
+        );
+
+        const isMale = v.gender.toLowerCase().includes("male");
+        let matchedVoice: SpeechSynthesisVoice | undefined;
+
+        if (isMale) {
+          const maleKeywords = [
+            "male", "guy", "man", "boy", "rishi", "ravi", "hemant",
+            "david", "mark", "george", "daniel", "oliver", "harry",
+            "thomas", "nathan", "evan", "russel", "james", "alex"
+          ];
+          // Try to find a voice that matches male keywords
+          matchedVoice = langVoices.find(voice => {
+            const nameLower = voice.name.toLowerCase();
+            return maleKeywords.some(kw => nameLower.includes(kw));
+          });
+
+          // If no specific male keyword matches, try to exclude known female voices/keywords
+          if (!matchedVoice) {
+            const femaleKeywords = [
+              "female", "girl", "woman", "lady", "samantha", "priya",
+              "ananya", "lekha", "zira", "heera", "kavita", "tessa",
+              "moira", "karen", "veena", "sangeeta", "hazel", "susan"
+            ];
+            matchedVoice = langVoices.find(voice => {
+              const nameLower = voice.name.toLowerCase();
+              return !femaleKeywords.some(kw => nameLower.includes(kw));
+            });
+          }
+        } else {
+          // Female voice matching
+          const femaleKeywords = [
+            "female", "girl", "woman", "lady", "samantha", "priya",
+            "ananya", "lekha", "zira", "heera", "kavita", "tessa",
+            "moira", "karen", "veena", "sangeeta", "hazel", "susan", "siri"
+          ];
+          matchedVoice = langVoices.find(voice => {
+            const nameLower = voice.name.toLowerCase();
+            return femaleKeywords.some(kw => nameLower.includes(kw));
+          });
+        }
+
+        if (matchedVoice) {
+          u.voice = matchedVoice;
+        } else if (langVoices.length > 0) {
+          u.voice = langVoices[0];
+        }
+      }
+
       u.onend = u.onerror = () => setPlayingVoice(null);
       window.speechSynthesis?.speak(u);
     }
@@ -189,8 +260,8 @@ export default function CreatePage() {
     try {
       const { data } = await api.post("/generate", { ...form, character: selectedCharacter });
       router.push(`/projects/${data.project_id}?job_id=${data.job_id}`);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "Failed to start generation");
+    } catch (err: unknown) {
+      setError((err as { response?: { data?: { detail?: string } } }).response?.data?.detail || "Failed to start generation");
       setLoading(false);
     }
   };

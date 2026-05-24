@@ -47,18 +47,20 @@ export default function DashboardPage() {
   useEffect(() => {
     const user = getStoredUser();
     if (!user) { router.push("/login"); return; }
-    if (user.name) setUserName(user.name.toUpperCase());
-    if (user.instagram_handle) setIgHandle(user.instagram_handle);
-    if (user.youtube_handle) setYtHandle(user.youtube_handle);
-    if (user.show_social_overlay !== undefined) setShowOverlay(user.show_social_overlay);
-    if (user.credits !== undefined) setUserCredits(user.credits);
-    if (user.plan) setUserPlan(user.plan);
-    if (user.first_video_purchased !== undefined) setFirstVideoPurchased(user.first_video_purchased);
+    setTimeout(() => {
+      if (user.name) setUserName(user.name.toUpperCase());
+      if (user.instagram_handle) setIgHandle(user.instagram_handle);
+      if (user.youtube_handle) setYtHandle(user.youtube_handle);
+      if (user.show_social_overlay !== undefined) setShowOverlay(user.show_social_overlay);
+      if (user.credits !== undefined) setUserCredits(user.credits);
+      if (user.plan) setUserPlan(user.plan);
+      if (user.first_video_purchased !== undefined) setFirstVideoPurchased(user.first_video_purchased);
+    }, 0);
     api.get("/projects?limit=20")
       .then((r) => { setProjects(r.data.items); setStats({ total: r.data.total ?? r.data.items.length }); })
       .catch(() => router.push("/login"))
       .finally(() => setLoading(false));
-  }, []);
+  }, [router]);
 
   const saveBranding = async () => {
     setBrandingSaving(true);

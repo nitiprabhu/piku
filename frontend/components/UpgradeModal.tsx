@@ -29,7 +29,7 @@ const PACKS = [
 ];
 
 async function loadRazorpay() {
-  if (typeof window === "undefined" || (window as any).Razorpay) return;
+  if (typeof window === "undefined" || (window as Window & { Razorpay?: unknown }).Razorpay) return;
   await new Promise<void>((resolve, reject) => {
     const s = document.createElement("script");
     s.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -62,7 +62,7 @@ export default function UpgradeModal({ onClose, onUpgraded }: Props) {
         name: "ReelCraft",
         description: pack.id === "starter" ? "10 Credits Top-Up" : "Pro Plan — ₹499/month",
         order_id: data.razorpay_order_id,
-        handler: async (response: any) => {
+        handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
           try {
             await api.post("/payments/verify", {
               razorpay_payment_id: response.razorpay_payment_id,
@@ -90,10 +90,10 @@ export default function UpgradeModal({ onClose, onUpgraded }: Props) {
         theme: { color: "#f97316" },
       };
 
-      const rzp = new (window as any).Razorpay(options);
+      const rzp = new (window as Window & { Razorpay: new (opts: unknown) => { open: () => void } }).Razorpay(options);
       rzp.open();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "Failed to create order. Try again.");
+    } catch (err: unknown) {
+      setError((err as { response?: { data?: { detail?: string } } }).response?.data?.detail || "Failed to create order. Try again.");
     } finally {
       setLoading(null);
     }

@@ -6,9 +6,9 @@ from app.services.ai.muapi_client import MuAPIClient
 
 
 VOICE_MAP = {
-    "rohit_m":  "male_rohit_hindi",
+    "rohit_m":  "Imposing_Manner",
     "priya_f":  "female_priya_hindi",
-    "arjun_m":  "male_arjun_en",
+    "arjun_m":  "Deep_Voice_Man",
     "ananya_f": "female_ananya_en",
 }
 
@@ -50,7 +50,7 @@ async def generate_voice(text: str, voice_id: str, speed: float = 1.0) -> str:
             endpoint="minimax-speech-2.6-hd",
             payload={
                 "prompt": text,
-                "voice_id": VOICE_MAP.get(voice_id, "male_rohit_hindi"),
+                "voice_id": VOICE_MAP.get(voice_id, "Imposing_Manner"),
                 "speed": speed,
                 "format": "mp3",
             },

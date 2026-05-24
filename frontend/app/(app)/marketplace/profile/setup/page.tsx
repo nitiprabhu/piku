@@ -154,7 +154,7 @@ export default function ProfileSetupPage() {
               borderRadius: "var(--r-md)", padding: "20px",
               boxShadow: "3px 3px 0 var(--ink)",
             }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ink-2)", marginBottom: 6 }}>You'll receive (after 12% platform + 2% Razorpay)</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ink-2)", marginBottom: 6 }}>You&apos;ll receive (after 12% platform + 2% Razorpay)</div>
               <div style={{ fontFamily: "var(--font-display)", fontSize: 40, color: "var(--green)" }}>
                 ₹{Math.round(ratePerVideo * 0.86).toLocaleString("en-IN")}
               </div>

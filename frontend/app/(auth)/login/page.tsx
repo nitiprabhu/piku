@@ -26,7 +26,7 @@ export default function LoginPage() {
     const token = localStorage.getItem("access_token");
     if (!token) return;
     api.get("/auth/me").then(() => router.replace("/dashboard")).catch(() => {});
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -49,8 +49,8 @@ export default function LoginPage() {
     try {
       await api.post("/auth/send-otp", { phone: formatPhone(phone) });
       setStep("otp"); setCountdown(30);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "Failed to send OTP");
+    } catch (err: unknown) {
+      setError((err as { response?: { data?: { detail?: string } } }).response?.data?.detail || "Failed to send OTP");
     } finally { setLoading(false); }
   };
 
@@ -81,8 +81,8 @@ export default function LoginPage() {
       });
       saveAuth(data);
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "Invalid or expired OTP");
+    } catch (err: unknown) {
+      setError((err as { response?: { data?: { detail?: string } } }).response?.data?.detail || "Invalid or expired OTP");
     } finally { setLoading(false); }
   };
 

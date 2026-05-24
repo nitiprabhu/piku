@@ -2,7 +2,7 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { clearAuth, getStoredUser } from "@/lib/api";
+import { clearAuth } from "@/lib/api";
 import api from "@/lib/api";
 
 const LANG_OPTIONS = [
@@ -19,7 +19,11 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState("all");
   useEffect(() => {
     const saved = typeof window !== "undefined" ? localStorage.getItem("rc_lang") : null;
-    if (saved) setLangState(saved);
+    if (saved) {
+      setTimeout(() => {
+        setLangState(saved);
+      }, 0);
+    }
   }, []);
   const setLang = (l: string) => {
     setLangState(l);
@@ -39,7 +43,6 @@ const NAV = [
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const user = getStoredUser();
   const [credits, setCredits] = useState<{ remaining: number; plan: string } | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { lang, setLang } = useLang();
@@ -58,7 +61,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     router.push("/login");
   };
 
-  const Sidebar = ({ mobile = false }: { mobile?: boolean }) => (
+  const renderSidebar = (mobile = false) => (
     <aside
       style={{
         width: mobile ? "100%" : 240,
@@ -215,16 +218,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg)" }}>
       {/* Desktop sidebar */}
       <div className="hidden md:block">
-        <Sidebar />
+        {renderSidebar(false)}
       </div>
 
       {/* Mobile header */}
       <div
-        className="md:hidden"
+        className="flex md:hidden"
         style={{
           position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
           background: "var(--card)", borderBottom: "2px solid var(--ink)",
-          height: 60, display: "flex", alignItems: "center",
+          height: 60, alignItems: "center",
           padding: "0 16px", justifyContent: "space-between",
         }}
       >
@@ -256,7 +259,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             overflowY: "auto",
           }}
         >
-          <Sidebar mobile />
+          {renderSidebar(true)}
         </div>
       )}
 

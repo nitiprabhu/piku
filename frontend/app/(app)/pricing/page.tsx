@@ -78,7 +78,7 @@ const PLANS = [
 ];
 
 declare global {
-  interface Window { Razorpay: any; }
+  interface Window { Razorpay: new (options: unknown) => { open: () => void }; }
 }
 
 export default function PricingPage() {
@@ -102,7 +102,7 @@ export default function PricingPage() {
         name: "ReelCraft",
         description: plan?.name,
         order_id: data.razorpay_order_id,
-        handler: async (response: any) => {
+        handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
           await api.post("/payments/verify", {
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_order_id: response.razorpay_order_id,
@@ -114,7 +114,7 @@ export default function PricingPage() {
       };
       const rz = new window.Razorpay(options);
       rz.open();
-    } catch (e) {
+    } catch {
       alert("Payment failed. Please try again.");
     } finally {
       setLoading(null);

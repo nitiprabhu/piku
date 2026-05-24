@@ -93,7 +93,7 @@ export default function LandingPage() {
             border: "2px solid rgba(255,255,255,0.3)", borderRadius: 8,
             padding: "6px 14px", fontSize: 12, fontWeight: 800,
             textDecoration: "none",
-          }}>I'm a Creator</Link>
+          }}>I&apos;m a Creator</Link>
           <Link href="/marketplace/search" style={{
             background: "transparent", color: "#fff",
             border: "2px solid rgba(255,255,255,0.4)", borderRadius: 8,

@@ -58,6 +58,22 @@ function ViralScore({ score }: { score: number }) {
   );
 }
 
+interface Project {
+  id: string;
+  title: string | null;
+  video_url: string | null;
+  thumbnail_url: string | null;
+  viral_score: number | null;
+  view_count: number | null;
+  like_count: number | null;
+  caption_text: string | null;
+  hashtags: string[] | null;
+  script_json: {
+    hook?: string;
+    narration?: string;
+  } | null;
+}
+
 export default function ProjectPage() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -67,7 +83,7 @@ export default function ProjectPage() {
 
   const progress = useJobProgress(jobId);
 
-  const [project, setProject] = useState<any>(null);
+  const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [caption, setCaption] = useState("");
   const [hashtags, setHashtags] = useState("");
@@ -77,17 +93,7 @@ export default function ProjectPage() {
   const [publishSuccess, setPublishSuccess] = useState<string | null>(null);
   const [userPlan, setUserPlan] = useState<string>("free");
 
-  useEffect(() => {
-    api.get("/user/credits").then((r) => setUserPlan(r.data.plan || "free")).catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    if (progress?.event === "completed" || !jobId) {
-      fetchProject();
-    }
-  }, [progress?.event, jobId]);
-
-  const fetchProject = async () => {
+  async function fetchProject() {
     try {
       const { data } = await api.get(`/projects/${projectId}`);
       setProject(data);
@@ -98,9 +104,21 @@ export default function ProjectPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const saveCaption = async () => {
+  useEffect(() => {
+    api.get("/user/credits").then((r) => setUserPlan(r.data.plan || "free")).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (progress?.event === "completed" || !jobId) {
+      setTimeout(() => {
+        fetchProject();
+      }, 0);
+    }
+  }, [progress?.event, jobId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function saveCaption() {
     setSaving(true);
     try {
       await api.patch(`/projects/${projectId}`, {

@@ -198,7 +198,7 @@ export default function SeriesDetailPage({ params }: { params: Promise<{ id: str
     }
   };
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => { load(); }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleGenerate = async () => {
     setGenerating(true);

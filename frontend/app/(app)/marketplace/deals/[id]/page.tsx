@@ -103,7 +103,13 @@ export default function DealRoomPage() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => { fetchDeal(); fetchMessages(); fetchMe(); }, [fetchDeal, fetchMessages, fetchMe]);
+  useEffect(() => {
+    setTimeout(() => {
+      fetchDeal();
+      fetchMessages();
+      fetchMe();
+    }, 0);
+  }, [fetchDeal, fetchMessages, fetchMe]);
 
   useEffect(() => {
     msgEndRef.current?.scrollIntoView({ behavior: "smooth" });

@@ -230,7 +230,7 @@ export default function BriefNewPage() {
             padding: "28px", maxWidth: 480, width: "100%",
           }}>
             <div style={{ fontFamily: "var(--font-display)", fontSize: 22, marginBottom: 8 }}>SEND TO CREATORS</div>
-            <div style={{ fontSize: 14, color: "var(--ink-2)", marginBottom: 16 }}>Deselect any creators you don't want to include:</div>
+            <div style={{ fontSize: 14, color: "var(--ink-2)", marginBottom: 16 }}>Deselect any creators you don&apos;t want to include:</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
               {matched.map((c) => {
                 const selected = selectedCreators.includes(c.id);

@@ -54,7 +54,9 @@ export default function PublishModal({
   };
 
   useEffect(() => {
-    fetchStatus();
+    setTimeout(() => {
+      fetchStatus();
+    }, 0);
   }, []);
 
   // Lock body scroll while modal is open

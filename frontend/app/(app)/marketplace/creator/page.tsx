@@ -83,7 +83,12 @@ export default function CreatorHubPage() {
     }
   }, []);
 
-  useEffect(() => { fetchBriefs(); fetchDeals(); }, [fetchBriefs, fetchDeals]);
+  useEffect(() => {
+    setTimeout(() => {
+      fetchBriefs();
+      fetchDeals();
+    }, 0);
+  }, [fetchBriefs, fetchDeals]);
 
   const applyToBrief = async (briefId: string) => {
     setApplying(briefId);

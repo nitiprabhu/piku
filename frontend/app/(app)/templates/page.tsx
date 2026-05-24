@@ -13,6 +13,13 @@ const CATEGORY_META: Record<string, { emoji: string; label: string }> = {
   storytelling: { emoji: "📖", label: "Storytelling" },
 };
 
+type TemplateStyleConfig = {
+  gradient?: string;
+  emoji?: string;
+  tags?: string[];
+  character_id?: string;
+};
+
 type Template = {
   id: string;
   name: string;
@@ -21,7 +28,7 @@ type Template = {
   description: string | null;
   template_type: string;
   prompt_examples: string[] | null;
-  style_config: Record<string, any> | null;
+  style_config: TemplateStyleConfig | null;
   thumbnail_url: string | null;
   sort_order: number;
 };
@@ -37,9 +44,13 @@ type InspirationVideo = {
   duration_s: number | null;
 };
 
+function getRandomPrompt(examples: string[] | null) {
+  if (!examples || examples.length === 0) return "";
+  return examples[Math.floor(Math.random() * examples.length)];
+}
+
 export default function TemplatesPage() {
   const router = useRouter();
-  const user = getStoredUser();
   const { lang } = useLang();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [inspirations, setInspirations] = useState<InspirationVideo[]>([]);
@@ -47,14 +58,15 @@ export default function TemplatesPage() {
   const [active, setActive] = useState("all");
 
   useEffect(() => {
-    if (!user) { router.push("/login"); return; }
+    const activeUser = getStoredUser();
+    if (!activeUser) { router.push("/login"); return; }
     Promise.all([
       api.get("/templates").then((r) => setTemplates(r.data)),
       api.get("/inspire").then((r) => setInspirations(r.data)),
     ])
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [router]);
 
   const regularTemplates = templates.filter((t) => t.template_type !== "character");
   const characterTemplates = templates.filter((t) => t.template_type === "character");
@@ -84,9 +96,8 @@ export default function TemplatesPage() {
     (t) => active === "all" || t.category === active
   );
 
-  const useTemplate = (tpl: Template) => {
-    const examples = tpl.prompt_examples || [];
-    const prompt = examples.length > 0 ? examples[Math.floor(Math.random() * examples.length)] : "";
+  const handleUseTemplate = (tpl: Template) => {
+    const prompt = getRandomPrompt(tpl.prompt_examples);
     router.push(`/create?${new URLSearchParams({
       template_id: tpl.id,
       style: tpl.category || "motivation",
@@ -95,7 +106,7 @@ export default function TemplatesPage() {
     })}`);
   };
 
-  const useCharacter = (tpl: Template) => {
+  const handleUseCharacter = (tpl: Template) => {
     const sc = tpl.style_config || {};
     const prompt = (tpl.prompt_examples || [])[0] || "";
     router.push(`/create?${new URLSearchParams({
@@ -202,7 +213,7 @@ export default function TemplatesPage() {
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 16 }}>
                     {catTpls.map((tpl) => (
-                      <button key={tpl.id} onClick={() => useTemplate(tpl)} style={{ textAlign: "left", cursor: "pointer", background: "none", border: "none", padding: 0 }}>
+                      <button key={tpl.id} onClick={() => handleUseTemplate(tpl)} style={{ textAlign: "left", cursor: "pointer", background: "none", border: "none", padding: 0 }}>
                         <TemplateCard tpl={tpl} />
                       </button>
                     ))}
@@ -228,7 +239,7 @@ export default function TemplatesPage() {
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 16 }}>
                   {filteredChars.map((tpl) => (
-                    <button key={tpl.id} onClick={() => useCharacter(tpl)} style={{ textAlign: "left", cursor: "pointer", background: "none", border: "none", padding: 0 }}>
+                    <button key={tpl.id} onClick={() => handleUseCharacter(tpl)} style={{ textAlign: "left", cursor: "pointer", background: "none", border: "none", padding: 0 }}>
                       <CharacterCard tpl={tpl} />
                     </button>
                   ))}

@@ -20,13 +20,6 @@ interface Creator {
   total_deals: number;
 }
 
-const FOLLOWER_RANGES = [
-  { label: "Any", min: undefined, max: undefined },
-  { label: "10K+", min: 10000, max: undefined },
-  { label: "100K+", min: 100000, max: undefined },
-  { label: "500K+", min: 500000, max: undefined },
-  { label: "1M+", min: 1000000, max: undefined },
-];
 
 const RATE_RANGES = [
   { label: "Any", max: undefined },
@@ -52,7 +45,7 @@ function gradForId(id: string) {
 export default function MarketplaceSearchPage() {
   const [nicheFilters, setNicheFilters] = useState<string[]>([]);
   const [langFilters, setLangFilters] = useState<string[]>([]);
-  const [minRate, setMinRate] = useState<number | undefined>(undefined);
+  const minRate = undefined;
   const [maxRate, setMaxRate] = useState<number | undefined>(undefined);
   const [sortBy, setSortBy] = useState<"rate" | "rating" | "followers">("rating");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -82,7 +75,11 @@ export default function MarketplaceSearchPage() {
     }
   }, [nicheFilters, langFilters, minRate, maxRate]);
 
-  useEffect(() => { fetchCreators(); }, [fetchCreators]);
+  useEffect(() => {
+    setTimeout(() => {
+      fetchCreators();
+    }, 0);
+  }, [fetchCreators]);
 
   const toggleNiche = (n: string) =>
     setNicheFilters((p) => p.includes(n) ? p.filter((x) => x !== n) : [...p, n]);
