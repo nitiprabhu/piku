@@ -70,28 +70,36 @@ function SectionCard({ label, sublabel, children }: { label: string; sublabel?: 
 }
 
 export default function CreatePage() {
-  return <Suspense><CreatePageInner /></Suspense>;
+  return <Suspense fallback={null}><CreatePageInner /></Suspense>;
 }
 
 function CreatePageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const user = getStoredUser();
 
-  const savedLang = typeof window !== "undefined" ? localStorage.getItem("rc_lang") : null;
-  const defaultLang = searchParams.get("language") || (savedLang && savedLang !== "all" ? savedLang : "hi");
-  const [form, setForm] = useState({
-    prompt:      searchParams.get("prompt") || "",
-    language:    defaultLang,
-    style:       searchParams.get("style") || "motivation",
-    voice_id:    "rohit_m",
-    duration:    30,
-    template_id: searchParams.get("template_id") || "",
+  // Read searchParams once into refs so useState initializers don't re-run
+  const initPrompt    = searchParams.get("prompt") || "";
+  const initCharacter = searchParams.get("character") || null;
+  const initStyle     = searchParams.get("style") || "motivation";
+  const initLang      = searchParams.get("language") || "";
+  const initTplId     = searchParams.get("template_id") || "";
+
+  const [form, setForm] = useState(() => {
+    const savedLang = typeof window !== "undefined" ? localStorage.getItem("rc_lang") : null;
+    const defaultLang = initLang || (savedLang && savedLang !== "all" ? savedLang : "hi");
+    return {
+      prompt:      initPrompt,
+      language:    defaultLang,
+      style:       initStyle,
+      voice_id:    "rohit_m",
+      duration:    30,
+      template_id: initTplId,
+    };
   });
   const [templates,         setTemplates]         = useState<any[]>([]);
-  const [selectedTplId,     setSelectedTplId]      = useState(searchParams.get("template_id") || "");
+  const [selectedTplId,     setSelectedTplId]      = useState(initTplId);
   const [selectedNiche,     setSelectedNiche]      = useState<string | null>(null);
-  const [selectedCharacter, setSelectedCharacter]  = useState<string | null>(searchParams.get("character") || null);
+  const [selectedCharacter, setSelectedCharacter]  = useState<string | null>(initCharacter);
   const [credits,           setCredits]            = useState<number | null>(null);
   const [userPlan,          setUserPlan]            = useState<string>("free");
   const [loading,           setLoading]            = useState(false);
@@ -103,8 +111,13 @@ function CreatePageInner() {
   const [generatingPrompt,  setGeneratingPrompt]   = useState(false);
   const [ideaMode,          setIdeaMode]           = useState<"ai" | "type">("type");
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const didInit = useRef(false);
 
   useEffect(() => {
+    if (didInit.current) return;
+    didInit.current = true;
+
+    const user = getStoredUser();
     if (!user) { router.push("/login"); return; }
     if (user.plan) setUserPlan(user.plan);
     api.get("/user/credits").then((r) => { setCredits(r.data.remaining); setUserPlan(r.data.plan || "free"); }).catch(() => {});
