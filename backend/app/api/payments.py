@@ -46,6 +46,8 @@ OVERAGE_PRICE_PAISE = {
 
 FIRST_VIDEO_PRICE_PAISE = 2900  # ₹29 one-time
 
+PLAN_RANK = {"free": 0, "starter": 1, "pro": 2, "business": 3}
+
 
 def _razorpay_client():
     import razorpay
@@ -169,12 +171,11 @@ async def verify_payment(
             raise HTTPException(status_code=400, detail="First video offer already used")
         current_user.first_video_purchased = True
         current_user.credits = (current_user.credits or 0) + 1
-    elif plan == "starter":
-        current_user.plan = "starter"
-        current_user.credits = (current_user.credits or 0) + PLAN_CREDITS["starter"]
-    else:
-        current_user.plan = plan
-        current_user.credits = (current_user.credits or 0) + PLAN_CREDITS.get(plan, 60)
+    elif plan in PLAN_CREDITS:
+        # Only upgrade plan tier, never downgrade
+        if PLAN_RANK.get(plan, 0) > PLAN_RANK.get(current_user.plan or "free", 0):
+            current_user.plan = plan
+        current_user.credits = (current_user.credits or 0) + PLAN_CREDITS[plan]
 
     current_user.razorpay_last_payment_id = body.razorpay_payment_id
     logger.info("Payment verified: user=%s plan=%s payment=%s", current_user.id, plan, body.razorpay_payment_id)
@@ -256,7 +257,8 @@ async def razorpay_webhook(request: Request, db: AsyncSession = Depends(get_db))
             user.plan = "starter"
             user.credits = (user.credits or 0) + PLAN_CREDITS["starter"]
         elif plan in PLAN_CREDITS:
-            user.plan = plan
+            if PLAN_RANK.get(plan, 0) > PLAN_RANK.get(user.plan or "free", 0):
+                user.plan = plan
             user.credits = (user.credits or 0) + PLAN_CREDITS[plan]
 
         user.razorpay_last_payment_id = payment_id
