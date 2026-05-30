@@ -12,21 +12,29 @@ from app.config import settings
 #   male:   abhilash, karun, hitesh
 _SARVAM_VOICE_MAP = {
     "rohit_m":  {"speaker": "karun",    "lang": "hi-IN"},   # male Hindi
+    "anchor_m": {"speaker": "hitesh",   "lang": "hi-IN"},   # male Hindi authoritative
+    "startup_m":{"speaker": "abhilash", "lang": "hi-IN"},   # male Hindi energetic/hinglish
     "priya_f":  {"speaker": "anushka",  "lang": "hi-IN"},   # female Hindi
     "arjun_m":  {"speaker": "abhilash", "lang": "en-IN"},   # male Indian English
     "ananya_f": {"speaker": "vidya",    "lang": "en-IN"},   # female Indian English
     "vikram_m": {"speaker": "karun",    "lang": "kn-IN"},   # male native Kannada
     "kavya_f":  {"speaker": "anushka",  "lang": "kn-IN"},   # female native Kannada
+    "anime_kid":   {"speaker": "anushka",  "lang": "hi-IN"},   # female base for kid pitch shift
+    "anime_kid_kn":{"speaker": "anushka",  "lang": "kn-IN"},   # female Kannada kid pitch shift
 }
 
 # OpenAI fallback — only if Sarvam key missing/failed
 _OPENAI_FALLBACK = {
     "rohit_m":  ("tts-1",    "onyx"),
+    "anchor_m": ("tts-1",    "fable"),
+    "startup_m":("tts-1",    "echo"),
     "priya_f":  ("tts-1",    "nova"),
     "arjun_m":  ("tts-1",    "echo"),
     "ananya_f": ("tts-1",    "shimmer"),
     "vikram_m": ("tts-1-hd", "onyx"),
     "kavya_f":  ("tts-1-hd", "nova"),
+    "anime_kid":   ("tts-1", "nova"),
+    "anime_kid_kn":("tts-1", "nova"),
 }
 
 
@@ -180,6 +188,36 @@ def _silent_audio(duration: int) -> str:
     return str(tmp_path)
 
 
+def _apply_kid_pitch(mp3_path: str) -> str:
+    """Apply pitch and speed shift to create a kid/anime voice effect."""
+    out_path = Path(tempfile.mktemp(suffix=".mp3"))
+    try:
+        pitch_ratio = 1.15 # For a ~24yo girl. Higher (e.g. 1.3) = younger, Lower (e.g. 1.05) = older
+        tempo = 1.0 / pitch_ratio # This fixes the playback speed!
+        
+        # Try high-quality 'rubberband' filter first. It preserves formants so it doesn't sound like a robot/chipmunk.
+        try:
+            subprocess.run([
+                "ffmpeg", "-y", "-i", mp3_path, 
+                "-af", f"rubberband=pitch={pitch_ratio}",
+                str(out_path)
+            ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return str(out_path)
+        except Exception:
+            pass # Fallback to asetrate if rubberband isn't compiled into their ffmpeg
+
+        # Fallback using standard filters but with high-quality 'soxr' resampling to make it smoother
+        subprocess.run([
+            "ffmpeg", "-y", "-i", mp3_path, 
+            "-af", f"aresample=resampler=soxr:precision=28,asetrate=44100*{pitch_ratio},aresample=resampler=soxr:precision=28,atempo={tempo}",
+            str(out_path)
+        ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return str(out_path)
+    except Exception as e:
+        print(f"⚠️ Kid pitch shift failed: {e}")
+        return mp3_path
+
+
 async def generate_voice(text: str, voice_id: str, speed: float = 1.0) -> str:
     """
     Generate TTS.
@@ -198,17 +236,24 @@ async def generate_voice(text: str, voice_id: str, speed: float = 1.0) -> str:
         and len(settings.SARVAM_API_KEY) >= 10
     )
 
+    out_path = None
     if sarvam_ok:
         try:
-            return await _sarvam_tts(text, voice_id, speed)
+            out_path = await _sarvam_tts(text, voice_id, speed)
         except Exception as e:
             print(f"⚠️ Sarvam TTS failed: {e}. Falling back to OpenAI.")
 
-    if settings.OPENAI_API_KEY:
+    if not out_path and settings.OPENAI_API_KEY:
         try:
-            return await _openai_tts(text, voice_id, speed)
+            out_path = await _openai_tts(text, voice_id, speed)
         except Exception as e:
             print(f"⚠️ OpenAI TTS failed: {e}. Falling back to silent audio.")
-
-    print(f"⚠️ All TTS providers failed. Generating {estimated_duration}s silent audio.")
-    return _silent_audio(estimated_duration)
+            
+    if not out_path:
+        print(f"⚠️ All TTS providers failed. Generating {estimated_duration}s silent audio.")
+        out_path = _silent_audio(estimated_duration)
+        
+    if voice_id in ("anime_kid", "anime_kid_kn") and out_path:
+        out_path = _apply_kid_pitch(out_path)
+        
+    return out_path

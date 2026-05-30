@@ -86,7 +86,7 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <div style={{ padding: "32px 28px", maxWidth: 1100 }}>
+      <div style={{ padding: "32px 24px", maxWidth: "min(1100px, 100%)", margin: "0 auto", boxSizing: "border-box" }}>
         {/* Page heading */}
         <div style={{ marginBottom: 28 }}>
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px,3vw,40px)", color: "var(--ink)", marginBottom: 4 }}>

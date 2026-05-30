@@ -216,7 +216,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg)" }}>
+    <div style={{ display: "flex", minHeight: "100vh", width: "100%", background: "var(--bg)", overflowX: "hidden" }}>
       {/* Desktop sidebar */}
       <div className="hidden md:block">
         {renderSidebar(false)}

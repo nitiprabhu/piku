@@ -6,22 +6,22 @@ from pathlib import Path
 # z = zoom expression, x/y = pan position expressions
 # 'd' is replaced with actual frame count at call time
 _EFFECTS = [
-    # Dramatic zoom in (hook scene — pulls viewer in)
-    ("1+0.40*on/d", "iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)"),
-    # Zoom out reveal (mystery build — starts tight, pulls back)
-    ("1.40-0.35*on/d", "iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)"),
-    # Pan left → right with zoom
-    ("1.25", "(iw-iw/zoom)*on/d", "ih/2-(ih/zoom/2)"),
-    # Pan right → left with zoom
-    ("1.25", "(iw-iw/zoom)*(1-on/d)", "ih/2-(ih/zoom/2)"),
-    # Pan top → bottom (descend into scene)
-    ("1.25", "iw/2-(iw/zoom/2)", "(ih-ih/zoom)*on/d"),
-    # Cinematic dolly-in diagonal
-    ("1+0.30*on/d", "(iw-iw/zoom)*on/d/2", "(ih-ih/zoom)*on/d/2"),
-    # Slow float up (ethereal spiritual feel)
-    ("1.20", "iw/2-(iw/zoom/2)", "(ih-ih/zoom)*(1-on/d)"),
-    # Push in bottom-center (face/subject focus)
-    ("1+0.35*on/d", "iw/2-(iw/zoom/2)", "(ih-ih/zoom)*0.7"),
+    # Dramatic fast zoom in (hook scene — aggressive punch in)
+    ("1+0.60*on/d", "iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)"),
+    # Fast zoom out reveal
+    ("1.60-0.55*on/d", "iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)"),
+    # Fast Pan left → right with zoom
+    ("1.40", "(iw-iw/zoom)*on/d", "ih/2-(ih/zoom/2)"),
+    # Fast Pan right → left with zoom
+    ("1.40", "(iw-iw/zoom)*(1-on/d)", "ih/2-(ih/zoom/2)"),
+    # Pan top → bottom (descend into scene quickly)
+    ("1.35", "iw/2-(iw/zoom/2)", "(ih-ih/zoom)*on/d"),
+    # Cinematic fast dolly-in diagonal
+    ("1+0.50*on/d", "(iw-iw/zoom)*on/d/2", "(ih-ih/zoom)*on/d/2"),
+    # Fast float up
+    ("1.35", "iw/2-(iw/zoom/2)", "(ih-ih/zoom)*(1-on/d)"),
+    # Aggressive push in bottom-center
+    ("1+0.55*on/d", "iw/2-(iw/zoom/2)", "(ih-ih/zoom)*0.7"),
 ]
 
 

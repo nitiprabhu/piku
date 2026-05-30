@@ -44,10 +44,6 @@ type InspirationVideo = {
   duration_s: number | null;
 };
 
-function getRandomPrompt(examples: string[] | null) {
-  if (!examples || examples.length === 0) return "";
-  return examples[Math.floor(Math.random() * examples.length)];
-}
 
 export default function TemplatesPage() {
   const router = useRouter();
@@ -60,12 +56,14 @@ export default function TemplatesPage() {
   useEffect(() => {
     const activeUser = getStoredUser();
     if (!activeUser) { router.push("/login"); return; }
-    Promise.all([
-      api.get("/templates").then((r) => setTemplates(r.data)),
-      api.get("/inspire").then((r) => setInspirations(r.data)),
-    ])
+    // Templates unblocks loading — inspire is non-critical secondary fetch
+    api.get("/templates")
+      .then((r) => setTemplates(r.data))
       .catch(() => {})
       .finally(() => setLoading(false));
+    api.get("/inspire")
+      .then((r) => setInspirations(r.data))
+      .catch(() => {});
   }, [router]);
 
   const regularTemplates = templates.filter((t) => t.template_type !== "character");
@@ -97,24 +95,11 @@ export default function TemplatesPage() {
   );
 
   const handleUseTemplate = (tpl: Template) => {
-    const prompt = getRandomPrompt(tpl.prompt_examples);
-    router.push(`/create?${new URLSearchParams({
-      template_id: tpl.id,
-      style: tpl.category || "motivation",
-      language: tpl.language || "hi",
-      prompt,
-    })}`);
+    router.push(`/create/${tpl.id}`);
   };
 
   const handleUseCharacter = (tpl: Template) => {
-    const sc = tpl.style_config || {};
-    const prompt = (tpl.prompt_examples || [])[0] || "";
-    router.push(`/create?${new URLSearchParams({
-      character: sc.character_id || "",
-      style: tpl.category || "funny",
-      language: tpl.language || "hi",
-      prompt,
-    })}`);
+    router.push(`/create/${tpl.id}`);
   };
 
   const tryInspiration = (v: InspirationVideo) => {
@@ -222,7 +207,8 @@ export default function TemplatesPage() {
               );
             })}
 
-            {/* Character templates */}
+
+{/* Character templates */}
             {filteredChars.length > 0 && (
               <section>
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>

@@ -20,9 +20,10 @@ VALID_CHARACTERS = {"raju_bhaiya", "priya_di", "professor_sharma", "rohit_anchor
 class GenerateRequest(BaseModel):
     prompt: str = Field(..., min_length=10, max_length=500)
     language: str = Field("hi", pattern="^(hi|en|hinglish|kn)$")
-    style: str = Field("motivation", pattern="^(funny|devotional|motivation|business|news|storytelling|mystery|facts|daily_routine|outfit_check|dance_trend|travel_vlog|product_review)$")
-    voice_id: str = Field("rohit_m", pattern="^(rohit_m|priya_f|arjun_m|ananya_f|kavya_f|vikram_m)$")
+    style: str = Field("motivation", pattern="^(funny|devotional|motivation|business|news|storytelling|mystery|facts|scary|anime|relationship|heist_crime|daily_routine|outfit_check|dance_trend|travel_vlog|product_review)$")
+    voice_id: str = Field("rohit_m", pattern="^(rohit_m|anchor_m|startup_m|priya_f|arjun_m|ananya_f|kavya_f|vikram_m|anime_kid)$")
     duration: int = Field(60, ge=30, le=90)
+    speed: float = Field(1.0, ge=0.5, le=2.0)
     template_id: str | None = None
     character: str | None = None
     enable_captions: bool = True
@@ -111,6 +112,7 @@ async def start_generation(
         style=body.style,
         voice_id=body.voice_id,
         duration=body.duration,
+        speed=body.speed,
         user_plan=current_user.plan,
         character=body.character,
         enable_captions=body.enable_captions,
@@ -124,7 +126,7 @@ async def start_generation(
 
 
 class IdeaRequest(BaseModel):
-    style: str = Field("motivation", pattern="^(funny|devotional|motivation|business|news|storytelling)$")
+    style: str = Field("motivation", pattern="^(funny|devotional|motivation|business|news|storytelling|mystery|facts|scary|anime|relationship|heist_crime)$")
     language: str = Field("hi", pattern="^(hi|en|hinglish|kn)$")
 
 

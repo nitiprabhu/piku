@@ -17,11 +17,13 @@ router = APIRouter(prefix="/series", tags=["series"])
 class CreateSeriesRequest(BaseModel):
     name: str = Field(..., min_length=1, max_length=200)
     topic: str = Field(..., min_length=10, max_length=1000)
-    style: str = Field("storytelling", pattern="^(funny|devotional|motivation|business|news|storytelling|mystery|facts|daily_routine|outfit_check|dance_trend|travel_vlog|product_review)$")
+    style: str = Field("storytelling", pattern="^(funny|devotional|motivation|business|news|storytelling|mystery|facts|scary|anime|relationship|heist_crime|daily_routine|outfit_check|dance_trend|travel_vlog|product_review)$")
     language: str = Field("hi", pattern="^(hi|en|hinglish|kn)$")
-    voice_id: str = Field("rohit_m", pattern="^(rohit_m|priya_f|arjun_m|ananya_f|kavya_f|vikram_m)$")
+    voice_id: str = Field("rohit_m", pattern="^(rohit_m|anchor_m|startup_m|priya_f|arjun_m|ananya_f|kavya_f|vikram_m|anime_kid|anime_kid_kn)$")
     duration_target: int = Field(60, ge=30, le=90)
+    speed: float = Field(1.0, ge=0.5, le=2.0)
     caption_mode: str = Field("full_sentence", pattern="^(full_sentence|keyword_pop)$")
+    enable_captions: bool = True
     is_serialized: bool = True
     series_type: str = Field("regular", pattern="^(regular|ai_influencer)$")
     character_profile: dict | None = None
@@ -31,6 +33,7 @@ class UpdateSeriesScheduleRequest(BaseModel):
     schedule_type: str = Field(..., pattern="^(manual|daily|every_3_days|weekly)$")
     schedule_time: str = Field("09:00", pattern="^([01]\\d|2[0-3]):[0-5]\\d$")
     caption_mode: str | None = Field(None, pattern="^(full_sentence|keyword_pop)$")
+    enable_captions: bool | None = None
     character_profile: dict | None = None
 
 
@@ -44,6 +47,7 @@ class SeriesResponse(BaseModel):
     duration_target: int
     episode_count: int
     caption_mode: str
+    enable_captions: bool
     schedule_type: str
     schedule_time: str
     is_serialized: bool
@@ -137,6 +141,7 @@ async def create_series(
         voice_id=body.voice_id,
         duration_target=body.duration_target,
         caption_mode=body.caption_mode,
+        enable_captions=body.enable_captions,
         content_pillars=pillars,
         is_serialized=body.is_serialized,
         series_type=body.series_type,
@@ -254,6 +259,8 @@ async def update_series_schedule(
     series.next_run_at = compute_next_run_at(body.schedule_type, body.schedule_time)
     if body.caption_mode:
         series.caption_mode = body.caption_mode
+    if body.enable_captions is not None:
+        series.enable_captions = body.enable_captions
     if body.character_profile is not None:
         series.character_profile = body.character_profile
         flag_modified(series, "character_profile")
@@ -440,23 +447,13 @@ async def generate_episode(
         )
         force_reveal = ""
         if episode_number >= 4 and previous_episode_context:
-            last_narration = previous_episode_context.get("narration") or ""
-            reveal_keywords = ["ॐ", "नमः", "मंत्र है", "विद्या है", "साधना है", "जाप करें", "उच्चारण"]
-            already_revealed = any(kw in last_narration for kw in reveal_keywords)
-            if already_revealed:
-                force_reveal = (
-                    f"\n\nPOST-REVEAL MODE (Ep {episode_number}): Previous episode already delivered a specific reveal. "
-                    "Do NOT repeat. Write a prompt that either: "
-                    "1) Shows practical application or transformation from what was revealed, OR "
-                    "2) Introduces the NEXT secret/mantra/topic in the series universe. "
-                    "Progress forward, not sideways."
-                )
-            else:
-                force_reveal = (
-                    f"\n\nFORCE-REVEAL MODE (Ep {episode_number}): Prior episodes promised but never explicitly delivered. "
-                    "This prompt MUST name the specific mantra/secret. "
-                    "Write: 'आज हम [SPECIFIC NAME] का पूरा रहस्य उजागर करते हैं'. No vague pronouns."
-                )
+            force_reveal = (
+                f"\n\nNARRATIVE PROGRESSION (Ep {episode_number}): "
+                "If the core secret or main topic of this series was NOT fully revealed in previous episodes, you MUST explicitly reveal it now. "
+                "However, if the previous episodes already revealed the main secret/concept, DO NOT repeat it. Instead, progress the story forward by "
+                "either showing practical applications, exploring a deeper sub-topic, or introducing the next secret in the series universe. "
+                "Always progress forward, never sideways."
+            )
         if previous_episode_context:
             user_content = (
                 f'Channel: "{series.name}"\n'
@@ -464,10 +461,12 @@ async def generate_episode(
                 f"Content pillars: {pillars_str}\n"
                 f"Style: {series.style}\n"
                 f"Episode: {episode_number}\n\n"
+                f"Recent Episode Prompts:\n{recent_str}\n\n"
                 f"Previous Episode {previous_episode_context['episode_number']} Prompt: {previous_episode_context['prompt']}\n"
                 f"Previous Episode Narration: {previous_episode_context['narration']}\n"
                 + force_reveal +
                 f"\n\nGenerate a continuous viral episode prompt for Ep {episode_number} that picks up directly from where the previous episode left off and advances the narrative. Be specific — name actual mantras, techniques, or people."
+                f"\nCRITICAL: DO NOT repeat any of the 'Recent Episode Prompts'. You MUST move the story forward to a new angle or sub-topic."
             )
         else:
             user_content = (
@@ -578,6 +577,7 @@ async def generate_episode(
         duration=series.duration_target,
         user_plan=current_user.plan,
         caption_mode=series.caption_mode,
+        enable_captions=series.enable_captions,
         is_serialized=series.is_serialized,
         previous_episode_context=previous_episode_str,
         series_type=series.series_type,

@@ -253,17 +253,17 @@ export default function ProjectPage() {
 
   return (
     <AppShell>
-      <div style={{ padding: "32px 28px", maxWidth: 1100 }}>
+      <div style={{ padding: "32px 24px", maxWidth: "min(1100px, 100%)", margin: "0 auto", boxSizing: "border-box" }}>
         {/* Breadcrumb */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 28, fontFamily: "var(--font-mono)", fontSize: 13 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 28, fontFamily: "var(--font-mono)", fontSize: 13, flexWrap: "wrap" }}>
           <Link href="/dashboard" style={{ color: "var(--muted)", textDecoration: "none" }}>Dashboard</Link>
           <span style={{ color: "var(--muted)" }}>/</span>
           <span style={{ color: "var(--ink)", fontWeight: 700 }}>{project?.title || "Untitled Reel"}</span>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 28, alignItems: "start" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 28, alignItems: "flex-start" }}>
           {/* Phone preview */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, flex: "1 1 280px", maxWidth: 400 }}>
             <div className="phone-frame" style={{ width: "100%" }}>
               {videoUrl ? (
                 <video
@@ -306,7 +306,7 @@ export default function ProjectPage() {
           </div>
 
           {/* Right panel */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 20, flex: "2 1 400px", minWidth: 0 }}>
             {/* Actions */}
             <div className="card">
               <div className="section-label" style={{ marginBottom: 16 }}>Actions</div>
