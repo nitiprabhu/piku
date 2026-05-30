@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import api from "@/lib/api";
+import api, { resolveMediaUrl } from "@/lib/api";
 import { useJobProgress } from "@/lib/websocket";
 import PublishModal from "@/components/PublishModal";
 import AppShell from "@/components/AppShell";
@@ -267,11 +267,11 @@ export default function ProjectPage() {
             <div className="phone-frame" style={{ width: "100%" }}>
               {videoUrl ? (
                 <video
-                  src={videoUrl}
+                  src={resolveMediaUrl(videoUrl)}
                   controls
                   playsInline
                   style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "calc(var(--r-lg) - 2px)" }}
-                  poster={project?.thumbnail_url}
+                  poster={project?.thumbnail_url ? resolveMediaUrl(project.thumbnail_url) : undefined}
                 />
               ) : (
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", fontSize: 48 }}>🎬</div>
@@ -312,22 +312,14 @@ export default function ProjectPage() {
               <div className="section-label" style={{ marginBottom: 16 }}>Actions</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 {videoUrl && (
-                  <button
+                  <a
+                    href={videoUrl}
+                    download={`reelcraft-${projectId}.mp4`}
                     className="btn-hard"
-                    style={{ fontSize: 14, padding: "10px 16px", justifyContent: "center" }}
-                    onClick={async () => {
-                      const res = await fetch(videoUrl);
-                      const blob = await res.blob();
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement("a");
-                      a.href = url;
-                      a.download = `reelcraft-${projectId}.mp4`;
-                      a.click();
-                      URL.revokeObjectURL(url);
-                    }}
+                    style={{ fontSize: 14, padding: "10px 16px", justifyContent: "center", textDecoration: "none", display: "flex", alignItems: "center" }}
                   >
                     ⬇️ Download MP4
-                  </button>
+                  </a>
                 )}
                 <Link
                   href="/create"
@@ -441,7 +433,7 @@ export default function ProjectPage() {
           projectId={projectId}
           initialCaption={caption}
           initialHashtags={hashtags.split(/\s+/).filter((h) => h.startsWith("#"))}
-          videoTitle={project?.title}
+          videoTitle={project?.title || undefined}
           userPlan={userPlan}
           onClose={() => setPublishModal(null)}
           onSuccess={(p) => {

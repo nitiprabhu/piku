@@ -31,6 +31,12 @@ def process_video_job(
     character: str | None = None,
     image_style: str = "cinematic",    # P3
     caption_mode: str = "full_sentence",  # P4
+    enable_captions: bool = True,
+    is_serialized: bool = False,
+    previous_episode_context: str | None = None,
+    series_type: str = "regular",
+    character_profile: dict | None = None,
+    episode_number: int = 1,
 ):
     """Main RQ worker function — orchestrates full video generation pipeline."""
     from app.database import AsyncSessionLocal
@@ -58,156 +64,187 @@ def process_video_job(
     Session = sessionmaker(engine)
     db = Session()
 
-    tmp_dir = None
-    try:
-        project = db.query(Project).filter(Project.id == project_id).first()
-        if not project:
-            raise Exception(f"Project {project_id} not found")
+    tmp_dir = Path(tempfile.mkdtemp())
 
-        project.status = "processing"
-        project.job_id = job_id
-        db.commit()
+    async def run_workflow():
+        try:
+            project = db.query(Project).filter(Project.id == project_id).first()
+            if not project:
+                raise Exception(f"Project {project_id} not found")
 
-        use_premium = False  # WAN 1.3B for all plans
+            project.status = "processing"
+            project.job_id = job_id
+            db.commit()
 
-        tmp_dir = Path(tempfile.mkdtemp())
+            use_premium = False  # WAN 1.3B for all plans
 
-        # ── Step 1: Script ─────────────────────────────────────────────
-        publish_progress(job_id, "generating_script", 10)
-        script = asyncio.run(generate_script(prompt, language, style, duration, character=character))
-        project.script_json = script
-        db.commit()
-        publish_progress(job_id, "script_done", 20)
+            # ── Step 1: Script ─────────────────────────────────────────────
+            from app.services.ai.providers import get_max_clips
+            num_scenes = get_max_clips(user_plan)
+            publish_progress(job_id, "generating_script", 10)
 
-        # ── Step 2: TTS + Music (parallel) ─────────────────────────────
-        publish_progress(job_id, "generating_voice", 25)
+            script = await generate_script(
+                prompt,
+                language,
+                style,
+                duration,
+                character=character,
+                num_scenes=num_scenes,
+                is_serialized=is_serialized,
+                previous_episode_context=previous_episode_context,
+                series_type=series_type,
+                character_profile=character_profile,
+                episode_number=episode_number,
+            )
+            project.script_json = script
+            db.commit()
+            publish_progress(job_id, "script_done", 20)
 
-        async def _gen_audio():
-            return await asyncio.gather(
+            # ── Step 2: TTS + Music (parallel) ─────────────────────────────
+            publish_progress(job_id, "generating_voice", 25)
+
+            voice_path, music_path = await asyncio.gather(
                 generate_voice(script["narration"], voice_id),
                 generate_background_music(style, duration),
             )
 
-        voice_path, music_path = asyncio.run(_gen_audio())
-        publish_progress(job_id, "voice_done", 40)
+            # Build visual prompts
+            _scenes = script.get("scenes", [])[:num_scenes]
+            if _scenes and _scenes[0].get("visual"):
+                _visuals = [s.get("visual", prompt) for s in _scenes]
+            else:
+                _visuals = script.get("visual_keywords", [prompt])[:num_scenes]
+            _durations = [s.get("duration", 5) for s in _scenes]
+            while len(_durations) < len(_visuals):
+                _durations.append(5)
+            # Sanity check: if GPT under-estimated, redistribute to hit target duration
+            total_scene_dur = sum(_durations)
+            if total_scene_dur < duration * 0.75:
+                avg = max(5, duration // len(_durations))
+                _durations = [avg] * (len(_durations) - 1) + [duration - avg * (len(_durations) - 1)]
+            while len(_visuals) < num_scenes:
+                _visuals.append(prompt)
 
-        # ── Step 3: Video Clips ────────────────────────────────────────
-        publish_progress(job_id, "generating_visuals", 45)
-        visual_keywords = script.get("visual_keywords", [prompt])[:6]
-        scene_durations = [
-            s.get("duration", max(duration // len(visual_keywords), 3))
-            for s in script.get("scenes", [{}] * len(visual_keywords))[:6]
-        ]
-        # Pad if needed
-        while len(scene_durations) < len(visual_keywords):
-            scene_durations.append(5)
-
-        video_clips = asyncio.run(
-            generate_all_clips(visual_keywords, scene_durations, use_premium, style, image_style, user_plan)
-        )
-        publish_progress(job_id, "visuals_done", 70)
-
-        # ── Step 4: FFmpeg Composition ─────────────────────────────────
-        publish_progress(job_id, "composing", 75)
-        output_path = str(tmp_dir / "final_video.mp4")
-        _wm_asset = Path(__file__).parent.parent.parent / "assets" / "watermark.png"
-
-        from app.models.user import User as UserModel
-        user_obj = db.query(UserModel).filter(UserModel.id == project.user_id).first()
-        show_overlay = user_obj and getattr(user_obj, "show_social_overlay", True)
-        ig_handle = user_obj.instagram_handle if (user_obj and show_overlay) else None
-        yt_handle = user_obj.youtube_handle if (user_obj and show_overlay) else None
-
-        # Watermark only on free plan (excludes ₹29 first-video and ₹99 starter buyers)
-        is_free = not user_obj or (
-            (user_obj.plan or "free") == "free" and not user_obj.first_video_purchased
-        )
-        effective_watermark = str(_wm_asset) if (is_free and _wm_asset.exists()) else None
-
-        compose_video(
-            video_clips=video_clips,
-            voice_path=voice_path,
-            music_path=music_path,
-            script=script,
-            output_path=output_path,
-            watermark_path=effective_watermark,
-            style=style,
-            instagram_handle=ig_handle,
-            youtube_handle=yt_handle,
-            caption_mode=caption_mode,
-        )
-        publish_progress(job_id, "composing", 85)
-
-        # ── Step 5: Thumbnail + Upload ─────────────────────────────────
-        thumbnail_path = str(tmp_dir / "thumbnail.jpg")
-        try:
-            extract_thumbnail(output_path, thumbnail_path, at_second=2)
-        except Exception as thumb_err:
-            print(f"⚠️ Thumbnail extraction failed, continuing without it: {thumb_err}")
-            thumbnail_path = None
-
-        video_url = asyncio.run(
-            upload_to_r2(output_path, f"videos/{project_id}/final.mp4")
-        )
-        thumbnail_url = asyncio.run(
-            upload_to_r2(thumbnail_path, f"videos/{project_id}/thumb.jpg")
-        ) if thumbnail_path else None
-
-        # ── Step 6: Viral Score + Save ─────────────────────────────────
-        viral_score = calculate_viral_score(script, duration, style)
-
-        project.status = "completed"
-        project.video_url = video_url
-        project.thumbnail_url = thumbnail_url
-        project.viral_score = viral_score
-        project.caption_text = script.get("caption", "")
-        project.hashtags = script.get("hashtags", [])
-        project.caption_mode = caption_mode
-
-        # Sync series episode status
-        from app.models.series import SeriesEpisode
-        ep = db.query(SeriesEpisode).filter(SeriesEpisode.project_id == project_id).first()
-        if ep:
-            ep.status = "completed"
-
-        # P3: increment videos_generated counter for VEO3 first-3 hook
-        from sqlalchemy import text as sa_text2
-        db.execute(
-            sa_text2("UPDATE users SET videos_generated = videos_generated + 1 WHERE id = :id"),
-            {"id": str(project.user_id)},
-        )
-
-        db.commit()
-
-        publish_progress(
-            job_id, "completed", 100,
-            event="completed",
-            video_url=video_url,
-            thumbnail_url=thumbnail_url,
-            viral_score=viral_score,
-        )
-
-    except Exception as e:
-        import traceback
-        err = f"{type(e).__name__}: {e}\n{traceback.format_exc()[-500:]}"
-        if 'project' in dir():
-            project.status = "failed"
-            project.error_message = err[:1000]
-            # Refund the credit that was deducted before enqueue
-            from sqlalchemy import text as sa_text
-            db.execute(
-                sa_text("UPDATE users SET credits = credits + 1 WHERE id = :id"),
-                {"id": str(project.user_id)},
+            video_clips = await generate_all_clips(
+                _visuals, _durations, use_premium, style, image_style, user_plan,
+                series_type=series_type, character_profile=character_profile
             )
+            publish_progress(job_id, "voice_done", 40)
+
+            # expose for compose step
+            scenes_list = script.get("scenes", [])[:num_scenes]
+            visual_keywords = [s.get("visual", prompt) for s in scenes_list] if (scenes_list and scenes_list[0].get("visual")) else script.get("visual_keywords", [prompt])[:num_scenes]
+            publish_progress(job_id, "visuals_done", 70)
+
+            # ── Step 4: FFmpeg Composition ─────────────────────────────────
+            publish_progress(job_id, "composing", 75)
+            output_path = str(tmp_dir / "final_video.mp4")
+            _wm_asset = Path(__file__).parent.parent.parent / "assets" / "watermark.png"
+
+            from app.models.user import User as UserModel
+            user_obj = db.query(UserModel).filter(UserModel.id == project.user_id).first()
+            show_overlay = user_obj and getattr(user_obj, "show_social_overlay", True)
+            ig_handle = user_obj.instagram_handle if (user_obj and show_overlay) else None
+            yt_handle = user_obj.youtube_handle if (user_obj and show_overlay) else None
+
+            # Watermark only on free plan (excludes ₹29 first-video and ₹99 starter buyers)
+            is_free = not user_obj or (
+                (user_obj.plan or "free") == "free" and not user_obj.first_video_purchased
+            )
+            effective_watermark = str(_wm_asset) if (is_free and _wm_asset.exists()) else None
+
+            await asyncio.to_thread(
+                compose_video,
+                video_clips=video_clips,
+                voice_path=voice_path,
+                music_path=music_path,
+                script=script,
+                output_path=output_path,
+                watermark_path=effective_watermark,
+                style=style,
+                instagram_handle=ig_handle,
+                youtube_handle=yt_handle,
+                caption_mode=caption_mode,
+                enable_captions=enable_captions,
+                episode_number=episode_number,
+                language=language,
+            )
+            publish_progress(job_id, "composing", 85)
+
+            # ── Step 5: Thumbnail + Upload ─────────────────────────────────
+            thumbnail_path = str(tmp_dir / "thumbnail.jpg")
+            try:
+                await asyncio.to_thread(extract_thumbnail, output_path, thumbnail_path, at_second=2)
+            except Exception as thumb_err:
+                print(f"⚠️ Thumbnail extraction failed, continuing without it: {thumb_err}")
+                thumbnail_path = None
+
+            video_url = await upload_to_r2(output_path, f"videos/{project_id}/final.mp4")
+            thumbnail_url = await upload_to_r2(thumbnail_path, f"videos/{project_id}/thumb.jpg") if thumbnail_path else None
+
+            # ── Step 6: Viral Score + Save ─────────────────────────────────
+            viral_score = calculate_viral_score(script, duration, style)
+
+            # Cost logging — gpt-image-1-mini low @ ₹0.25/img, TTS @ ₹0.95, script @ ₹0.04
+            _n_imgs = len(video_clips)
+            _cogs_inr = round(_n_imgs * 0.25 + 0.95 + 0.04, 2)
+            print(f"[cost] project={project_id} plan={user_plan} imgs={_n_imgs} cogs=₹{_cogs_inr} watermark={effective_watermark is not None}")
+
+            project.status = "completed"
+            project.video_url = video_url
+            project.thumbnail_url = thumbnail_url
+            project.viral_score = viral_score
+            project.caption_text = script.get("caption", "")
+            project.hashtags = script.get("hashtags", [])
+            project.caption_mode = caption_mode
+
             # Sync series episode status
             from app.models.series import SeriesEpisode
             ep = db.query(SeriesEpisode).filter(SeriesEpisode.project_id == project_id).first()
             if ep:
-                ep.status = "failed"
-            db.commit()
-        publish_progress(job_id, "failed", 0, event="failed", error=str(e))
-        raise
+                ep.status = "completed"
 
+            # P3: increment videos_generated counter for VEO3 first-3 hook
+            from sqlalchemy import text as sa_text2
+            db.execute(
+                sa_text2("UPDATE users SET videos_generated = videos_generated + 1 WHERE id = :id"),
+                {"id": str(project.user_id)},
+            )
+            db.commit()
+
+            publish_progress(
+                job_id, "completed", 100,
+                event="completed",
+                video_url=video_url,
+                thumbnail_url=thumbnail_url,
+                viral_score=viral_score,
+            )
+
+        except Exception as e:
+            import traceback
+            err = f"{type(e).__name__}: {e}\n{traceback.format_exc()[-500:]}"
+            # Reload project inside exception block to ensure thread-safety/correctness
+            project = db.query(Project).filter(Project.id == project_id).first()
+            if project:
+                project.status = "failed"
+                project.error_message = err[:1000]
+                # Refund the credit that was deducted before enqueue
+                from sqlalchemy import text as sa_text
+                db.execute(
+                    sa_text("UPDATE users SET credits = credits + 1 WHERE id = :id"),
+                    {"id": str(project.user_id)},
+                )
+                # Sync series episode status
+                from app.models.series import SeriesEpisode
+                ep = db.query(SeriesEpisode).filter(SeriesEpisode.project_id == project_id).first()
+                if ep:
+                    ep.status = "failed"
+                db.commit()
+            publish_progress(job_id, "failed", 0, event="failed", error=str(e))
+            raise
+
+    try:
+        asyncio.run(run_workflow())
     finally:
         db.close()
         # Cleanup temp files

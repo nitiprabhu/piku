@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Anton, Plus_Jakarta_Sans, Noto_Sans_Devanagari, JetBrains_Mono } from "next/font/google";
+import { Anton, Plus_Jakarta_Sans, Noto_Sans_Devanagari, JetBrains_Mono, Caveat } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { LangProvider } from "@/components/AppShell";
@@ -32,6 +32,13 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const caveat = Caveat({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  variable: "--font-caveat",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "ReelCraft — AI Reels in 60 Seconds",
   description:
@@ -47,11 +54,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${anton.variable} ${plusJakarta.variable} ${notoDevanagari.variable} ${jetbrainsMono.variable}`}
+      className={`${anton.variable} ${plusJakarta.variable} ${notoDevanagari.variable} ${jetbrainsMono.variable} ${caveat.variable}`}
       suppressHydrationWarning
     >
       <body className="antialiased">
-        <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
         <LangProvider>{children}</LangProvider>
       </body>
     </html>

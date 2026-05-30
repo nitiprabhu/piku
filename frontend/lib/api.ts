@@ -74,3 +74,13 @@ export function getStoredUser() {
   const u = localStorage.getItem("user");
   return u ? JSON.parse(u) : null;
 }
+
+export function resolveMediaUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  if (url.includes("/static/")) {
+    const parts = url.split("/static/");
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8005";
+    return `${baseUrl}/static/${parts[1]}`;
+  }
+  return url;
+}

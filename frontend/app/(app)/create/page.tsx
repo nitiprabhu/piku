@@ -21,6 +21,8 @@ const STYLES = [
   { value: "business", emoji: "💼", label: "Business" },
   { value: "news", emoji: "📰", label: "News" },
   { value: "storytelling", emoji: "📖", label: "Story" },
+  { value: "mystery", emoji: "🔮", label: "Mystery" },
+  { value: "facts", emoji: "🧠", label: "Facts" },
 ];
 
 // P2: Visual niche cards — maps to style + suggested language
@@ -28,26 +30,35 @@ const NICHES = [
   { id: "mythology", label: "Mythology", emoji: "⚔️", style: "storytelling", lang: "hi", bg: "linear-gradient(135deg,#2D1B4E,#6B21A8)", color: "#E9D5FF" },
   { id: "devotional", label: "Devotional", emoji: "🪔", style: "devotional", lang: "hi", bg: "linear-gradient(135deg,#78350F,#D97706)", color: "#FEF3C7" },
   { id: "motivation", label: "Motivation", emoji: "🔥", style: "motivation", lang: "hinglish", bg: "linear-gradient(135deg,#7F1D1D,#DC2626)", color: "#FEE2E2" },
-  { id: "scary", label: "Scary Stories", emoji: "👻", style: "storytelling", lang: "hi", bg: "linear-gradient(135deg,#111827,#374151)", color: "#D1FAE5" },
+  { id: "rahasya", label: "Rahasya / Mystery", emoji: "🔮", style: "mystery", lang: "hi", bg: "linear-gradient(135deg,#1C1917,#7C3AED)", color: "#DDD6FE" },
+  { id: "facts", label: "Did You Know", emoji: "🧠", style: "facts", lang: "hinglish", bg: "linear-gradient(135deg,#0C4A6E,#0891B2)", color: "#E0F2FE" },
+  { id: "scary", label: "Scary Stories", emoji: "👻", style: "mystery", lang: "hi", bg: "linear-gradient(135deg,#111827,#374151)", color: "#D1FAE5" },
   { id: "business", label: "Business", emoji: "💼", style: "business", lang: "hinglish", bg: "linear-gradient(135deg,#0C4A6E,#0284C7)", color: "#E0F2FE" },
   { id: "funny", label: "Funny / Comedy", emoji: "😂", style: "funny", lang: "hi", bg: "linear-gradient(135deg,#7C2D12,#EA580C)", color: "#FFEDD5" },
   { id: "anime", label: "Anime Stories", emoji: "🗡️", style: "storytelling", lang: "en", bg: "linear-gradient(135deg,#4C1D95,#7C3AED)", color: "#EDE9FE" },
   { id: "news", label: "News / Updates", emoji: "📰", style: "news", lang: "hi", bg: "linear-gradient(135deg,#1E3A5F,#2563EB)", color: "#DBEAFE" },
   { id: "relationship", label: "Relationships", emoji: "💕", style: "funny", lang: "hinglish", bg: "linear-gradient(135deg,#831843,#DB2777)", color: "#FCE7F3" },
-  { id: "heist", label: "Heist / Crime", emoji: "🔫", style: "storytelling", lang: "en", bg: "linear-gradient(135deg,#1C1917,#44403C)", color: "#D6D3D1" },
+  { id: "heist", label: "Heist / Crime", emoji: "🔫", style: "mystery", lang: "en", bg: "linear-gradient(135deg,#1C1917,#44403C)", color: "#D6D3D1" },
 ];
 
 const VOICES = [
-  { id: "rohit_m", label: "Rohit", emoji: "🧔", lang: "Hindi", gender: "Heavy Male", speechText: "नमस्कार! मैं रोहित हूँ।" },
-  { id: "priya_f", label: "Priya", emoji: "👩", lang: "Hindi", gender: "Female", speechText: "नमस्ते! मैं प्रिया हूँ।" },
-  { id: "arjun_m", label: "Arjun", emoji: "🧔", lang: "English", gender: "Heavy Male", speechText: "Hello! I am Arjun." },
-  { id: "ananya_f", label: "Ananya", emoji: "👩‍💼", lang: "English", gender: "Female", speechText: "Hi! I am Ananya." },
+  { id: "rohit_m",  label: "Rohit",  emoji: "🧔",    lang: "Hindi",    gender: "Heavy Male", speechText: "नमस्कार! मैं रोहित हूँ।",        langKeys: ["hi", "hinglish"], previewLang: "hi-IN" },
+  { id: "priya_f",  label: "Priya",  emoji: "👩",    lang: "Hindi",    gender: "Female",     speechText: "नमस्ते! मैं प्रिया हूँ।",         langKeys: ["hi", "hinglish"], previewLang: "hi-IN" },
+  { id: "arjun_m",  label: "Arjun",  emoji: "🧔",    lang: "English",  gender: "Heavy Male", speechText: "Hello! I am Arjun.",              langKeys: ["en"],             previewLang: "en-US" },
+  { id: "ananya_f", label: "Ananya", emoji: "👩‍💼", lang: "English",  gender: "Female",     speechText: "Hi! I am Ananya.",                langKeys: ["en"],             previewLang: "en-US" },
+  { id: "vikram_m", label: "Vikram", emoji: "🧔",    lang: "Kannada",  gender: "Male",       speechText: "ನಮಸ್ಕಾರ! ನಾನು ವಿಕ್ರಮ್.",        langKeys: ["kn"],             previewLang: "kn-IN" },
+  { id: "kavya_f",  label: "Kavya",  emoji: "👩",    lang: "Kannada",  gender: "Female",     speechText: "ನಮಸ್ಕಾರ! ನಾನು ಕಾವ್ಯ.",          langKeys: ["kn"],             previewLang: "kn-IN" },
 ];
 
+const DEFAULT_VOICE: Record<string, string> = {
+  hi: "rohit_m", hinglish: "rohit_m", en: "arjun_m", kn: "vikram_m",
+};
+
 const LANGUAGES = [
-  { value: "hi", label: "हिंदी", flag: "🇮🇳" },
-  { value: "en", label: "English", flag: "🌐" },
+  { value: "hi",       label: "हिंदी",   flag: "🇮🇳" },
+  { value: "en",       label: "English",  flag: "🌐" },
   { value: "hinglish", label: "Hinglish", flag: "✨" },
+  { value: "kn",       label: "ಕನ್ನಡ",   flag: "🇮🇳" },
 ];
 
 const DURATIONS = [
@@ -112,7 +123,8 @@ export default function CreatePage() {
       language: defaultLang,
       style: initStyle,
       voice_id: "rohit_m",
-      duration: 30,
+      enable_captions: true,
+      duration: 60,
       template_id: initTplId,
     };
   });
@@ -191,12 +203,11 @@ export default function CreatePage() {
       window.speechSynthesis?.cancel();
       setPlayingVoice(v.id);
       const u = new SpeechSynthesisUtterance(v.speechText);
-      const isHindi = v.lang === "Hindi";
-      u.lang = isHindi ? "hi-IN" : "en-US";
+      u.lang = v.previewLang;
 
       if (typeof window !== "undefined" && window.speechSynthesis) {
         const voices = window.speechSynthesis.getVoices();
-        const langCode = isHindi ? "hi" : "en";
+        const langCode = v.previewLang.split("-")[0];
         const langVoices = voices.filter(voice =>
           voice.lang.toLowerCase().startsWith(langCode)
         );
@@ -300,7 +311,7 @@ export default function CreatePage() {
                     <div style={{ fontSize: 20, marginBottom: 4 }}>{emoji}</div>
                     <div style={{ fontWeight: 800, fontSize: 13, marginBottom: 4 }}>{tpl.name}</div>
                     <div style={{ fontSize: 11, opacity: 0.6, fontWeight: 600, textTransform: "uppercase" }}>
-                      {tpl.language === "hi" ? "Hindi" : tpl.language}
+                      {tpl.language === "hi" ? "Hindi" : tpl.language === "hinglish" ? "Hinglish" : tpl.language === "kn" ? "ಕನ್ನಡ" : tpl.language}
                     </div>
                   </button>
                 );
@@ -308,6 +319,44 @@ export default function CreatePage() {
             </div>
           </SectionCard>
         )}
+
+        {/* Niche visual cards — pick context first, auto-fills style + language */}
+        <SectionCard label="Pick Your Niche" sublabel="Auto-fills style and language for you">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: 8 }}>
+            {NICHES.map((n) => {
+              const active = selectedNiche === n.id;
+              return (
+                <button
+                  key={n.id}
+                  onClick={() => {
+                    setSelectedNiche(active ? null : n.id);
+                    if (!active) {
+                      setForm(f => ({ ...f, style: n.style, language: n.lang, template_id: "" }));
+                      setSelectedTplId("");
+                    }
+                  }}
+                  style={{
+                    padding: 0, border: active ? "3px solid var(--orange)" : "2px solid var(--ink)",
+                    borderRadius: "var(--r-sm)", cursor: "pointer", overflow: "hidden",
+                    boxShadow: active ? "3px 3px 0 var(--orange)" : "2px 2px 0 var(--ink)",
+                    transition: "all 0.08s ease", background: "none",
+                  }}
+                >
+                  <div style={{
+                    background: n.bg, padding: "14px 6px 10px",
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                  }}>
+                    <span style={{ fontSize: 22 }}>{n.emoji}</span>
+                    <span style={{
+                      fontFamily: "var(--font-body)", fontWeight: 800, fontSize: 11,
+                      color: n.color, textAlign: "center", lineHeight: 1.2,
+                    }}>{n.label}</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </SectionCard>
 
         {/* Prompt */}
         <SectionCard label="Your Idea">
@@ -346,14 +395,12 @@ export default function CreatePage() {
               >
                 {generatingPrompt
                   ? <><span style={{ width: 12, height: 12, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} /> Generating idea...</>
-                  : <>✨ Generate idea based on {STYLES.find(s => s.value === form.style)?.label || "selected"} style</>}
+                  : <>✨ Generate idea
+                    {selectedNiche
+                      ? <> for <strong style={{ marginLeft: 4 }}>{NICHES.find(n => n.id === selectedNiche)?.label} · {STYLES.find(s => s.value === form.style)?.label}</strong></>
+                      : <> based on <strong style={{ marginLeft: 4 }}>{STYLES.find(s => s.value === form.style)?.label || "selected"} style</strong></>}
+                  </>}
               </button>
-              {selectedTplId && (
-                <button onClick={fetchAiIdeas} disabled={ideasLoading || generatingPrompt}
-                  style={{ background: "none", border: "none", cursor: ideasLoading ? "default" : "pointer", fontSize: 12, fontWeight: 700, color: "var(--orange)", fontFamily: "var(--font-body)", opacity: ideasLoading ? 0.6 : 1, display: "block", marginBottom: 8 }}>
-                  {ideasLoading ? "⏳ Getting ideas..." : "🔄 Get template ideas instead"}
-                </button>
-              )}
             </div>
           )}
           {ideaMode === "type" && (
@@ -397,63 +444,48 @@ export default function CreatePage() {
           </div>
         </SectionCard>
 
-        {/* Niche visual cards (P2) */}
-        <SectionCard label="Pick Your Niche" sublabel="Auto-fills style and language for you">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: 8 }}>
-            {NICHES.map((n) => {
-              const active = selectedNiche === n.id;
-              return (
-                <button
-                  key={n.id}
-                  onClick={() => {
-                    setSelectedNiche(active ? null : n.id);
-                    if (!active) {
-                      setForm(f => ({ ...f, style: n.style, language: n.lang, template_id: "" }));
-                      setSelectedTplId("");
-                    }
-                  }}
-                  style={{
-                    padding: 0, border: active ? "3px solid var(--orange)" : "2px solid var(--ink)",
-                    borderRadius: "var(--r-sm)", cursor: "pointer", overflow: "hidden",
-                    boxShadow: active ? "3px 3px 0 var(--orange)" : "2px 2px 0 var(--ink)",
-                    transition: "all 0.08s ease", background: "none",
-                  }}
-                >
-                  <div style={{
-                    background: n.bg, padding: "14px 6px 10px",
-                    display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
-                  }}>
-                    <span style={{ fontSize: 22 }}>{n.emoji}</span>
-                    <span style={{
-                      fontFamily: "var(--font-body)", fontWeight: 800, fontSize: 11,
-                      color: n.color, textAlign: "center", lineHeight: 1.2,
-                    }}>{n.label}</span>
-                  </div>
+        {/* Style — collapsed when niche is active, shown as override */}
+        {selectedNiche ? (
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "10px 16px", border: "2px solid var(--ink)", borderRadius: "var(--r-sm)",
+            background: "var(--bg-2)", fontFamily: "var(--font-body)",
+          }}>
+            <span style={{ fontSize: 13, color: "var(--ink-2)" }}>
+              Style: <strong style={{ color: "var(--ink)" }}>{STYLES.find(s => s.value === form.style)?.emoji} {STYLES.find(s => s.value === form.style)?.label}</strong>
+              <span style={{ opacity: 0.5, marginLeft: 6 }}>(set by niche)</span>
+            </span>
+            <button
+              onClick={() => setSelectedNiche(null)}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                fontSize: 12, fontWeight: 800, color: "var(--orange)",
+                fontFamily: "var(--font-body)",
+              }}
+            >
+              Change style ↓
+            </button>
+          </div>
+        ) : (
+          <SectionCard label="Style" sublabel="Set your content style">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))", gap: 8 }}>
+              {STYLES.map((s) => (
+                <button key={s.value} onClick={() => { setForm({ ...form, style: s.value, template_id: "" }); setSelectedTplId(""); setSelectedNiche(null); }}
+                  style={{ padding: "10px 4px", borderRadius: "var(--r-sm)", textAlign: "center", cursor: "pointer", fontFamily: "var(--font-body)", transition: "all 0.08s ease", ...sel(form.style === s.value) }}>
+                  <div style={{ fontSize: 20, marginBottom: 3 }}>{s.emoji}</div>
+                  <div style={{ fontSize: 11, fontWeight: 700 }}>{s.label}</div>
                 </button>
-              );
-            })}
-          </div>
-        </SectionCard>
-
-        {/* Style — fine-tune after niche */}
-        <SectionCard label="Style" sublabel="Override niche default if needed">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))", gap: 8 }}>
-            {STYLES.map((s) => (
-              <button key={s.value} onClick={() => { setForm({ ...form, style: s.value, template_id: "" }); setSelectedTplId(""); setSelectedNiche(null); }}
-                style={{ padding: "10px 4px", borderRadius: "var(--r-sm)", textAlign: "center", cursor: "pointer", fontFamily: "var(--font-body)", transition: "all 0.08s ease", ...sel(form.style === s.value) }}>
-                <div style={{ fontSize: 20, marginBottom: 3 }}>{s.emoji}</div>
-                <div style={{ fontSize: 11, fontWeight: 700 }}>{s.label}</div>
-              </button>
-            ))}
-          </div>
-        </SectionCard>
+              ))}
+            </div>
+          </SectionCard>
+        )}
 
         {/* Language + Duration */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <SectionCard label="Language">
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {LANGUAGES.map((l) => (
-                <button key={l.value} onClick={() => { setForm({ ...form, language: l.value, template_id: "" }); setSelectedTplId(""); if (typeof window !== "undefined") localStorage.setItem("rc_lang", l.value); }}
+                <button key={l.value} onClick={() => { setForm({ ...form, language: l.value, voice_id: DEFAULT_VOICE[l.value] || "rohit_m", template_id: "" }); setSelectedTplId(""); if (typeof window !== "undefined") localStorage.setItem("rc_lang", l.value); }}
                   style={{ padding: "10px 12px", borderRadius: "var(--r-sm)", textAlign: "left", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: 14, fontWeight: 700, transition: "all 0.08s ease", ...sel(form.language === l.value) }}>
                   {l.flag} {l.label}
                 </button>
@@ -499,7 +531,7 @@ export default function CreatePage() {
         {/* Voice */}
         <SectionCard label="Voice">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 10 }}>
-            {VOICES.map((v) => {
+            {VOICES.filter(v => v.langKeys.includes(form.language)).map((v) => {
               const active = form.voice_id === v.id;
               const playing = playingVoice === v.id;
               return (
@@ -554,6 +586,29 @@ export default function CreatePage() {
             </button>
           )}
         </SectionCard>
+
+        {/* Captions toggle */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 12,
+          padding: "14px 16px", border: "2px solid var(--ink)",
+          borderRadius: "var(--r-sm)", background: "var(--card)",
+          cursor: "pointer",
+        }} onClick={() => setForm(f => ({ ...f, enable_captions: !f.enable_captions }))}>
+          <div style={{
+            width: 22, height: 22, borderRadius: 4, border: "2px solid var(--ink)",
+            background: form.enable_captions ? "var(--orange)" : "transparent",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            flexShrink: 0, transition: "background 0.1s",
+          }}>
+            {form.enable_captions && <span style={{ color: "#fff", fontSize: 14, fontWeight: 900, lineHeight: 1 }}>✓</span>}
+          </div>
+          <div>
+            <div style={{ fontFamily: "var(--font-body)", fontWeight: 800, fontSize: 14 }}>Show Captions on Video</div>
+            <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "var(--muted)", marginTop: 2 }}>
+              {form.enable_captions ? "Captions will be burned into video" : "No captions — clean video"}
+            </div>
+          </div>
+        </div>
 
         {/* Error */}
         {error && (

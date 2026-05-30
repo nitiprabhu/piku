@@ -1,7 +1,7 @@
 import uuid
 from sqlalchemy import String, Integer, Text, ForeignKey, TIMESTAMP, func, UniqueConstraint, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 from app.database import Base
 
 
@@ -20,6 +20,11 @@ class Series(Base):
     duration_target: Mapped[int] = mapped_column(Integer, default=60)
     episode_count: Mapped[int] = mapped_column(Integer, default=0)
     is_deleted: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Content Universe: auto-derived pillars for viral standalone episode generation
+    content_pillars: Mapped[list | None] = mapped_column(JSONB, nullable=True)
+    is_serialized: Mapped[bool] = mapped_column(Boolean, default=True)
+    series_type: Mapped[str] = mapped_column(String(50), default="regular", server_default="regular")
+    character_profile: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
 
     # P1: Auto-scheduling
     schedule_type: Mapped[str] = mapped_column(String(20), default="manual")  # manual | daily | every_3_days | weekly

@@ -51,7 +51,15 @@ async def send_otp(body: SendOTPRequest):
             detail=f"Too many OTP requests. Try again in {ttl}s.",
         )
 
-    otp = "123456" if body.phone == "+919999999999" else f"{random.randint(100000, 999999)}"
+    # Dev mode: always use 123456, skip SMS entirely
+    if settings.APP_ENV == "development":
+        otp = "123456"
+        await rc.setex(f"otp:{body.phone}", _OTP_TTL, otp)
+        await rc.delete(f"otp:attempts:{body.phone}")
+        print(f"[DEV] OTP for {body.phone}: {otp}")
+        return {"success": True, "message": "OTP sent successfully", "otp": otp}
+
+    otp = f"{random.randint(100000, 999999)}"
 
     await rc.setex(f"otp:{body.phone}", _OTP_TTL, otp)
     await rc.delete(f"otp:attempts:{body.phone}")
@@ -63,10 +71,7 @@ async def send_otp(body: SendOTPRequest):
             detail="Failed to send OTP. Please try again.",
         )
 
-    response: dict = {"success": True, "message": "OTP sent successfully"}
-    if settings.APP_ENV == "development":
-        response["otp"] = otp
-    return response
+    return {"success": True, "message": "OTP sent successfully"}
 
 
 @router.post("/verify-otp", response_model=AuthResponse)

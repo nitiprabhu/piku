@@ -154,7 +154,7 @@ async def razorpay_webhook(request: Request, db: AsyncSession = Depends(get_db))
         user = result.scalar_one_or_none()
         if user:
             plan = user.plan or "pro"
-            user.credits = PLAN_CREDITS.get(plan, 60)
+            user.credits = (user.credits or 0) + PLAN_CREDITS.get(plan, 60)
             await db.flush()
 
     return {"status": "ok"}

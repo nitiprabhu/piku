@@ -11,11 +11,11 @@ const PLANS = [
     price: "₹0",
     period: "",
     credits: 2,
-    creditLabel: "2 videos total",
+    creditLabel: "2 videos to try",
     overage: null,
     highlight: false,
     badge: null,
-    features: ["AI-generated video (2 scenes)", "Hindi / English / Hinglish", "Auto captions", "Watermarked output"],
+    features: ["2 free video credits", "4 AI-generated scenes", "Hindi / English / Hinglish / ಕನ್ನಡ", "Optional captions", "Watermarked output"],
     cta: "Current Plan",
     disabled: true,
   },
@@ -29,7 +29,7 @@ const PLANS = [
     overage: null,
     highlight: false,
     badge: "TRY IT",
-    features: ["1 video credit", "No watermark", "Post directly to Instagram & YouTube", "2 AI-generated scenes"],
+    features: ["1 video credit", "4 AI-generated scenes", "No watermark", "Post directly to Instagram & YouTube", "Hindi / English / Hinglish / ಕನ್ನಡ"],
     cta: "Post Your First Reel",
     disabled: false,
   },
@@ -43,7 +43,7 @@ const PLANS = [
     overage: null,
     highlight: false,
     badge: "TOP UP",
-    features: ["10 video credits", "No expiry", "AI-generated video (2 scenes)", "No watermark", "Post directly to Instagram & YouTube"],
+    features: ["10 video credits", "No expiry", "5 AI-generated scenes", "No watermark", "Post directly to Instagram & YouTube", "Hindi / English / Hinglish / ಕನ್ನಡ"],
     cta: "Buy Pack",
     disabled: false,
   },
@@ -57,21 +57,21 @@ const PLANS = [
     overage: "₹8/video after",
     highlight: true,
     badge: "POPULAR",
-    features: ["60 videos/month", "Enhanced AI video (3 scenes)", "No watermark", "Auto-publish to Instagram & YouTube", "Priority queue", "₹8/video overage"],
+    features: ["60 videos/month", "7 AI-generated scenes per reel", "30s, 60s & 90s videos", "No watermark", "Auto-publish to Instagram & YouTube", "Series & multi-episode support", "Priority queue", "₹8/video overage"],
     cta: "Go Pro",
     disabled: false,
   },
   {
     id: "business",
     name: "Business",
-    price: "₹3,999",
+    price: "₹1,499",
     period: "/mo",
-    credits: 100,
+    credits: 150,
     creditLabel: "Coming Soon",
     overage: null,
     highlight: false,
     badge: "SOON",
-    features: ["Everything in Pro", "100 videos/month", "4 scenes per reel", "Team access", "Priority support"],
+    features: ["Everything in Pro", "150 videos/month", "9 AI-generated scenes per reel", "Team access", "Priority support", "Custom branding"],
     cta: "Notify Me",
     disabled: true,
   },
@@ -86,6 +86,10 @@ export default function PricingPage() {
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleBuy = async (planId: string) => {
+    if (!window.Razorpay) {
+      alert("Payment is loading, please wait a moment and try again.");
+      return;
+    }
     setLoading(planId);
     try {
       const endpoint = planId === "first_video"
@@ -103,12 +107,16 @@ export default function PricingPage() {
         description: plan?.name,
         order_id: data.razorpay_order_id,
         handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
-          await api.post("/payments/verify", {
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_signature: response.razorpay_signature,
-          });
-          router.push("/dashboard");
+          try {
+            await api.post("/payments/verify", {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            router.push("/dashboard?payment=success");
+          } catch {
+            alert("Payment received but activation failed. Contact support with payment ID: " + response.razorpay_payment_id);
+          }
         },
         theme: { color: "#FF5C00" },
       };
@@ -129,7 +137,7 @@ export default function PricingPage() {
             PICK YOUR PLAN
           </h1>
           <p style={{ color: "var(--ink-2)", fontSize: 16 }}>
-            Type your idea in Hindi or English — get a reel in 45 seconds
+            Type your idea in Hindi, English, Hinglish or ಕನ್ನಡ — get a reel in 45 seconds
           </p>
         </div>
 
@@ -244,7 +252,7 @@ export default function PricingPage() {
               WHY PRO?
             </div>
             <p style={{ fontFamily: "var(--font-body)", fontSize: 14, color: "var(--ink-2)", margin: 0 }}>
-              Pro gives you <strong>2 reels/day</strong> with 3 AI-generated scenes, auto-published to Instagram & YouTube. Average creator posts 20 reels/month = <strong>₹25/reel</strong>. Saves 2+ hours per reel.
+              Pro gives you <strong>2 reels/day</strong> with 7 AI-generated scenes, native Indian voice (Hindi & Kannada), auto-published to Instagram & YouTube. Average creator posts 20 reels/month = <strong>₹25/reel</strong>. Saves 2+ hours per reel.
             </p>
           </div>
         </div>

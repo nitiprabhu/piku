@@ -30,6 +30,7 @@ class Settings(BaseSettings):
 
     # AI APIs
     OPENAI_API_KEY: str = ""
+    SARVAM_API_KEY: str = ""  # Sarvam AI — native Kannada/Indic TTS (sarvam.ai)
 
     # Video provider: auto | muapi | kling | falai
     # auto = cheapest viable model per plan (WAN1.3B free, Kling std paid)

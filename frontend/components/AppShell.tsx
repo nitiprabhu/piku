@@ -10,6 +10,7 @@ const LANG_OPTIONS = [
   { value: "hi",       flag: "🇮🇳", label: "हिंदी" },
   { value: "en",       flag: "🌐", label: "English" },
   { value: "hinglish", flag: "✨", label: "Hinglish" },
+  { value: "kn",       flag: "🇮🇳", label: "ಕನ್ನಡ" },
 ];
 
 export const LangContext = createContext<{ lang: string; setLang: (l: string) => void }>({ lang: "all", setLang: () => {} });
@@ -37,7 +38,7 @@ const NAV = [
   { href: "/create",      emoji: "✨", label: "Create",       badge: "" },
   { href: "/series",      emoji: "📺", label: "Series",       badge: "NEW" },
   { href: "/templates",   emoji: "🎬", label: "Templates",    badge: "" },
-  { href: "/marketplace", emoji: "💼", label: "Marketplace",  badge: "" },
+  // { href: "/marketplace", emoji: "💼", label: "Marketplace",  badge: "" },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {

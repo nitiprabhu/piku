@@ -45,11 +45,14 @@ class MuAPIClient:
                 status = data.get("status", "")
                 if attempt % 6 == 0:
                     print(f"🔄 MuAPI {request_id[:8]}... status={status} (attempt {attempt})")
-                if status == "completed":
+                # MuAPI omits "status" field in some completed responses
+                if status == "completed" or (not status and data.get("outputs")):
                     print(f"✅ MuAPI {request_id[:8]} done: outputs={data.get('outputs')}")
                     return data
                 elif status in ("failed", "error"):
                     raise Exception(f"MuAPI job failed: {data.get('error') or data.get('message') or data}")
+                if attempt % 6 == 0 and not status:
+                    print(f"🔄 MuAPI {request_id[:8]}... unexpected response: {str(data)[:200]}")
                 await asyncio.sleep(self.POLL_INTERVAL)
         raise TimeoutError(f"MuAPI job {request_id} timed out after {self.MAX_POLLS * self.POLL_INTERVAL}s")
 

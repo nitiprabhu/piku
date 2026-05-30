@@ -19,12 +19,13 @@ VALID_CHARACTERS = {"raju_bhaiya", "priya_di", "professor_sharma", "rohit_anchor
 
 class GenerateRequest(BaseModel):
     prompt: str = Field(..., min_length=10, max_length=500)
-    language: str = Field("hi", pattern="^(hi|en|hinglish)$")
-    style: str = Field("motivation", pattern="^(funny|devotional|motivation|business|news|storytelling)$")
-    voice_id: str = Field("rohit_m", pattern="^(rohit_m|priya_f|arjun_m|ananya_f)$")
+    language: str = Field("hi", pattern="^(hi|en|hinglish|kn)$")
+    style: str = Field("motivation", pattern="^(funny|devotional|motivation|business|news|storytelling|mystery|facts|daily_routine|outfit_check|dance_trend|travel_vlog|product_review)$")
+    voice_id: str = Field("rohit_m", pattern="^(rohit_m|priya_f|arjun_m|ananya_f|kavya_f|vikram_m)$")
     duration: int = Field(60, ge=30, le=90)
     template_id: str | None = None
     character: str | None = None
+    enable_captions: bool = True
 
 
 class GenerateResponse(BaseModel):
@@ -112,6 +113,7 @@ async def start_generation(
         duration=body.duration,
         user_plan=current_user.plan,
         character=body.character,
+        enable_captions=body.enable_captions,
         job_timeout=600,
     )
 
@@ -123,7 +125,7 @@ async def start_generation(
 
 class IdeaRequest(BaseModel):
     style: str = Field("motivation", pattern="^(funny|devotional|motivation|business|news|storytelling)$")
-    language: str = Field("hi", pattern="^(hi|en|hinglish)$")
+    language: str = Field("hi", pattern="^(hi|en|hinglish|kn)$")
 
 
 class IdeaResponse(BaseModel):
@@ -138,7 +140,7 @@ async def generate_idea(
     from app.config import settings
     import openai
 
-    lang_map = {"hi": "Hindi", "en": "English", "hinglish": "Hinglish (mix of Hindi and English)"}
+    lang_map = {"hi": "Hindi", "en": "English", "hinglish": "Hinglish (mix of Hindi and English)", "kn": "Kannada (ಕನ್ನಡ — write the idea in Kannada script)"}
     style_map = {
         "funny": "comedy and humor for Indian audiences — desi situations, relatable family moments, jugaad culture",
         "devotional": "Indian devotional and spiritual content — shlokas, bhajans, life wisdom from scriptures",

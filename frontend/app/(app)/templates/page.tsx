@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import api, { getStoredUser } from "@/lib/api";
+import api, { getStoredUser, resolveMediaUrl } from "@/lib/api";
 import AppShell, { useLang } from "@/components/AppShell";
 
 const CATEGORY_META: Record<string, { emoji: string; label: string }> = {
@@ -380,12 +380,12 @@ function InspirationCard({ video, onTry }: { video: InspirationVideo; onTry: (v:
     >
       <div style={{ aspectRatio: "9/16", position: "relative", background: grad, display: "flex", alignItems: "center", justifyContent: "center" }}>
         {video.thumbnail_url && !hovered && (
-          <img src={video.thumbnail_url} alt={video.title} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+          <img src={resolveMediaUrl(video.thumbnail_url)} alt={video.title} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
         )}
         {video.video_url && (
           <video
             ref={videoRef}
-            src={video.video_url}
+            src={resolveMediaUrl(video.video_url)}
             muted
             loop
             playsInline

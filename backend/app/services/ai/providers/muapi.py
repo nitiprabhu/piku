@@ -42,10 +42,10 @@ class MuAPIProvider(VideoProvider):
                 )
                 data = resp.json()
                 status = data.get("status", "")
+                outputs = data.get("outputs", [])
                 if attempt % 6 == 0:
                     print(f"MuAPI {request_id[:8]}... status={status} attempt={attempt}")
-                if status == "completed":
-                    outputs = data.get("outputs", [])
+                if status == "completed" or (not status and outputs):
                     if not outputs:
                         raise Exception(f"MuAPI completed but no outputs: {data}")
                     return outputs[0]
@@ -56,7 +56,7 @@ class MuAPIProvider(VideoProvider):
 
     async def generate_clip(self, prompt: str, duration: int) -> str:
         model = "wan2.1-text-to-video"
-        wan_duration = 10 if duration >= 8 else 5
+        wan_duration = 5  # 5s clips: ~$0.014 each vs $0.60 for 10s
         request_id = await self._submit(model, {"prompt": prompt, "duration": wan_duration})
         video_url = await self._poll(request_id)
 

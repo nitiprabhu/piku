@@ -4,6 +4,8 @@ from sqlalchemy import select, and_
 from pydantic import BaseModel
 from app.database import get_db
 from app.models.publish_job import Template
+from app.models.user import User
+from app.api.auth import get_current_user
 from app.config import settings
 
 router = APIRouter(prefix="/templates", tags=["templates"])
@@ -44,10 +46,12 @@ async def list_templates(
 
 @router.get("/{template_id}", response_model=TemplateResponse)
 async def get_template(template_id: str, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Template).where(Template.id == template_id))
+    from fastapi import HTTPException
+    result = await db.execute(
+        select(Template).where(Template.id == template_id, Template.is_active == True)
+    )
     template = result.scalar_one_or_none()
     if not template:
-        from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Template not found")
     return TemplateResponse.model_validate(template)
 
@@ -66,8 +70,9 @@ async def generate_ideas(template_id: str, db: AsyncSession = Depends(get_db)):
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
 
-    lang_map = {"hi": "Hindi", "en": "English", "hinglish": "Hinglish (Hindi+English mix)"}
-    language = lang_map.get(template.language or "hi", "Hindi")
+    lang_map = {"hi": "Hindi", "en": "English", "hinglish": "Hinglish (Hindi+English mix)", "kn": "Kannada (ಕನ್ನಡ)"}
+    template_lang = template.language or "hi"
+    language = lang_map.get(template_lang, "Hindi")
     examples = "\n".join(f"- {e}" for e in (template.prompt_examples or [])[:2])
 
     system = (

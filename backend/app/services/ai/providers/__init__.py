@@ -6,10 +6,10 @@ from app.services.ai.providers.falai import FalAIWanCheapProvider
 # All plans use WAN 1.3B (fal.ai) — cheapest viable model.
 # Clip count is the only differentiator between plans.
 _AUTO_MAX_CLIPS = {
-    "free":     2,
-    "starter":  2,
-    "pro":      3,
-    "business": 4,
+    "free":     4,   # 4×7s = ~28s
+    "starter":  5,   # 5×7s = ~35s
+    "pro":      7,   # 7×8s = ~56s
+    "business": 9,   # 9×10s = ~90s
 }
 
 

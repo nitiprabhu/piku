@@ -34,6 +34,7 @@
     --font-body:       "Plus Jakarta Sans", sans-serif;
     --font-devanagari: "Noto Sans Devanagari", sans-serif;
     --font-mono:       "JetBrains Mono", monospace;
+    --font-caveat:     "Caveat", cursive;
   }
 
   * { box-sizing: border-box; }
@@ -384,7 +385,7 @@
 
 .star { position: absolute; font-size: 32px; animation: wiggle 3s ease-in-out infinite; }
 
-.caveat { font-family: "Caveat", cursive; }
+.caveat { font-family: var(--font-caveat), "Caveat", cursive; }
 
 .phone {
   width: 280px;

@@ -68,7 +68,7 @@ services:
       - NEXT_PUBLIC_API_URL=http://localhost:8005
       - NEXT_PUBLIC_WS_URL=ws://localhost:8005
       - NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_placeholder
-      - NEXT_TURBOPACK=false
+      - NEXT_TURBOPACK=0
     depends_on:
       - api
     volumes:

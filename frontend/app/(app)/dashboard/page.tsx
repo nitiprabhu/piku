@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import api, { getStoredUser } from "@/lib/api";
+import api, { getStoredUser, resolveMediaUrl } from "@/lib/api";
 import AppShell from "@/components/AppShell";
 
 interface Project {
@@ -292,10 +292,10 @@ export default function DashboardPage() {
                   onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ""; (e.currentTarget as HTMLDivElement).style.boxShadow = "var(--shadow-sm)"; }}
                 >
                   {project.thumbnail_url ? (
-                    <img src={project.thumbnail_url} alt={project.title || "Reel"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <img src={resolveMediaUrl(project.thumbnail_url)} alt={project.title || "Reel"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   ) : project.video_url && project.status === "completed" ? (
                     <video
-                      src={project.video_url}
+                      src={resolveMediaUrl(project.video_url)}
                       muted
                       playsInline
                       preload="metadata"
