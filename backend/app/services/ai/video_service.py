@@ -48,6 +48,14 @@ def _theme_color(visual_keyword: str, style: str) -> str:
     kw = visual_keyword.lower()
     if style == "storytelling":
         return "0x2D1B4E"
+    if style == "scary":
+        return "0x0A0A1A"
+    if style == "anime":
+        return "0x1A0533"
+    if style == "relationship":
+        return "0x4A1942"
+    if style == "heist_crime":
+        return "0x121212"
     if any(x in kw for x in ["funny", "comedy", "joke"]):
         return "0xFF6B35"
     if any(x in kw for x in ["devotional", "spiritual", "shloka", "temple", "ram"]):

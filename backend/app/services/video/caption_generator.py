@@ -8,7 +8,7 @@ def generate_srt(narration: str, voice_path: str, caption_mode: str = "full_sent
     """
     Generate SRT from narration. caption_mode:
     - full_sentence: standard subtitle lines
-    - keyword_pop: extract one key word per sentence, display large centered
+    - keyword_pop: trendy short-form style (1-2 words popping rapidly)
     """
     total_duration = _get_audio_duration(voice_path)
     sentences = _split_sentences(narration)
@@ -36,7 +36,7 @@ def _split_sentences(narration: str) -> list[str]:
     return sentences or [narration[:100]]
 
 
-def _chunk_sentence(sentence: str, max_words: int = 7) -> list[str]:
+def _chunk_sentence(sentence: str, max_words: int = 4) -> list[str]:
     """Split sentence into display chunks of max_words words, each max 2 lines."""
     words = sentence.split()
     chunks = []
@@ -79,47 +79,46 @@ def _build_full_sentence_srt(sentences: list[str], total_duration: float) -> str
 
 
 def _build_keyword_pop_srt(sentences: list[str], total_duration: float) -> str:
-    """One bold keyword per sentence, displayed center-screen."""
-    dur = total_duration / len(sentences)
+    """Trendy short-form style: 1-2 words popping rapidly on screen."""
+    # Calculate average time per sentence
+    sentence_dur = total_duration / len(sentences)
+    
+    all_chunks: list[tuple[float, float, str]] = []  # (start, end, text)
+
+    for i, sentence in enumerate(sentences):
+        sent_start = i * sentence_dur
+        words = sentence.split()
+        chunks = []
+        temp = []
+        for w in words:
+            temp.append(w)
+            if len(temp) >= 3:
+                chunks.append(" ".join(temp))
+                temp = []
+        if temp:
+            chunks.append(" ".join(temp))
+            
+        if not chunks:
+            continue
+            
+        chunk_dur = sentence_dur / len(chunks)
+        for j, chunk in enumerate(chunks):
+            start = sent_start + j * chunk_dur
+            end = start + chunk_dur
+            all_chunks.append((start, end, chunk))
+
     srt_path = Path(tempfile.mktemp(suffix=".srt"))
     lines = []
-    for i, sentence in enumerate(sentences):
-        keyword = _extract_keyword(sentence)
-        start = i * dur
-        end = start + dur
-        lines.append(f"{i + 1}")
+    
+    for idx, (start, end, text) in enumerate(all_chunks):
+        lines.append(f"{idx + 1}")
         lines.append(f"{_fmt(start)} --> {_fmt(end)}")
-        # {\an2} = bottom-center; overrides force_style Alignment at ASS tag level
-        lines.append("{\\an2}" + keyword.upper())
+        # {\an5} = absolute center, popping rapidly
+        lines.append("{\\an5}" + text.upper())
         lines.append("")
+        
     srt_path.write_text("\n".join(lines), encoding="utf-8")
     return str(srt_path)
-
-
-def _extract_keyword(sentence: str) -> str:
-    """Extract the most prominent word from a sentence."""
-    STOP = {
-        # Hindi
-        "का", "के", "की", "में", "से", "पर", "को", "ने", "है", "हैं", "था", "थी",
-        "एक", "और", "यह", "वह", "जो", "कि", "भी", "तो", "हो", "कर", "यही", "वही",
-        # Kannada
-        "ಮತ್ತು", "ಅಥವಾ", "ಆದರೆ", "ಇದು", "ಅದು", "ಈ", "ಆ", "ಒಂದು", "ಅಲ್ಲ",
-        "ಇಲ್ಲ", "ನಾನು", "ನೀನು", "ಅವನು", "ಅವಳು", "ನಾವು", "ನೀವು", "ಅವರು",
-        "ಹೇಗೆ", "ಏನು", "ಯಾರು", "ಎಷ್ಟು", "ಎಲ್ಲಿ",
-        # English
-        "a", "an", "the", "is", "are", "was", "were", "in", "on", "at", "to",
-        "for", "of", "and", "or", "but", "it", "this", "that", "you", "we",
-        "they", "he", "she", "with", "have", "has", "been", "will", "would",
-    }
-    words = re.findall(r"[\wऀ-ॿಀ-೿]+", sentence)
-    # min 4 chars to avoid garbage fragments like "धिा"
-    candidates = [w for w in words if w.lower() not in STOP and len(w) >= 4]
-    if not candidates:
-        # fallback: any word >= 3 chars
-        candidates = [w for w in words if len(w) >= 3]
-    if not candidates:
-        return sentence[:12]
-    return max(candidates, key=len)
 
 
 def _fmt(seconds: float) -> str:

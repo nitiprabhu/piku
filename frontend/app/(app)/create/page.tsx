@@ -23,6 +23,10 @@ const STYLES = [
   { value: "storytelling", emoji: "📖", label: "Story" },
   { value: "mystery", emoji: "🔮", label: "Mystery" },
   { value: "facts", emoji: "🧠", label: "Facts" },
+  { value: "scary", emoji: "👻", label: "Scary" },
+  { value: "anime", emoji: "🗡️", label: "Anime" },
+  { value: "relationship", emoji: "💕", label: "Relationship" },
+  { value: "heist_crime", emoji: "🔫", label: "Heist/Crime" },
 ];
 
 // P2: Visual niche cards — maps to style + suggested language
@@ -32,26 +36,38 @@ const NICHES = [
   { id: "motivation", label: "Motivation", emoji: "🔥", style: "motivation", lang: "hinglish", bg: "linear-gradient(135deg,#7F1D1D,#DC2626)", color: "#FEE2E2" },
   { id: "rahasya", label: "Rahasya / Mystery", emoji: "🔮", style: "mystery", lang: "hi", bg: "linear-gradient(135deg,#1C1917,#7C3AED)", color: "#DDD6FE" },
   { id: "facts", label: "Did You Know", emoji: "🧠", style: "facts", lang: "hinglish", bg: "linear-gradient(135deg,#0C4A6E,#0891B2)", color: "#E0F2FE" },
-  { id: "scary", label: "Scary Stories", emoji: "👻", style: "mystery", lang: "hi", bg: "linear-gradient(135deg,#111827,#374151)", color: "#D1FAE5" },
+  { id: "scary", label: "Scary Stories", emoji: "👻", style: "scary", lang: "hi", bg: "linear-gradient(135deg,#0A0A1A,#1F2937)", color: "#D1FAE5" },
   { id: "business", label: "Business", emoji: "💼", style: "business", lang: "hinglish", bg: "linear-gradient(135deg,#0C4A6E,#0284C7)", color: "#E0F2FE" },
   { id: "funny", label: "Funny / Comedy", emoji: "😂", style: "funny", lang: "hi", bg: "linear-gradient(135deg,#7C2D12,#EA580C)", color: "#FFEDD5" },
-  { id: "anime", label: "Anime Stories", emoji: "🗡️", style: "storytelling", lang: "en", bg: "linear-gradient(135deg,#4C1D95,#7C3AED)", color: "#EDE9FE" },
+  { id: "anime", label: "Anime Stories", emoji: "🗡️", style: "anime", lang: "en", bg: "linear-gradient(135deg,#1A0533,#7C3AED)", color: "#EDE9FE" },
   { id: "news", label: "News / Updates", emoji: "📰", style: "news", lang: "hi", bg: "linear-gradient(135deg,#1E3A5F,#2563EB)", color: "#DBEAFE" },
-  { id: "relationship", label: "Relationships", emoji: "💕", style: "funny", lang: "hinglish", bg: "linear-gradient(135deg,#831843,#DB2777)", color: "#FCE7F3" },
-  { id: "heist", label: "Heist / Crime", emoji: "🔫", style: "mystery", lang: "en", bg: "linear-gradient(135deg,#1C1917,#44403C)", color: "#D6D3D1" },
+  { id: "relationship", label: "Relationships", emoji: "💕", style: "relationship", lang: "hinglish", bg: "linear-gradient(135deg,#4A1942,#DB2777)", color: "#FCE7F3" },
+  { id: "heist", label: "Heist / Crime", emoji: "🔫", style: "heist_crime", lang: "en", bg: "linear-gradient(135deg,#121212,#44403C)", color: "#D6D3D1" },
 ];
 
 const VOICES = [
   { id: "rohit_m",  label: "Rohit",  emoji: "🧔",    lang: "Hindi",    gender: "Heavy Male", speechText: "नमस्कार! मैं रोहित हूँ।",        langKeys: ["hi", "hinglish"], previewLang: "hi-IN" },
+  { id: "anchor_m",  label: "Anchor",  emoji: "📺",    lang: "Hindi",    gender: "Anchor",   speechText: "बड़ी खबर! आज की ताज़ा खबर यह है।",          langKeys: ["hi", "hinglish"], previewLang: "hi-IN" },
+  { id: "startup_m", label: "Dev Bhai", emoji: "🚀",  lang: "Hinglish", gender: "Energetic", speechText: "Yaar ek crore ka idea hai mere paas!",        langKeys: ["hi", "hinglish"], previewLang: "hi-IN" },
   { id: "priya_f",  label: "Priya",  emoji: "👩",    lang: "Hindi",    gender: "Female",     speechText: "नमस्ते! मैं प्रिया हूँ।",         langKeys: ["hi", "hinglish"], previewLang: "hi-IN" },
   { id: "arjun_m",  label: "Arjun",  emoji: "🧔",    lang: "English",  gender: "Heavy Male", speechText: "Hello! I am Arjun.",              langKeys: ["en"],             previewLang: "en-US" },
   { id: "ananya_f", label: "Ananya", emoji: "👩‍💼", lang: "English",  gender: "Female",     speechText: "Hi! I am Ananya.",                langKeys: ["en"],             previewLang: "en-US" },
   { id: "vikram_m", label: "Vikram", emoji: "🧔",    lang: "Kannada",  gender: "Male",       speechText: "ನಮಸ್ಕಾರ! ನಾನು ವಿಕ್ರಮ್.",        langKeys: ["kn"],             previewLang: "kn-IN" },
   { id: "kavya_f",  label: "Kavya",  emoji: "👩",    lang: "Kannada",  gender: "Female",     speechText: "ನಮಸ್ಕಾರ! ನಾನು ಕಾವ್ಯ.",          langKeys: ["kn"],             previewLang: "kn-IN" },
+  { id: "anime_kid",label: "Anime Kid",emoji: "👦",  lang: "Hindi",    gender: "Kid",        speechText: "हम हार नहीं मानेंगे!",            langKeys: ["hi", "hinglish"], previewLang: "hi-IN" },
 ];
 
 const DEFAULT_VOICE: Record<string, string> = {
   hi: "rohit_m", hinglish: "rohit_m", en: "arjun_m", kn: "vikram_m",
+};
+
+const CHARACTER_VOICE: Record<string, string> = {
+  priya_di:          "priya_f",
+  raju_bhaiya:       "rohit_m",
+  professor_sharma:  "rohit_m",
+  rohit_anchor:      "anchor_m",
+  dev_startup:       "startup_m",
+  pandit_gyani:      "rohit_m",
 };
 
 const LANGUAGES = [
@@ -565,7 +581,11 @@ export default function CreatePage() {
             {CHARACTERS.map((c) => {
               const active = selectedCharacter === c.id;
               return (
-                <div key={c.id} onClick={() => setSelectedCharacter(active ? null : c.id)} style={{
+                <div key={c.id} onClick={() => {
+                    const next = active ? null : c.id;
+                    setSelectedCharacter(next);
+                    if (next && CHARACTER_VOICE[next]) setForm(f => ({ ...f, voice_id: CHARACTER_VOICE[next] }));
+                  }} style={{
                   padding: "12px", borderRadius: "var(--r-sm)", cursor: "pointer",
                   display: "flex", alignItems: "center", gap: 10,
                   transition: "all 0.08s ease", fontFamily: "var(--font-body)", ...sel(active),

@@ -7,12 +7,18 @@ from app.config import settings
 
 
 _STYLE_SUFFIX = {
-    "storytelling": "dramatic cinematic lighting, Indian mythological aesthetic, no text no watermark, portrait vertical 9:16",
+    "storytelling": "dramatic cinematic lighting, epic mythological or historical aesthetic, no text no watermark, portrait vertical 9:16",
     "devotional": "soft golden light, serene spiritual atmosphere, no text no watermark, portrait vertical 9:16",
     "motivation": "powerful epic composition, dramatic lighting, no text no watermark, portrait vertical 9:16",
-    "funny": "vibrant colorful, expressive Indian context, no text no watermark, portrait vertical 9:16",
+    "funny": "vibrant colorful, expressive comedic context, no text no watermark, portrait vertical 9:16",
     "business": "professional clean modern, no text no watermark, portrait vertical 9:16",
     "news": "dramatic journalistic high contrast, no text no watermark, portrait vertical 9:16",
+    "mystery": "dark mysterious atmosphere, dim dramatic lighting, ancient ruins or cryptic settings, eerie shadows, no text no watermark, portrait vertical 9:16",
+    "facts": "bold informative aesthetic, bright infographic feel, dramatic reveal lighting, clean composition, no text no watermark, portrait vertical 9:16",
+    "scary": "dark horror atmosphere, pitch-black shadows, eerie abandoned settings, unsettling mood, cold blue or green tint, no text no watermark, portrait vertical 9:16",
+    "anime": "anime art style, cel-shaded vibrant colors, manga-inspired composition, dramatic speed lines, Studio Ghibli or shonen aesthetic, no text no watermark, portrait vertical 9:16",
+    "relationship": "warm emotional aesthetic, soft golden hour lighting, intimate bokeh, tender mood, romantic or melancholic tones, no text no watermark, portrait vertical 9:16",
+    "heist_crime": "crime noir aesthetic, dark dramatic shadows, high contrast, urban night setting, surveillance camera grain feel, no text no watermark, portrait vertical 9:16",
     "daily_routine": "casual vlog aesthetic, bright natural morning light, clean modern apartment background, handheld camera feel, portrait vertical 9:16",
     "outfit_check": "fashion photoshoot look, studio lighting, aesthetic mirror reflections or clean wardrobe background, high-end lifestyle style, portrait vertical 9:16",
     "dance_trend": "high energy motion blur, neon accent lighting, trendy urban street or studio background, dynamic action capture, portrait vertical 9:16",
@@ -64,6 +70,11 @@ def _build_image_prompt(
 ) -> str:
     suffix = _STYLE_SUFFIX.get(style, "cinematic high quality, no text no watermark, portrait vertical 9:16")
     
+    # Force character consistency for anime style
+    if style == "anime":
+        anime_anchor = "A young anime protagonist with spiky black hair, intense eyes, wearing a crimson and black high-collar jacket"
+        return f"{anime_anchor}. {scene_visual}. {suffix}. Ultra detailed, photorealistic, 4K."
+
     anchor = build_character_anchor_prompt(character_profile)
     if series_type == "ai_influencer" and anchor:
         # If the scene visual description specifies the character's clothing, do not force the static profile clothing.

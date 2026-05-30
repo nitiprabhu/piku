@@ -153,84 +153,111 @@ def _build_prompt(
     )
 
     # ── Psychological hook formulas per style ──────────────────────────────────
+    # NOTE: Hooks are language-AGNOSTIC structural triggers. GPT renders them
+    # in the target language specified by the Language instruction above.
+    # Each hook is labeled with its psychological trigger type.
     hook_bank = {
         "storytelling": [
-            "Kya aap jaante hain ki [X] ke peeche ki woh sach jo history books mein nahi hai?",
-            "[Historical moment] — yeh ek aisi kahani hai jo [N] saalon se chupayi gayi thi...",
-            "Agar [X] sach hai, toh hamari poori soch galat hai.",
-            "Woh [ek secret] jo [person/place] ke baare mein koi nahi jaanta — aaj reveal hoga.",
+            "(Open loop) History erased this story on purpose — but we found it. [X] was never meant to surface.",
+            "(Identity flip) Everything you were taught about [X] is a lie — the real version is wilder.",
+            "(Forbidden knowledge) This story was banned for [N] years — once you hear it, you will understand why.",
+            "(Cliffhanger bait) [Person/civilization] vanished overnight — they left behind only one clue.",
         ],
         "mystery": [
-            "Kya [X] actually sach hai? Science abhi bhi explain nahi kar pa rahi...",
-            "India ke [place/event] ke baare mein yeh fact sunke aapki roh kaanp jaayegi",
-            "Woh [mystery] jo [N] saalon se unsolved hai — aaj hum try karte hain",
-            "[Title/Place] ke peeche ka woh andha sach jo government ne chupaaya",
+            "(Unsolved tension) [X] happened [N] years ago — to this day, nobody can explain it.",
+            "(Science vs unknown) Researchers tested [X] — the results broke every known law of physics.",
+            "(You-are-next) If you live near [place/region], you need to hear this. Seriously.",
+            "(Cover-up) They deleted every record of [X] — but one witness recorded everything.",
+        ],
+        "scary": [
+            "(Dread) At 3:17 AM, [X] was caught on camera — the footage has zero explanation.",
+            "(Isolation fear) The last person who entered [place] came out speaking a language nobody recognized.",
+            "(Warning) Thousands of people reported the same nightmare about [X] — on the exact same night.",
+            "(True event) This actually happened in [year] — and the family still refuses to talk about it.",
         ],
         "facts": [
-            "Kya aap jaante hain ki [surprising fact about topic]? 99% log nahi jaante.",
-            "India ke baare mein yeh [N] facts aapko school mein kyun nahi padhaaye gaye?",
-            "[Topic] ke baare mein woh fact jo aapka dimaag hila dega — seriously.",
-            "Aaj se [X] ko alag nazar se dekhoge — yeh ek fact ke baad.",
+            "(Brain break) This fact about [X] will literally rewire how you see the world. Not exaggerating.",
+            "(Conspiracy-lite) Why were you never taught this in school? The answer is uncomfortable.",
+            "(Chain reaction) One tiny fact about [X] — and suddenly 10 other things make sense.",
+            "(Flex bait) Only 1 in 100 people know this about [topic] — test yourself.",
         ],
         "devotional": [
-            "Shastra kehte hain: '[Sanskrit line]' — aaj ki zindagi mein iska matlab kya hai?",
-            "Bhagavad Gita mein ek aisi line hai jo [modern problem] ka [N] saal purana jawab hai.",
-            "[Deity/Saint] ne ek baar kuch aisa kiya jo aaj science bhi explain nahi kar sakti.",
-            "Yeh ek prayer hai jo [N] saalon se log karte aa rahe hain — aur iska karan pata chala.",
+            "(Ancient hack) This [N]-year-old verse was written for exactly what you are going through right now.",
+            "(Science meets faith) Scientists studied [practice/mantra] — the brain scan results shocked them.",
+            "(Divine paradox) [Deity/Saint] once did something that makes zero logical sense — until you understand the deeper meaning.",
+            "(Urgency) If you are ignoring this one spiritual practice, you are blocking your own blessings.",
         ],
         "motivation": [
-            "90% log [common mistake] karte hain — aur isi wajah se fail hote hain.",
-            "Woh ek chhoti si cheez jo successful log roz karte hain aur baaki log ignore karte hain.",
-            "Agar aaj se sirf [X] band kar do, toh [timeframe] mein zindagi badal jaayegi.",
-            "Failure ko success mein kaise badle — woh formula jo koi nahi batata.",
+            "(Pattern interrupt) Stop scrolling. If you are stuck in life right now, this is your sign.",
+            "(Contrarian truth) The advice that ruined most people? 'Follow your passion.' Here is what actually works.",
+            "(Micro-dare) Do this ONE thing for 7 days — I dare you. Your life will not be the same.",
+            "(Rage bait → value) People will hate me for saying this — but [uncomfortable truth] is why you are not growing.",
         ],
         "funny": [
-            "Bhai, ye sirf India mein hi ho sakta hai — [relatable situation].",
-            "Jab [typical Indian scenario] hota hai — [exaggerated reaction]. Sach mein!",
-            "[Indian stereotype] ki asli kahani — jo sirf hum Indians samjhenge.",
-            "Ek cheez jo hum Indians kabhi nahi chhod sakte — [relatable quirk].",
+            "(Call-out) POV: [universal relatable situation] — and you know EXACTLY what happens next 😂",
+            "(Exaggeration) The way [everyday scenario] hits different when [absurd twist] — I cannot be the only one.",
+            "(Cultural flex) Only people from [culture/region] will understand this pain — outsiders will never get it.",
+            "(Duo energy) That one friend who [relatable quirk] — tag them, they need to see this 💀",
         ],
         "business": [
-            "Woh ek business mistake jo [industry leaders] baar baar karte hain — aur aap bhi shayad.",
-            "₹0 se [X] tak — woh secret formula jo mainstream media nahi batata.",
-            "India ke top founders ne [X] kiya — yeh ek counterintuitive decision tha.",
-            "Agar [business principle] follow karo, toh [outcome] guaranteed hai.",
+            "(Myth-bust) Everyone says [common advice] — the founders who actually made it did the exact opposite.",
+            "(Zero-to-one) Built from literally zero. No connections, no funding. Here is the unconventional playbook.",
+            "(Data bomb) This one metric predicted which startups survive — and 90% of founders ignore it.",
+            "(Framework drop) The 3-step system behind every viral product launch — steal this.",
         ],
         "news": [
-            "Breaking: [topic] ko lekar aaj jo hua, woh kisi ne expect nahi kiya tha.",
-            "Yeh khabar [N] saalon mein sabse badi hai — aur mainstream media khamosh hai.",
-            "[Event] ke peeche ki asli kahani — jo aapko news channels nahi dikhayenge.",
-            "Sirf [duration] mein [major change] — India ke liye kya matlab hai?",
+            "(Urgency + exclusivity) This just happened — and nobody is talking about it yet.",
+            "(Impact framing) [Event] just changed the game for [millions of people] — here is what it means for YOU.",
+            "(Accountability) They said [X] would never happen — it happened today. Receipts inside.",
+            "(Speed) In the last [N] hours, [X] happened — the ripple effects are massive.",
+        ],
+        "anime": [
+            "(Power reveal) The moment [character] finally snapped — the entire power system changed forever.",
+            "(Plot twist) Everyone simped for [character] — turns out THEY were the real villain all along.",
+            "(Hype build) This fight scene has more strategy than most chess games — let me break it down.",
+            "(Tier list energy) Ranking [anime topic] and my #1 pick will make the fandom RAGE.",
+        ],
+        "relationship": [
+            "(Emotional gut-punch) They never said it out loud — but this one habit told you everything.",
+            "(Hot take) Unpopular opinion: [common relationship advice] is actually destroying your bond.",
+            "(Story hook) We were perfect on paper — but one conversation at 2 AM changed everything.",
+            "(Mirror) If you have ever felt [specific emotion in love], this is going to hit too close to home.",
+        ],
+        "heist_crime": [
+            "(Audacity) They stole [X] from the most secure [place] on earth — and walked out smiling.",
+            "(Mastermind) One person outsmarted [N] experts, [N] cameras, and a [security system] — here is how.",
+            "(Perfect crime) Everything was flawless — except for one stupid [tiny detail] that ruined it all.",
+            "(True crime) This case has been cold for [N] years — but one new piece of evidence changes everything.",
         ],
         "daily_routine": [
-            "Meri realistic subah ki routine — koi filter nahi, sirf asli zindagi.",
-            "5 kaam jo main roz 9 baje se pehle karta/karti hoon — aur aap bhi kar sakte hain.",
-            "Ek chaotic subah mere saath — dekho kaise main ready hota/hoti hoon.",
-            "My morning routine as a creator — yeh dekhke tumhari mornings bhi badal jaayengi.",
+            "(Raw authenticity) No aesthetic, no filter — this is what my mornings ACTUALLY look like.",
+            "(Productivity flex) [N] things done before 9 AM — this routine changed my entire life.",
+            "(Chaos relatability) My morning is a beautiful disaster — come survive it with me.",
+            "(Transformation) I rewired my entire morning in 30 days — the before/after is insane.",
         ],
         "outfit_check": [
-            "Aaj ka look check karo — rate karo 1 se 10 mein comments mein!",
-            "Get ready with me — ek naya outfit, ek naya vibe.",
-            "GRWM: yeh outfit style karke batata/batati hoon ek quick story.",
-            "Outfit transition: casual se boss look — sirf kuch seconds mein.",
+            "(Rate me) Today's fit — be honest, 1-10. Comment your score!",
+            "(Transition magic) Watch this outfit go from mid to main character in 3 seconds.",
+            "(GRWM energy) Getting ready while I tell you something nobody knows about me.",
+            "(Glow up) Casual to CEO energy — one outfit change, completely different person.",
         ],
         "dance_trend": [
-            "Yeh dance trend easy lagta hai — lekin iska asli secret yeh hai...",
-            "15 seconds mein seekho yeh viral hook step — guarantee hai sab dekhenge.",
-            "Chalo mil ke try karte hain yeh trending dance transition!",
-            "Agar yeh dance kar paaye toh tera rhythm next level hai — try karo!",
+            "(Challenge) This trend looks easy — 95% of people cannot get past the second move.",
+            "(Tutorial bait) Learn this viral step in 10 seconds flat — your followers will thank you.",
+            "(Collab energy) POV: your bestie pulls you into the trending dance and you actually nail it.",
+            "(Flex) If you can hit this beat switch, your body coordination is elite — try it.",
         ],
         "travel_vlog": [
-            "India ka yeh hidden gem ekdum movie jaisa lagta hai — yaqeen nahi hoga.",
-            "24 ghante mere saath — explore karte hain is khoobsurat jagah ko!",
-            "Sabse underrated jagah jo aapko is saal zaroor dekhni chahiye.",
-            "Travel vlog: [Jagah] ka sabse best local khana dhundhne nikla/nikli hoon.",
+            "(Hidden gem) This place looks AI-generated — but it is 100% real and barely anyone knows about it.",
+            "(Day-with-me) 24 hours in [place] with zero plan — the best moments were unscripted.",
+            "(Budget flex) Most underrated destination — looks like a luxury trip, costs almost nothing.",
+            "(Food hunt) I found the best street food in [place] — the last one broke my brain.",
         ],
         "product_review": [
-            "Maine yeh viral product ek hafte use kiya — yeh raha honest review.",
-            "Kya yeh product actually hype ke laayak hai? Aaj pata chalega.",
-            "Unboxing: 2026 ka sabse satisfying gadget — dekho reaction!",
-            "Yeh [product] mat kharido jab tak yeh video nahi dekh lete — seriously.",
+            "(Honest verdict) Used this viral product for 7 days straight — here is the truth nobody tells you.",
+            "(Hype audit) Is [product] actually worth the hype? I tested it so you do not waste money.",
+            "(Unboxing dopamine) This unboxing was SO satisfying — watch my genuine reaction.",
+            "(Anti-recommendation) Do NOT buy [product] until you see this — I wish someone told me earlier.",
         ],
     }
 
@@ -314,6 +341,30 @@ def _build_prompt(
             f"Scene {num_scenes-1}: HONEST RATING — showing final face reaction/thumbs up.\n"
             f"Scene {num_scenes}: CTA — 'Link is in bio! Follow for more honest reviews!'"
         ),
+        "scary": (
+            f"Scene 1: DREAD HOOK — unsettling atmosphere, eerie sound, shadow or silhouette, tension from first frame.\n"
+            f"Scenes 2–{max(2, num_scenes-2)}: HORROR ESCALATION — each scene more terrifying, isolation builds, paranormal evidence mounts.\n"
+            f"Scene {num_scenes-1}: CLIMAX SCARE — the terrifying encounter, reveal, or jump-scare moment.\n"
+            f"Scene {num_scenes}: AFTERMATH CTA — 'Share this before you forget… if you dare. Follow for more.'"
+        ),
+        "anime": (
+            f"Scene 1: EPIC COLD OPEN — dramatic power reveal, intense close-up, anime-energy opening line.\n"
+            f"Scenes 2–{max(2, num_scenes-2)}: ARC BUILD — escalating stakes, rivalry, training montage, or mystery unfolding with fast cuts.\n"
+            f"Scene {num_scenes-1}: CLIMAX MOMENT — the ultimate battle, power-up, or emotional peak.\n"
+            f"Scene {num_scenes}: CLIFFHANGER CTA — 'Follow for the next episode of this saga!'"
+        ),
+        "relationship": (
+            f"Scene 1: EMOTIONAL HOOK — a raw, vulnerable moment that instantly resonates with anyone who has loved.\n"
+            f"Scenes 2–{max(2, num_scenes-2)}: EMOTIONAL ARC — building connection, conflict, or the slow realization.\n"
+            f"Scene {num_scenes-1}: TURNING POINT — the gut-punch realization, reconciliation, or bittersweet truth.\n"
+            f"Scene {num_scenes}: REFLECTIVE CTA — 'Tag someone who needs to hear this. Follow for more.'"
+        ),
+        "heist_crime": (
+            f"Scene 1: HEIST HOOK — the audacious crime or impossible target, stated with cinematic intensity.\n"
+            f"Scenes 2–{max(2, num_scenes-2)}: PLAN UNFOLDS — the mastermind's strategy, obstacles, close calls, twists.\n"
+            f"Scene {num_scenes-1}: THE TWIST — the betrayal, capture, escape, or shocking reveal.\n"
+            f"Scene {num_scenes}: VERDICT CTA — 'What would you have done? Follow for more crime stories.'"
+        ),
     }
 
     # ── Visual palette anchors per style — serialized styles rotate per episode ─
@@ -355,20 +406,44 @@ def _build_prompt(
         # Aqua-blue underwater
         "Sunken temple underwater — aqua-blue shafts of light, ancient stone inscriptions, fish drifting past, haunting and ethereal.",
     ]
+    _scary_palettes = [
+        # Midnight black-blue
+        "Pitch-dark abandoned hospital corridor — single flickering tube light, cracked tiles, wheelchair moving on its own, cold blue-black atmosphere.",
+        # Blood-red fog
+        "Foggy graveyard at midnight — silhouette of a figure between tombstones, blood-red moonlight, twisted dead trees, ground-level wide angle.",
+        # Sickly green
+        "Decrepit basement — sickly green light from a cracked bulb, rusty chains on wall, water dripping, claustrophobic close-up.",
+        # Grey storm
+        "Isolated house on a hill during thunderstorm — grey sky, lightning flash, broken windows, something watching from inside.",
+    ]
+    _anime_palettes = [
+        # Vibrant action
+        "Anime battle arena — explosive energy aura, dramatic speed lines, vivid orange and blue clash, dynamic action pose, cel-shaded.",
+        # Dark dramatic
+        "Anime dark throne room — villain silhouette, glowing red eyes, purple energy, dramatic low angle, manga-style shadows.",
+        # Serene epic
+        "Anime mountain peak at sunrise — lone warrior with cape in wind, vast landscape, pastel sky, Studio Ghibli-inspired wide shot.",
+        # Neon cyberpunk
+        "Anime neon city at night — rain-soaked streets, holographic signs, character in hoodie, cyberpunk palette, tight medium shot.",
+    ]
 
     ep_idx = max(0, episode_number - 1)
     rotating_palettes = {
         "storytelling": _storytelling_palettes[ep_idx % len(_storytelling_palettes)],
         "devotional": _devotional_palettes[ep_idx % len(_devotional_palettes)],
         "mystery": _mystery_palettes[ep_idx % len(_mystery_palettes)],
+        "scary": _scary_palettes[ep_idx % len(_scary_palettes)],
+        "anime": _anime_palettes[ep_idx % len(_anime_palettes)],
     }
     visual_palettes = {
         **rotating_palettes,
-        "facts": "Clean infographic-style — maps, historical photographs, dramatic reenactments, close-ups of objects, split-screen comparisons. Bright but informative.",
-        "motivation": "High-contrast dramatic — mountain peaks, lone athlete training at sunrise, empty road ahead, hands writing, city skyline at dawn. Bold, energetic.",
-        "funny": "Bright saturated everyday India — chai stalls, family dinner, metro, office, markets. Expressive faces and recognizable settings.",
-        "business": "Clean modern India — glass offices, laptops, pitch decks, startup hubs, graphs. Sharp and authoritative.",
-        "news": "Broadcast-style drama — news studio feel, India map overlays, city aerials, government buildings. Urgent and high-contrast.",
+        "facts": "Bold infographic aesthetic — 3D data visualizations, dramatic before/after comparisons, macro detail shots, split-screen reveals, neon accent highlights on dark background.",
+        "motivation": "High-contrast epic energy — silhouette against blazing sunrise, lone figure on empty road, punching through obstacles, city skyline at golden hour, fast-cut montage feel.",
+        "funny": "Bright saturated everyday life — colorful street markets, chaotic family dinners, crowded metro, office cubicle drama, expressive reaction faces, meme-worthy compositions.",
+        "business": "Clean modern aesthetic — glass offices with city views, laptop close-ups, whiteboard strategies, startup team energy, sharp graphs, co-working space vibes.",
+        "news": "Broadcast-style urgency — breaking news studio graphics, city aerials, government building exteriors, protest crowds, split-screen data overlays, high-contrast dramatic lighting.",
+        "relationship": "Warm emotional aesthetic — golden hour couple silhouettes, rain-on-window reflections, empty bench, old photographs, soft bokeh fairy lights, intimate close-ups of hands.",
+        "heist_crime": "Crime noir aesthetic — dark alley with single street light, vault door close-up, gloved hands, CCTV footage grain, city skyline at night, dramatic Dutch angle shots.",
         "daily_routine": "Handheld vlogging style, natural bright indoor light, cozy modern apartment, morning bedroom, kitchen, dynamic close-up cuts.",
         "outfit_check": "Bright studio background, full-length mirror style, elegant styling items, high-fashion wardrobe, close-ups of texture/jewelry.",
         "dance_trend": "Dynamic motion blur, neon accents, modern dance studio or urban street, energetic moving camera, front angle facing the lens.",
@@ -433,30 +508,31 @@ def _build_prompt(
     is_force_reveal = is_serialized and episode_number >= 4
     if is_force_reveal:
         reveal_hooks_fmt = (
-            "  1. '[MANTRA/SECRET NAME] — यही है वह रहस्य जिसका इंतज़ार था' (direct name drop)\n"
-            "  2. 'आज पहली बार सुनिए: [SPECIFIC NAME] — वह प्राचीन साधना जो बदल देती है सब कुछ' (first reveal)\n"
-            "  3. '[SPECIFIC MANTRA] — इन तीन शब्दों में छुपा है हज़ारों साल का ज्ञान' (specific content)\n"
-            "  4. 'रहस्य खुलता है आज: [NAME] साधना का वह सूत्र जो ऋषियों ने छुपाया' (revelation format)\n"
-            "CRITICAL: Hook MUST start with the specific name/mantra — NOT a question. Do NOT use 'क्या आपने', 'क्या आप जानते'. State the name directly."
+            "  1. '[MANTRA/SECRET NAME] — This is the secret you have been waiting for' (direct name drop)\n"
+            "  2. 'Hear this for the first time: [SPECIFIC NAME] — the ancient practice that changes everything' (first reveal)\n"
+            "  3. '[SPECIFIC MANTRA] — thousands of years of wisdom hidden in these words' (specific content)\n"
+            "  4. 'The secret is revealed today: [NAME] the formula hidden by sages' (revelation format)\n"
+            "CRITICAL: Hook MUST start with the specific name/mantra. State the name directly. TRANSLATE these directly into the target language."
         )
-        hooks_section = f"━━ REVEAL HOOKS — use one of these (NOT question hooks):\n{reveal_hooks_fmt}"
+        hooks_section = f"━━ REVEAL HOOKS — adapt one of these into {lang_note}:\n{reveal_hooks_fmt}"
         structure_section = (
-            f"━━ SCENE STRUCTURE — REVEAL FORMAT:\n"
+            f"━━ SCENE STRUCTURE — REVEAL FORMAT (write all narration and CTAs in {lang_note}):\n"
             f"Scene 1: DIRECT REVEAL — state the specific mantra/secret NAME immediately. No question hook.\n"
             f"Scenes 2–{max(2, num_scenes-2)}: EXPLAIN IT — what it means, how to practice it, step by step.\n"
             f"Scene {num_scenes-1}: TRANSFORMATION — what changes when you apply this. Concrete outcome.\n"
-            f"Scene {num_scenes}: CLOSING CTA — 'Follow karo aur aisi vidya paate raho.'"
+            f"Scene {num_scenes}: CLOSING CTA — Call to action relevant to the topic (e.g., Follow for more wisdom)."
         )
     else:
-        hooks_section = f"━━ HOOK FORMULAS — adapt the best-fitting one for this topic:\n{hooks_fmt}"
-        structure_section = f"━━ SCENE STRUCTURE — follow this format exactly:\n{structure}"
+        hooks_section = f"━━ HOOK FORMULAS — adapt the best-fitting psychological trigger for this topic. WRITE THE HOOK IN {lang_note}:\n{hooks_fmt}"
+        structure_section = f"━━ SCENE STRUCTURE — follow this format exactly (write all narration and CTAs in {lang_note}):\n{structure}"
 
     return f"""You are an expert viral short-form video scriptwriter for Indian content creators. You understand psychological hooks, scroll-stopping openers, and emotional pacing.
 
-CRITICAL — PROPER NOUN SPELLING:
+CRITICAL — PROPER NOUN SPELLING AND SCRIPT ENFORCEMENT:
 - If the topic contains any Sanskrit, Hindi, or Indian proper noun written in Roman/English script (e.g. "Asta Vakra", "Ashtavakra", "Ramayan", "Hanuman", "Gita"), identify it correctly and use the standard native-script spelling in the narration.
 - NEVER phonetically transliterate Roman characters into Devanagari/native script letter-by-letter. Example: "Asta Vakra" → अष्टावक्र (NOT आसता वाक्र).
 - Proper nouns like sage names, scripture names, deity names must use their established correct spellings.
+- STRICT SCRIPT ENFORCEMENT: NEVER mix multiple scripts in the narration! If the language requested is Kannada, use ONLY Kannada script. Do NOT leave words in English/Latin letters (e.g. 'dúrgāyai') and do NOT use Devanagari (e.g. 'नम:'). Convert ALL mantras, words, and proper nouns entirely into the single requested native script (e.g. 'ದುರ್ಗಾಯೈ ನಮಃ'). Mixing scripts will break the text-to-speech engine.
 
 Topic: {prompt}
 Language: {lang_note}

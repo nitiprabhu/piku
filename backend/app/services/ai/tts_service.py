@@ -192,9 +192,24 @@ def _apply_kid_pitch(mp3_path: str) -> str:
     """Apply pitch and speed shift to create a kid/anime voice effect."""
     out_path = Path(tempfile.mktemp(suffix=".mp3"))
     try:
+        pitch_ratio = 1.15 # For a ~24yo girl. Higher (e.g. 1.3) = younger, Lower (e.g. 1.05) = older
+        tempo = 1.0 / pitch_ratio # This fixes the playback speed!
+        
+        # Try high-quality 'rubberband' filter first. It preserves formants so it doesn't sound like a robot/chipmunk.
+        try:
+            subprocess.run([
+                "ffmpeg", "-y", "-i", mp3_path, 
+                "-af", f"rubberband=pitch={pitch_ratio}",
+                str(out_path)
+            ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return str(out_path)
+        except Exception:
+            pass # Fallback to asetrate if rubberband isn't compiled into their ffmpeg
+
+        # Fallback using standard filters but with high-quality 'soxr' resampling to make it smoother
         subprocess.run([
             "ffmpeg", "-y", "-i", mp3_path, 
-            "-af", "asetrate=44100*1.5,aresample=44100",
+            "-af", f"aresample=resampler=soxr:precision=28,asetrate=44100*{pitch_ratio},aresample=resampler=soxr:precision=28,atempo={tempo}",
             str(out_path)
         ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         return str(out_path)

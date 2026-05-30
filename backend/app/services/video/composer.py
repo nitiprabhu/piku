@@ -40,6 +40,10 @@ _STATIC_GRADES = {
     "funny": None,
     "business": "eq=contrast=1.05:saturation=0.92,vignette=PI/5",
     "news": "eq=contrast=1.10:saturation=0.88,vignette=PI/4",
+    "scary": "eq=contrast=1.20:saturation=0.60:brightness=-0.05,colorbalance=rh=-0.1:gh=0.05:bh=0.1,vignette=PI/2.5,noise=alls=15:allf=t+u",
+    "anime": "eq=contrast=1.15:saturation=1.20,colorbalance=rh=0.05:gh=-0.02:bh=0.08,vignette=PI/5",
+    "relationship": "eq=contrast=1.05:saturation=0.85,colorbalance=rh=0.12:gh=0.05:bh=-0.08,vignette=PI/3.5,noise=alls=5:allf=t+u",
+    "heist_crime": "eq=contrast=1.25:saturation=0.50,colorbalance=rh=-0.05:gh=0.08:bh=0.05,vignette=PI/3,noise=alls=20:allf=t+u",
 }
 
 
@@ -126,24 +130,29 @@ def compose_video(
         srt_escaped = srt_path.replace("\\", "\\\\").replace(":", "\\:")
         bright_styles = {"funny", "daily_routine", "outfit_check", "dance_trend", "product_review"}
         caption_color = "&H00FFFFFF" if style in bright_styles else "&H0000FFFF"
-        font_name = "Noto Sans Kannada" if language == "kn" else "Noto Sans"
+        if language == "kn":
+            font_name = "Noto Sans Kannada"
+        elif language in ("hi", "hinglish"):
+            font_name = "Noto Sans Devanagari"
+        else:
+            font_name = "Noto Sans"
 
         if caption_mode == "keyword_pop":
             caption_filter = (
                 f"[vcat]subtitles={srt_escaped}:"
-                f"force_style='FontName={font_name},FontSize=24,"
+                f"force_style='FontName={font_name},FontSize=34,"
                 f"PrimaryColour={caption_color},Bold=1,"
-                f"OutlineColour=&H00000000,Outline=5,Shadow=2,BorderStyle=1,"
-                f"Alignment=5,MarginV=0,MarginL=0,MarginR=0,"
+                f"OutlineColour=&H00000000,Outline=7,Shadow=0,BorderStyle=1,"
+                f"Alignment=5,MarginV=0,MarginL=20,MarginR=20,"
                 f"WrapStyle=1'[vcap]"
             )
         else:
             caption_filter = (
                 f"[vcat]subtitles={srt_escaped}:"
-                f"force_style='FontName={font_name},FontSize=19,"
+                f"force_style='FontName={font_name},FontSize=24,"
                 f"PrimaryColour={caption_color},Bold=1,"
-                f"OutlineColour=&H00000000,Outline=4,Shadow=2,BorderStyle=1,"
-                f"Alignment=2,MarginV=60,MarginL=80,MarginR=80,"
+                f"OutlineColour=&H00000000,Outline=5,Shadow=3,BorderStyle=1,"
+                f"Alignment=2,MarginV=120,MarginL=80,MarginR=80,"
                 f"WrapStyle=1'[vcap]"
             )
     else:

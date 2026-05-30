@@ -447,23 +447,13 @@ async def generate_episode(
         )
         force_reveal = ""
         if episode_number >= 4 and previous_episode_context:
-            last_narration = previous_episode_context.get("narration") or ""
-            reveal_keywords = ["ॐ", "नमः", "मंत्र है", "विद्या है", "साधना है", "जाप करें", "उच्चारण"]
-            already_revealed = any(kw in last_narration for kw in reveal_keywords)
-            if already_revealed:
-                force_reveal = (
-                    f"\n\nPOST-REVEAL MODE (Ep {episode_number}): Previous episode already delivered a specific reveal. "
-                    "Do NOT repeat. Write a prompt that either: "
-                    "1) Shows practical application or transformation from what was revealed, OR "
-                    "2) Introduces the NEXT secret/mantra/topic in the series universe. "
-                    "Progress forward, not sideways."
-                )
-            else:
-                force_reveal = (
-                    f"\n\nFORCE-REVEAL MODE (Ep {episode_number}): Prior episodes promised but never explicitly delivered. "
-                    "This prompt MUST name the specific mantra/secret. "
-                    "Write: 'आज हम [SPECIFIC NAME] का पूरा रहस्य उजागर करते हैं'. No vague pronouns."
-                )
+            force_reveal = (
+                f"\n\nNARRATIVE PROGRESSION (Ep {episode_number}): "
+                "If the core secret or main topic of this series was NOT fully revealed in previous episodes, you MUST explicitly reveal it now. "
+                "However, if the previous episodes already revealed the main secret/concept, DO NOT repeat it. Instead, progress the story forward by "
+                "either showing practical applications, exploring a deeper sub-topic, or introducing the next secret in the series universe. "
+                "Always progress forward, never sideways."
+            )
         if previous_episode_context:
             user_content = (
                 f'Channel: "{series.name}"\n'
@@ -471,10 +461,12 @@ async def generate_episode(
                 f"Content pillars: {pillars_str}\n"
                 f"Style: {series.style}\n"
                 f"Episode: {episode_number}\n\n"
+                f"Recent Episode Prompts:\n{recent_str}\n\n"
                 f"Previous Episode {previous_episode_context['episode_number']} Prompt: {previous_episode_context['prompt']}\n"
                 f"Previous Episode Narration: {previous_episode_context['narration']}\n"
                 + force_reveal +
                 f"\n\nGenerate a continuous viral episode prompt for Ep {episode_number} that picks up directly from where the previous episode left off and advances the narrative. Be specific — name actual mantras, techniques, or people."
+                f"\nCRITICAL: DO NOT repeat any of the 'Recent Episode Prompts'. You MUST move the story forward to a new angle or sub-topic."
             )
         else:
             user_content = (
