@@ -33,9 +33,9 @@ export default function SeriesPage() {
 
   return (
     <AppShell>
-    <div style={{ padding: "32px 24px", maxWidth: 900, margin: "0 auto" }}>
+    <div style={{ padding: "32px", maxWidth: 900, width: "100%", margin: "0 auto", boxSizing: "border-box" }}>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32, flexWrap: "wrap", gap: 16 }}>
         <div>
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: 36, color: "var(--ink)", margin: 0 }}>
             Series
@@ -92,12 +92,12 @@ export default function SeriesPage() {
           </Link>
         </div>
       ) : (
-        <div style={{ display: "grid", gap: 16 }}>
+        <div style={{ display: "grid", gap: 16, overflow: "visible" }}>
           {seriesList.map((s) => (
             <Link
               key={s.id}
               href={`/series/${s.id}`}
-              style={{ textDecoration: "none" }}
+              style={{ textDecoration: "none", display: "block" }}
             >
               <div style={{
                 background: "var(--card)", border: "2px solid var(--ink)",
@@ -105,7 +105,7 @@ export default function SeriesPage() {
                 padding: "20px 24px",
                 display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
                 transition: "transform 0.08s ease, box-shadow 0.08s ease",
-                cursor: "pointer",
+                cursor: "pointer", overflow: "hidden",
               }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLDivElement).style.transform = "translate(-1px,-1px)";
@@ -133,7 +133,6 @@ export default function SeriesPage() {
                   </div>
                   <div style={{
                     fontFamily: "var(--font-body)", fontSize: 14, color: "var(--ink-2)",
-                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                   }}>
                     {s.topic}
                   </div>
