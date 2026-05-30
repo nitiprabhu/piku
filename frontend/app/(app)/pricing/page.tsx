@@ -99,29 +99,56 @@ export default function PricingPage() {
       const { data } = await api.post(endpoint, body);
 
       const plan = PLANS.find(p => p.id === planId);
-      const options = {
+      const isSubscription = data.type === "subscription";
+
+      const baseOptions = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: data.amount,
         currency: data.currency,
         name: "ReelCraft",
         description: plan?.name,
-        order_id: data.razorpay_order_id,
-        handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
-          try {
-            await api.post("/payments/verify", {
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-            });
-            router.push("/dashboard?payment=success");
-          } catch {
-            alert("Payment received but activation failed. Contact support with payment ID: " + response.razorpay_payment_id);
-          }
-        },
         theme: { color: "#FF5C00" },
       };
-      const rz = new window.Razorpay(options);
-      rz.open();
+
+      if (isSubscription) {
+        const options = {
+          ...baseOptions,
+          subscription_id: data.razorpay_sub_id,
+          handler: async (response: { razorpay_payment_id: string; razorpay_subscription_id: string; razorpay_signature: string }) => {
+            try {
+              await api.post("/payments/verify", {
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_subscription_id: response.razorpay_subscription_id,
+                razorpay_signature: response.razorpay_signature,
+              });
+              router.push("/dashboard?payment=success");
+            } catch {
+              alert("Payment received but activation failed. Contact support with payment ID: " + response.razorpay_payment_id);
+            }
+          },
+        };
+        const rz = new window.Razorpay(options);
+        rz.open();
+      } else {
+        const options = {
+          ...baseOptions,
+          order_id: data.razorpay_order_id,
+          handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
+            try {
+              await api.post("/payments/verify", {
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+              });
+              router.push("/dashboard?payment=success");
+            } catch {
+              alert("Payment received but activation failed. Contact support with payment ID: " + response.razorpay_payment_id);
+            }
+          },
+        };
+        const rz = new window.Razorpay(options);
+        rz.open();
+      }
     } catch {
       alert("Payment failed. Please try again.");
     } finally {

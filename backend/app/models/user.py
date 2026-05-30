@@ -29,6 +29,7 @@ class User(Base):
 
     # Payments
     razorpay_sub_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    razorpay_last_payment_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
     created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_at: Mapped[str] = mapped_column(
