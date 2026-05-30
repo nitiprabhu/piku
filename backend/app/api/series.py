@@ -17,11 +17,13 @@ router = APIRouter(prefix="/series", tags=["series"])
 class CreateSeriesRequest(BaseModel):
     name: str = Field(..., min_length=1, max_length=200)
     topic: str = Field(..., min_length=10, max_length=1000)
-    style: str = Field("storytelling", pattern="^(funny|devotional|motivation|business|news|storytelling|mystery|facts|daily_routine|outfit_check|dance_trend|travel_vlog|product_review)$")
+    style: str = Field("storytelling", pattern="^(funny|devotional|motivation|business|news|storytelling|mystery|facts|scary|anime|relationship|heist_crime|daily_routine|outfit_check|dance_trend|travel_vlog|product_review)$")
     language: str = Field("hi", pattern="^(hi|en|hinglish|kn)$")
-    voice_id: str = Field("rohit_m", pattern="^(rohit_m|priya_f|arjun_m|ananya_f|kavya_f|vikram_m)$")
+    voice_id: str = Field("rohit_m", pattern="^(rohit_m|anchor_m|startup_m|priya_f|arjun_m|ananya_f|kavya_f|vikram_m|anime_kid|anime_kid_kn)$")
     duration_target: int = Field(60, ge=30, le=90)
+    speed: float = Field(1.0, ge=0.5, le=2.0)
     caption_mode: str = Field("full_sentence", pattern="^(full_sentence|keyword_pop)$")
+    enable_captions: bool = True
     is_serialized: bool = True
     series_type: str = Field("regular", pattern="^(regular|ai_influencer)$")
     character_profile: dict | None = None
@@ -31,6 +33,7 @@ class UpdateSeriesScheduleRequest(BaseModel):
     schedule_type: str = Field(..., pattern="^(manual|daily|every_3_days|weekly)$")
     schedule_time: str = Field("09:00", pattern="^([01]\\d|2[0-3]):[0-5]\\d$")
     caption_mode: str | None = Field(None, pattern="^(full_sentence|keyword_pop)$")
+    enable_captions: bool | None = None
     character_profile: dict | None = None
 
 
@@ -44,6 +47,7 @@ class SeriesResponse(BaseModel):
     duration_target: int
     episode_count: int
     caption_mode: str
+    enable_captions: bool
     schedule_type: str
     schedule_time: str
     is_serialized: bool
@@ -137,6 +141,7 @@ async def create_series(
         voice_id=body.voice_id,
         duration_target=body.duration_target,
         caption_mode=body.caption_mode,
+        enable_captions=body.enable_captions,
         content_pillars=pillars,
         is_serialized=body.is_serialized,
         series_type=body.series_type,
@@ -254,6 +259,8 @@ async def update_series_schedule(
     series.next_run_at = compute_next_run_at(body.schedule_type, body.schedule_time)
     if body.caption_mode:
         series.caption_mode = body.caption_mode
+    if body.enable_captions is not None:
+        series.enable_captions = body.enable_captions
     if body.character_profile is not None:
         series.character_profile = body.character_profile
         flag_modified(series, "character_profile")
@@ -578,6 +585,7 @@ async def generate_episode(
         duration=series.duration_target,
         user_plan=current_user.plan,
         caption_mode=series.caption_mode,
+        enable_captions=series.enable_captions,
         is_serialized=series.is_serialized,
         previous_episode_context=previous_episode_str,
         series_type=series.series_type,

@@ -38,3 +38,7 @@ async def init_db():
     async with engine.begin() as conn:
         from app.models import user, project, publish_job  # noqa: F401
         await conn.run_sync(Base.metadata.create_all)
+        # Idempotent column additions for existing tables
+        await conn.execute(__import__("sqlalchemy").text(
+            "ALTER TABLE series ADD COLUMN IF NOT EXISTS enable_captions BOOLEAN NOT NULL DEFAULT TRUE"
+        ))

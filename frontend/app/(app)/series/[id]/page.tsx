@@ -15,6 +15,7 @@ interface Series {
   duration_target: number;
   episode_count: number;
   caption_mode: string;
+  enable_captions: boolean;
   schedule_type: string;
   schedule_time: string;
   next_run_at: string | null;
@@ -92,6 +93,7 @@ function SchedulePanel({ series, onSaved }: { series: Series; onSaved: (s: Serie
   const [scheduleType, setScheduleType] = useState(series.schedule_type);
   const [scheduleTime, setScheduleTime] = useState(series.schedule_time);
   const [captionMode, setCaptionMode] = useState(series.caption_mode);
+  const [enableCaptions, setEnableCaptions] = useState(series.enable_captions ?? true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -102,6 +104,7 @@ function SchedulePanel({ series, onSaved }: { series: Series; onSaved: (s: Serie
         schedule_type: scheduleType,
         schedule_time: scheduleTime,
         caption_mode: captionMode,
+        enable_captions: enableCaptions,
       });
       onSaved(r.data);
       setSaved(true);
@@ -130,7 +133,7 @@ function SchedulePanel({ series, onSaved }: { series: Series; onSaved: (s: Serie
       <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--muted)", marginBottom: 14 }}>
         Auto-Schedule & Style
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12, marginBottom: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr", gap: 12, marginBottom: 14 }}>
         <div>
           <label style={labelStyle}>Frequency</label>
           <select style={selectStyle} value={scheduleType} onChange={e => setScheduleType(e.target.value)}>
@@ -148,6 +151,23 @@ function SchedulePanel({ series, onSaved }: { series: Series; onSaved: (s: Serie
           />
         </div>
         <div>
+          <label style={labelStyle}>Captions</label>
+          <button
+            type="button"
+            onClick={() => setEnableCaptions(v => !v)}
+            style={{
+              padding: "7px 14px", cursor: "pointer",
+              fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 13,
+              border: "1.5px solid var(--ink)", borderRadius: "var(--r-sm)",
+              background: enableCaptions ? "var(--orange)" : "var(--bg-2)",
+              color: enableCaptions ? "#fff" : "var(--ink)",
+              boxShadow: enableCaptions ? "2px 2px 0 var(--ink)" : "none",
+            }}
+          >
+            {enableCaptions ? "ON" : "OFF"}
+          </button>
+        </div>
+        <div style={{ opacity: enableCaptions ? 1 : 0.4, pointerEvents: enableCaptions ? "auto" : "none" }}>
           <label style={labelStyle}>Caption Style</label>
           <select style={selectStyle} value={captionMode} onChange={e => setCaptionMode(e.target.value)}>
             <option value="full_sentence">Full sentence</option>

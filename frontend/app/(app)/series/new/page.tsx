@@ -18,8 +18,10 @@ const VOICES = [
   { value: "priya_f",  label: "Priya (F) — Hindi" },
   { value: "arjun_m",  label: "Arjun (M) — English" },
   { value: "ananya_f", label: "Ananya (F) — English" },
-  { value: "vikram_m", label: "Vikram (M) — ಕನ್ನಡ" },
-  { value: "kavya_f",  label: "Kavya (F) — ಕನ್ನಡ" },
+  { value: "vikram_m",   label: "Vikram (M) — ಕನ್ನಡ" },
+  { value: "kavya_f",    label: "Kavya (F) — ಕನ್ನಡ" },
+  { value: "anime_kid",    label: "Anime Girl (F) — Hindi" },
+  { value: "anime_kid_kn", label: "Anime Girl (F) — ಕನ್ನಡ" },
 ];
 
 export default function NewSeriesPage() {
@@ -32,6 +34,7 @@ export default function NewSeriesPage() {
     voice_id: "rohit_m",
     duration_target: 60,
     caption_mode: "full_sentence",
+    enable_captions: true,
     is_serialized: true,
   });
 
@@ -420,7 +423,7 @@ export default function NewSeriesPage() {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
             <div>
               <label style={labelStyle}>Language</label>
               <select style={inputStyle} value={form.language} onChange={(e) => update("language", e.target.value)}>
@@ -442,7 +445,28 @@ export default function NewSeriesPage() {
                 <option value={90}>90s</option>
               </select>
             </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 16, alignItems: "end" }}>
             <div>
+              <label style={labelStyle}>Captions</label>
+              <button
+                type="button"
+                onClick={() => update("enable_captions", !form.enable_captions)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  padding: "10px 14px", borderRadius: "var(--r-sm)", cursor: "pointer",
+                  fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 13,
+                  border: "2px solid var(--ink)",
+                  background: form.enable_captions ? "var(--orange)" : "var(--bg-2)",
+                  color: form.enable_captions ? "#fff" : "var(--ink)",
+                  boxShadow: form.enable_captions ? "2px 2px 0 var(--ink)" : "none",
+                }}
+              >
+                <span>{form.enable_captions ? "ON" : "OFF"}</span>
+              </button>
+            </div>
+            <div style={{ opacity: form.enable_captions ? 1 : 0.4, pointerEvents: form.enable_captions ? "auto" : "none" }}>
               <label style={labelStyle}>Caption Style</label>
               <select style={inputStyle} value={form.caption_mode} onChange={(e) => update("caption_mode", e.target.value)}>
                 <option value="full_sentence">Full sentence</option>

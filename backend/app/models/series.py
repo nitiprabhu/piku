@@ -34,6 +34,7 @@ class Series(Base):
 
     # P4: Caption style
     caption_mode: Mapped[str] = mapped_column(String(20), default="full_sentence")  # full_sentence | keyword_pop
+    enable_captions: Mapped[bool] = mapped_column(Boolean, default=True)
 
     created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_at: Mapped[str] = mapped_column(
