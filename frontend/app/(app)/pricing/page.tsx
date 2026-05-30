@@ -53,11 +53,11 @@ const PLANS = [
     price: "₹499",
     period: "/mo",
     credits: 60,
-    creditLabel: "2 videos/day",
+    creditLabel: "+60 credits/mo",
     overage: "₹8/video after",
     highlight: true,
     badge: "POPULAR",
-    features: ["60 videos/month", "7 AI-generated scenes per reel", "30s, 60s & 90s videos", "No watermark", "Auto-publish to Instagram & YouTube", "Series & multi-episode support", "Priority queue", "₹8/video overage"],
+    features: ["60 credits added every month", "Credits never expire, carry over", "7 AI-generated scenes per reel", "30s, 60s & 90s videos", "No watermark", "Auto-publish to Instagram & YouTube", "Series & multi-episode support", "₹8/video overage"],
     cta: "Go Pro",
     disabled: false,
   },
@@ -279,7 +279,7 @@ export default function PricingPage() {
               WHY PRO?
             </div>
             <p style={{ fontFamily: "var(--font-body)", fontSize: 14, color: "var(--ink-2)", margin: 0 }}>
-              Pro gives you <strong>2 reels/day</strong> with 7 AI-generated scenes, native Indian voice (Hindi & Kannada), auto-published to Instagram & YouTube. Average creator posts 20 reels/month = <strong>₹25/reel</strong>. Saves 2+ hours per reel.
+              Pro adds <strong>60 credits every month</strong> — unused credits carry over, they never expire. 7 AI-generated scenes, native Indian voice (Hindi & Kannada), auto-published to Instagram & YouTube. Average creator uses 20 credits/month = <strong>₹25/reel</strong>. Saves 2+ hours per reel.
             </p>
           </div>
         </div>
