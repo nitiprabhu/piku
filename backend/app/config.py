@@ -58,6 +58,8 @@ class Settings(BaseSettings):
     RAZORPAY_KEY_ID: str = ""
     RAZORPAY_KEY_SECRET: str = ""
     RAZORPAY_WEBHOOK_SECRET: str = ""
+    RAZORPAY_PLAN_ID_PRO: str = ""      # Create in Razorpay dashboard → Products → Plans
+    RAZORPAY_PLAN_ID_BUSINESS: str = "" # Create in Razorpay dashboard → Products → Plans
 
     # SMS/OTP (MSG91)
     MSG91_AUTH_KEY: str = ""

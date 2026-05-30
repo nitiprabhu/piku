@@ -53,11 +53,11 @@ const PLANS = [
     price: "₹499",
     period: "/mo",
     credits: 60,
-    creditLabel: "2 videos/day",
-    overage: "₹8/video after",
+    creditLabel: "+60 credits/mo",
+    overage: null,
     highlight: true,
     badge: "POPULAR",
-    features: ["60 videos/month", "7 AI-generated scenes per reel", "30s, 60s & 90s videos", "No watermark", "Auto-publish to Instagram & YouTube", "Series & multi-episode support", "Priority queue", "₹8/video overage"],
+    features: ["60 credits added every month", "Credits never expire, carry over", "7 AI-generated scenes per reel", "30s, 60s & 90s videos", "No watermark", "Publish to Instagram & YouTube", "Series & multi-episode support"],
     cta: "Go Pro",
     disabled: false,
   },
@@ -99,29 +99,56 @@ export default function PricingPage() {
       const { data } = await api.post(endpoint, body);
 
       const plan = PLANS.find(p => p.id === planId);
-      const options = {
+      const isSubscription = data.type === "subscription";
+
+      const baseOptions = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: data.amount,
         currency: data.currency,
         name: "ReelCraft",
         description: plan?.name,
-        order_id: data.razorpay_order_id,
-        handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
-          try {
-            await api.post("/payments/verify", {
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-            });
-            router.push("/dashboard?payment=success");
-          } catch {
-            alert("Payment received but activation failed. Contact support with payment ID: " + response.razorpay_payment_id);
-          }
-        },
         theme: { color: "#FF5C00" },
       };
-      const rz = new window.Razorpay(options);
-      rz.open();
+
+      if (isSubscription) {
+        const options = {
+          ...baseOptions,
+          subscription_id: data.razorpay_sub_id,
+          handler: async (response: { razorpay_payment_id: string; razorpay_subscription_id: string; razorpay_signature: string }) => {
+            try {
+              await api.post("/payments/verify", {
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_subscription_id: response.razorpay_subscription_id,
+                razorpay_signature: response.razorpay_signature,
+              });
+              router.push("/dashboard?payment=success");
+            } catch {
+              alert("Payment received but activation failed. Contact support with payment ID: " + response.razorpay_payment_id);
+            }
+          },
+        };
+        const rz = new window.Razorpay(options);
+        rz.open();
+      } else {
+        const options = {
+          ...baseOptions,
+          order_id: data.razorpay_order_id,
+          handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
+            try {
+              await api.post("/payments/verify", {
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+              });
+              router.push("/dashboard?payment=success");
+            } catch {
+              alert("Payment received but activation failed. Contact support with payment ID: " + response.razorpay_payment_id);
+            }
+          },
+        };
+        const rz = new window.Razorpay(options);
+        rz.open();
+      }
     } catch {
       alert("Payment failed. Please try again.");
     } finally {
@@ -252,7 +279,7 @@ export default function PricingPage() {
               WHY PRO?
             </div>
             <p style={{ fontFamily: "var(--font-body)", fontSize: 14, color: "var(--ink-2)", margin: 0 }}>
-              Pro gives you <strong>2 reels/day</strong> with 7 AI-generated scenes, native Indian voice (Hindi & Kannada), auto-published to Instagram & YouTube. Average creator posts 20 reels/month = <strong>₹25/reel</strong>. Saves 2+ hours per reel.
+              Pro adds <strong>60 credits every month</strong> — unused credits carry over, they never expire. 7 AI-generated scenes, native Indian voice (Hindi & Kannada), publish directly to Instagram & YouTube. Average creator uses 20 credits/month = <strong>₹25/reel</strong>. Saves 2+ hours per reel.
             </p>
           </div>
         </div>
