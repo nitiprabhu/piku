@@ -174,7 +174,7 @@ async def verify_payment(
         current_user.credits = (current_user.credits or 0) + PLAN_CREDITS["starter"]
     else:
         current_user.plan = plan
-        current_user.credits = PLAN_CREDITS.get(plan, 60)
+        current_user.credits = (current_user.credits or 0) + PLAN_CREDITS.get(plan, 60)
 
     current_user.razorpay_last_payment_id = body.razorpay_payment_id
     logger.info("Payment verified: user=%s plan=%s payment=%s", current_user.id, plan, body.razorpay_payment_id)
@@ -257,7 +257,7 @@ async def razorpay_webhook(request: Request, db: AsyncSession = Depends(get_db))
             user.credits = (user.credits or 0) + PLAN_CREDITS["starter"]
         elif plan in PLAN_CREDITS:
             user.plan = plan
-            user.credits = PLAN_CREDITS[plan]
+            user.credits = (user.credits or 0) + PLAN_CREDITS[plan]
 
         user.razorpay_last_payment_id = payment_id
         logger.info("payment.captured (backup): user=%s plan=%s payment=%s", user.id, plan, payment_id)
