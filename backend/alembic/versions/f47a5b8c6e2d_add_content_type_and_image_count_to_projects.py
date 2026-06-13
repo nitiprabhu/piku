@@ -16,24 +16,8 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column(
-        "projects",
-        sa.Column(
-            "content_type",
-            sa.String(length=20),
-            server_default="video",
-            nullable=False,
-        ),
-    )
-    op.add_column(
-        "projects",
-        sa.Column(
-            "image_count",
-            sa.Integer(),
-            server_default="1",
-            nullable=False,
-        ),
-    )
+    op.execute("ALTER TABLE projects ADD COLUMN IF NOT EXISTS content_type VARCHAR(20) NOT NULL DEFAULT 'video'")
+    op.execute("ALTER TABLE projects ADD COLUMN IF NOT EXISTS image_count INTEGER NOT NULL DEFAULT 1")
 
 
 def downgrade() -> None:

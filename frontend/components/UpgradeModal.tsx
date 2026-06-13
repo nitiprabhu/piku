@@ -101,43 +101,43 @@ export default function UpgradeModal({ onClose, onUpgraded }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       <div className="relative z-10 w-full max-w-lg glass p-8 space-y-6">
         <div className="text-center">
           <div className="text-4xl mb-2">⚡</div>
-          <h2 className="text-2xl font-black text-white">Out of Credits</h2>
-          <p className="text-white/50 text-sm mt-1">Top up instantly or go Pro for monthly credits</p>
+          <h2 className="text-2xl font-black" style={{ color: "var(--ink)" }}>Out of Credits</h2>
+          <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>Top up instantly or go Pro for monthly credits</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           {PACKS.map((pack) => (
             <div
               key={pack.id}
-              className={`rounded-2xl p-5 space-y-3 border ${
-                pack.highlight
-                  ? "bg-gradient-to-br from-orange-500/15 to-pink-500/15 border-orange-500/40"
-                  : "bg-white/5 border-white/10"
-              }`}
+              className="rounded-2xl p-5 space-y-3"
+              style={{
+                background: pack.highlight ? "var(--orange-lt)" : "var(--bg)",
+                border: pack.highlight ? "2px solid var(--orange)" : "2px solid var(--line-strong)",
+              }}
             >
               <div className="flex items-center justify-between">
-                <span className={`text-xs font-bold uppercase tracking-wider ${pack.highlight ? "text-orange-400" : "text-white/40"}`}>
+                <span className="text-xs font-bold uppercase tracking-wider" style={{ color: pack.highlight ? "var(--orange)" : "var(--muted)" }}>
                   {pack.label}
                 </span>
                 {pack.highlight && (
-                  <span className="text-xs bg-orange-500 text-white px-2 py-0.5 rounded-full font-bold">Popular</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full font-bold text-white" style={{ background: "var(--orange)" }}>Popular</span>
                 )}
               </div>
 
               <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-black text-white">{pack.price}</span>
-                <span className="text-white/40 text-xs">{pack.priceNote}</span>
+                <span className="text-2xl font-black" style={{ color: "var(--ink)" }}>{pack.price}</span>
+                <span className="text-xs" style={{ color: "var(--muted)" }}>{pack.priceNote}</span>
               </div>
 
               <ul className="space-y-1.5">
                 {pack.perks.map((p) => (
-                  <li key={p} className="flex items-center gap-2 text-xs text-white/60">
-                    <span className="text-green-400">✓</span>
+                  <li key={p} className="flex items-center gap-2 text-xs" style={{ color: "var(--ink-2)" }}>
+                    <span style={{ color: "var(--green)" }}>✓</span>
                     {p}
                   </li>
                 ))}
@@ -146,15 +146,16 @@ export default function UpgradeModal({ onClose, onUpgraded }: Props) {
               <button
                 onClick={() => handlePurchase(pack)}
                 disabled={loading !== null}
-                className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all ${
-                  pack.highlight
-                    ? "btn-primary"
-                    : "bg-white/10 text-white hover:bg-white/20"
-                }`}
+                className={pack.highlight ? "btn-primary w-full" : "w-full py-2.5 rounded-xl text-sm font-bold transition-all"}
+                style={pack.highlight ? {} : {
+                  background: "var(--bg-2)",
+                  color: "var(--ink)",
+                  border: "2px solid var(--line-strong)",
+                }}
               >
                 {loading === pack.id ? (
                   <span className="flex items-center justify-center gap-2">
-                    <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span className="w-3.5 h-3.5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: "var(--ink)" }} />
                     Loading...
                   </span>
                 ) : (
@@ -166,12 +167,12 @@ export default function UpgradeModal({ onClose, onUpgraded }: Props) {
         </div>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-red-400 text-sm text-center">
+          <div className="rounded-xl p-3 text-sm text-center" style={{ background: "#FEE2E2", border: "1px solid #FCA5A5", color: "#DC2626" }}>
             {error}
           </div>
         )}
 
-        <button onClick={onClose} className="w-full text-white/30 text-sm hover:text-white/50 transition-colors">
+        <button onClick={onClose} className="w-full text-sm transition-colors" style={{ color: "var(--muted)" }}>
           Maybe later
         </button>
       </div>

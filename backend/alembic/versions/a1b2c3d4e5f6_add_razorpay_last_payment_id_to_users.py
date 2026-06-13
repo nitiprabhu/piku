@@ -17,7 +17,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.add_column('users', sa.Column('razorpay_last_payment_id', sa.String(100), nullable=True))
+    op.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS razorpay_last_payment_id VARCHAR(100)")
 
 
 def downgrade() -> None:

@@ -60,6 +60,7 @@ async def send_otp(body: SendOTPRequest):
         return {"success": True, "message": "OTP sent successfully", "otp": otp}
 
     otp = f"{random.randint(100000, 999999)}"
+    print(f"[OTP] {body.phone}: {otp}")
 
     await rc.setex(f"otp:{body.phone}", _OTP_TTL, otp)
     await rc.delete(f"otp:attempts:{body.phone}")
@@ -86,6 +87,7 @@ async def verify_otp(body: VerifyOTPRequest, db: AsyncSession = Depends(get_db))
         )
 
     stored_otp = await rc.get(f"otp:{body.phone}")
+    print(f"[OTP verify] phone={body.phone!r} submitted={body.otp!r} stored={stored_otp!r}")
     if not stored_otp or stored_otp != body.otp:
         new_attempts = await rc.incr(attempt_key)
         await rc.expire(attempt_key, _OTP_TTL)
