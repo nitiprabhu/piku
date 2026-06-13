@@ -33,6 +33,8 @@ class ProjectResponse(BaseModel):
     caption_text: str | None
     hashtags: list[str] | None
     error_message: str | None
+    content_type: str = "video"
+    image_count: int = 1
     created_at: datetime.datetime
 
 

@@ -155,46 +155,46 @@ def _build_prompt(
     # ── Psychological hook formulas per style ──────────────────────────────────
     hook_bank = {
         "storytelling": [
-            "Kya aap jaante hain ki [X] ke peeche ki woh sach jo history books mein nahi hai?",
-            "[Historical moment] — yeh ek aisi kahani hai jo [N] saalon se chupayi gayi thi...",
-            "Agar [X] sach hai, toh hamari poori soch galat hai.",
-            "Woh [ek secret] jo [person/place] ke baare mein koi nahi jaanta — aaj reveal hoga.",
+            "Ek [X] ka untold origin story — jo main riyal khud investigate karke laya hoon.",
+            "[Historical figure/event] — yeh 3 saal pehle discover hua tha, par media ne ignore kiya.",
+            "[X] ke behind-the-scenes: yeh woh narrative hai jisne apni soch badal di meri.",
+            "Archive mein mila yeh [evidence] — woh puri kahani jo officially galat likhi gayi hai.",
         ],
         "mystery": [
-            "Kya [X] actually sach hai? Science abhi bhi explain nahi kar pa rahi...",
-            "India ke [place/event] ke baare mein yeh fact sunke aapki roh kaanp jaayegi",
-            "Woh [mystery] jo [N] saalon se unsolved hai — aaj hum try karte hain",
-            "[Title/Place] ke peeche ka woh andha sach jo government ne chupaaya",
+            "[X] ke baare mein sab jo sochte hain woh galat hai — yeh woh clue hai.",
+            "Investigate karte hain: [Mystery] — 15 saal baad truth aa raha hai.",
+            "Primary sources check kiye — [X] ke baare mein jo official version sunaaya gaya woh nahi hai pura.",
+            "Data + research = [X] ke baare mein shocking truth jo kabhi nahi suna hoga.",
         ],
         "facts": [
-            "Kya aap jaante hain ki [surprising fact about topic]? 99% log nahi jaante.",
-            "India ke baare mein yeh [N] facts aapko school mein kyun nahi padhaaye gaye?",
-            "[Topic] ke baare mein woh fact jo aapka dimaag hila dega — seriously.",
-            "Aaj se [X] ko alag nazar se dekhoge — yeh ek fact ke baad.",
+            "[Specific surprising fact] — 99% people miss this, lekin data clear hai.",
+            "India ke [specific sector/place] mein yeh trend [N] saalon se chhup hai.",
+            "[Counterintuitive fact based on real numbers] — aapki assumption completely galat hai.",
+            "Statistical breakdown: [X] ko alag nazar se dekho after yeh fact.",
         ],
         "devotional": [
-            "Shastra kehte hain: '[Sanskrit line]' — aaj ki zindagi mein iska matlab kya hai?",
-            "Bhagavad Gita mein ek aisi line hai jo [modern problem] ka [N] saal purana jawab hai.",
-            "[Deity/Saint] ne ek baar kuch aisa kiya jo aaj science bhi explain nahi kar sakti.",
-            "Yeh ek prayer hai jo [N] saalon se log karte aa rahe hain — aur iska karan pata chala.",
+            "Ancient wisdom jo modern science abhi verify kar raha hai — [Shastra quote].",
+            "[Specific Gita verse] — iska meaning aaj ke [modern problem] ke liye perfect solution hai.",
+            "[Saint/Deity] ne ek baar kuch kiya jo aaj scientists copy kar rahe hain.",
+            "Thousands of years ka psychology hidden in this one practice — [Traditional ritual].",
         ],
         "motivation": [
-            "90% log [common mistake] karte hain — aur isi wajah se fail hote hain.",
-            "Woh ek chhoti si cheez jo successful log roz karte hain aur baaki log ignore karte hain.",
-            "Agar aaj se sirf [X] band kar do, toh [timeframe] mein zindagi badal jaayegi.",
-            "Failure ko success mein kaise badle — woh formula jo koi nahi batata.",
+            "Successful log jo [specific daily habit] karte hain — failed log skip karte hain.",
+            "[Real example of transformation] — yeh ek non-obvious choice se shuru hua.",
+            "[Specific counterintuitive insight] — jo setbacks ko actually breakthroughs mein convert karti hai.",
+            "Woh ek mindset shift jo [visible outcome] directly lata hai — yeh framework kaam karti hai.",
         ],
         "funny": [
-            "Bhai, ye sirf India mein hi ho sakta hai — [relatable situation].",
-            "Jab [typical Indian scenario] hota hai — [exaggerated reaction]. Sach mein!",
-            "[Indian stereotype] ki asli kahani — jo sirf hum Indians samjhenge.",
-            "Ek cheez jo hum Indians kabhi nahi chhod sakte — [relatable quirk].",
+            "Jab [extremely specific Indian situation] hota hai, toh hum [overly exaggerated reaction] karte hain.",
+            "[Desi stereotype] ka actual reality dekho — toh pata chalega sach kitna relatable hai.",
+            "Indian parents ke [specific behavior] — sab karte hain, kisi ne acknowledge nahi kiya till now.",
+            "[Specific Indian workplace/family scenario] jo har ek relatable ko trigger karega — Guarantee.",
         ],
         "business": [
-            "Woh ek business mistake jo [industry leaders] baar baar karte hain — aur aap bhi shayad.",
-            "₹0 se [X] tak — woh secret formula jo mainstream media nahi batata.",
-            "India ke top founders ne [X] kiya — yeh ek counterintuitive decision tha.",
-            "Agar [business principle] follow karo, toh [outcome] guaranteed hai.",
+            "Top 3 Indian founders ne [specific decision] — jo sirf ek formula apply karte hain.",
+            "₹50 crore se ₹500 crore tak — yeh [unique strategy] tha jo change maker ban gya.",
+            "[Specific business problem] — solution [unexpected approach] se aaya, not conventional.",
+            "Market data dekho: [X] strategy karte log [specific advantage] paate hain, doosre nahi.",
         ],
         "news": [
             "Breaking: [topic] ko lekar aaj jo hua, woh kisi ne expect nahi kiya tha.",
@@ -231,6 +231,12 @@ def _build_prompt(
             "Kya yeh product actually hype ke laayak hai? Aaj pata chalega.",
             "Unboxing: 2026 ka sabse satisfying gadget — dekho reaction!",
             "Yeh [product] mat kharido jab tak yeh video nahi dekh lete — seriously.",
+        ],
+        "anime": [
+            "[Character] ke paas koi power nahi thi — phir ek din sab badal gaya.",
+            "Duniya ne use weak samjha — yeh uski sabse badi galti thi.",
+            "Is story mein ek aisa twist hai jo koi predict nahi kar sakta — brace yourself.",
+            "[Character] 5 saal baad wapas aaya — aur ab koi nahi rok sakta.",
         ],
     }
 
@@ -314,6 +320,12 @@ def _build_prompt(
             f"Scene {num_scenes-1}: HONEST RATING — showing final face reaction/thumbs up.\n"
             f"Scene {num_scenes}: CTA — 'Link is in bio! Follow for more honest reviews!'"
         ),
+        "anime": (
+            f"Scene 1: POWER HOOK — dramatic close-up, energy awakening or shocking confrontation opener.\n"
+            f"Scenes 2–{max(2, num_scenes-2)}: ORIGIN & STRUGGLE — backstory reveal, training montage, escalating challenge.\n"
+            f"Scene {num_scenes-1}: PEAK MOMENT — climax battle, emotional resolution or transformation reveal.\n"
+            f"Scene {num_scenes}: CTA — 'Follow karo next episode ke liye — kahani abhi khatam nahi hui!'"
+        ),
     }
 
     # ── Visual palette anchors per style — serialized styles rotate per episode ─
@@ -374,6 +386,7 @@ def _build_prompt(
         "dance_trend": "Dynamic motion blur, neon accents, modern dance studio or urban street, energetic moving camera, front angle facing the lens.",
         "travel_vlog": "Vibrant cinematic landscapes, sun-kissed outdoor photography, epic nature views, bustling markets, traveler's perspective shots.",
         "product_review": "Clean studio desk, soft ring lighting, product close-ups, macro texture shots, aesthetic shelf backgrounds, modern minimalist styling.",
+        "anime": "Vibrant anime-style visuals — dramatic energy auras, expressive character close-ups, dynamic action blur, neon city skylines at night, intense battle poses, bold outlines, cinematic wide shots with dramatic lighting.",
     }
 
     hooks = hook_bank.get(style, hook_bank["motivation"])
@@ -641,6 +654,66 @@ def generate_mock_script(prompt: str, language: str, style: str, duration: int) 
     }
 
 
+def _build_image_script_prompt(
+    language: str,
+    style: str,
+    prompt: str,
+    num_slides: int,
+    content_type: str = "image_post",
+) -> str:
+    """Build prompt for image post / carousel — each scene gets its own slide_headline + slide_body."""
+    lang_note = (
+        "Hindi (Devanagari script)" if language == "hi"
+        else "Hinglish (Hindi+English mix, Roman script)" if language == "hinglish"
+        else "Kannada (ಕನ್ನಡ)" if language == "kn"
+        else "English"
+    )
+    style_guides = {
+        "news_image":       "breaking news/editorial. headline: punchy news statement ≤80 chars. body: one supporting fact ≤120 chars.",
+        "politics":         "bold political opinion. headline: strong provocative statement ≤80 chars. body: supporting angle ≤120 chars.",
+        "motivation_quote": "motivational quote card. headline: inspiring quote ≤100 chars. body: attribution or short expansion ≤60 chars.",
+        "did_you_know":     "facts/trivia card. headline: the surprising fact ≤140 chars. body: supporting detail ≤100 chars.",
+        "meme":             "funny meme. headline: setup/top text ≤80 chars. body: punchline/bottom text ≤80 chars.",
+        "education_story":  "educational lesson. headline: key lesson title ≤80 chars. body: brief explanation ≤120 chars.",
+    }
+    style_guide = style_guides.get(style, "image post. headline: main text. body: supporting text.")
+    format_note = (
+        f"This is a {num_slides}-slide CAROUSEL. Each slide MUST have DIFFERENT, UNIQUE text — "
+        "think of each slide as a new point or step in a series."
+        if content_type == "carousel_post" and num_slides > 1
+        else "This is a single image post."
+    )
+    example_scenes = "\n".join(
+        f'    {{"id": {i+1}, "visual": "background image description for AI generation, no text in image, 9:16 portrait", '
+        f'"slide_headline": "unique headline for slide {i+1}", "slide_body": "supporting text for slide {i+1}"}}'
+        for i in range(num_slides)
+    )
+    return f"""You are an expert Instagram image post copywriter for Indian content creators.
+
+Topic: {prompt}
+Style: {style.upper()} — {style_guide}
+Language: {lang_note}
+{format_note}
+
+STRICT RULES:
+- Each slide MUST have a DIFFERENT slide_headline — never repeat across slides
+- slide_headline: punchy, impactful, ≤90 chars
+- slide_body: supporting detail, ≤130 chars (empty string if not needed)
+- visual: SPECIFIC 15-20 word image description for AI image gen. Include: subject, setting, lighting, mood. NO TEXT in image.
+- Write EXACTLY {num_slides} scenes
+
+Return ONLY valid JSON:
+{{
+  "scenes": [
+{example_scenes}
+  ],
+  "narration": "brief combined summary of all slides",
+  "hook": "most compelling headline from all slides",
+  "caption": "Instagram caption with emoji + CTA",
+  "hashtags": ["#tag1", "#tag2", "#tag3", "#tag4", "#tag5", "#tag6", "#tag7", "#tag8"]
+}}"""
+
+
 async def generate_script(
     prompt: str,
     language: str,
@@ -653,6 +726,7 @@ async def generate_script(
     series_type: str = "regular",
     character_profile: dict | None = None,
     episode_number: int = 1,
+    content_type: str = "video",
 ) -> dict:
     """Generate video script using GPT-4o-mini with structured scene-by-scene format."""
     is_unconfigured = (
@@ -667,7 +741,10 @@ async def generate_script(
     try:
         client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 
-        if character and character in CHARACTER_PROMPTS:
+        if content_type in ("image_post", "carousel_post"):
+            system_prompt = _build_image_script_prompt(language, style, prompt, num_scenes, content_type)
+            user_message = f"Create image post content for: {prompt}"
+        elif character and character in CHARACTER_PROMPTS:
             # Inject scene count into character prompt
             char_base = CHARACTER_PROMPTS[character]
             system_prompt = (
@@ -686,6 +763,7 @@ async def generate_script(
                     f"Pick up where it left off, and end with a cliffhanger or transition."
                 )
             system_prompt = system_prompt.format(prompt=prompt, duration=duration)
+            user_message = f"Create a viral reel script for: {prompt}"
         else:
             system_prompt = _build_prompt(
                 language,
@@ -699,6 +777,7 @@ async def generate_script(
                 character_profile=character_profile,
                 episode_number=episode_number,
             )
+            user_message = f"Create a viral reel script for: {prompt}"
 
         # Devanagari/script chars cost ~2-4 tokens each; 6 scenes × 90s needs ~2500 tokens
         tokens_needed = max(2500, num_scenes * 250 + 500)
@@ -711,7 +790,7 @@ async def generate_script(
             response_format={"type": "json_object"},
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Create a viral reel script for: {prompt}"},
+                {"role": "user", "content": user_message},
             ],
         )
 

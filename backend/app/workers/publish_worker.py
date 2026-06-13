@@ -79,14 +79,14 @@ def _fail(job, db, error: str):
 
 
 def _publish_instagram(job, project, acct, db):
-    """Publish to Instagram Reels."""
+    """Publish to Instagram: image post, carousel, or reel."""
     import httpx
     from datetime import datetime, timezone
     from app.core.security import decrypt_token, encrypt_token
 
     access_token = decrypt_token(acct.access_token)
 
-    # Try to refresh IG token (long-lived tokens, refresh if approaching expiry)
+    # Try to refresh IG token
     try:
         with httpx.Client(timeout=30) as client:
             refresh_resp = client.get(
@@ -106,36 +106,89 @@ def _publish_instagram(job, project, acct, db):
     if job.hashtags:
         full_caption += "\n" + " ".join(job.hashtags)
 
+    content_type = getattr(project, "content_type", "video")
+
     with httpx.Client(timeout=60) as client:
-        container_resp = client.post(
-            f"https://graph.instagram.com/v18.0/{acct.platform_user_id}/media",
-            params={
-                "video_url": project.video_url,
-                "caption": full_caption,
-                "media_type": "REELS",
-                "access_token": access_token,
-            },
-        )
-        container_data = container_resp.json()
-        container_id = container_data.get("id")
-        if not container_id:
-            raise Exception(f"Failed to create IG container: {container_data}")
-
-        # Poll until FINISHED
-        for _ in range(30):
-            time.sleep(5)
-            status_resp = client.get(
-                f"https://graph.instagram.com/v18.0/{container_id}",
-                params={"fields": "status_code,status", "access_token": access_token},
+        if content_type == "image_post":
+            # Single image — no polling needed
+            container_resp = client.post(
+                f"https://graph.instagram.com/v18.0/{acct.platform_user_id}/media",
+                params={
+                    "image_url": project.video_url,
+                    "caption": full_caption,
+                    "access_token": access_token,
+                },
             )
-            status_data = status_resp.json()
-            if status_data.get("status_code") == "FINISHED":
-                break
-            if status_data.get("status_code") == "ERROR":
-                raise Exception(f"IG container error: {status_data}")
-        else:
-            raise Exception("IG container timed out (150s)")
+            container_data = container_resp.json()
+            container_id = container_data.get("id")
+            if not container_id:
+                raise Exception(f"Failed to create IG image container: {container_data}")
 
+        elif content_type == "carousel_post":
+            # Carousel — create child containers, then wrapper
+            image_urls = (project.script_json or {}).get("image_urls", [project.video_url])
+            child_ids = []
+            for img_url in image_urls:
+                child_resp = client.post(
+                    f"https://graph.instagram.com/v18.0/{acct.platform_user_id}/media",
+                    params={
+                        "image_url": img_url,
+                        "is_carousel_item": "true",
+                        "access_token": access_token,
+                    },
+                )
+                child_data = child_resp.json()
+                child_id = child_data.get("id")
+                if not child_id:
+                    raise Exception(f"Failed to create carousel child: {child_data}")
+                child_ids.append(child_id)
+
+            carousel_resp = client.post(
+                f"https://graph.instagram.com/v18.0/{acct.platform_user_id}/media",
+                params={
+                    "media_type": "CAROUSEL",
+                    "children": ",".join(child_ids),
+                    "caption": full_caption,
+                    "access_token": access_token,
+                },
+            )
+            carousel_data = carousel_resp.json()
+            container_id = carousel_data.get("id")
+            if not container_id:
+                raise Exception(f"Failed to create carousel container: {carousel_data}")
+
+        else:
+            # REELS — original flow with polling
+            container_resp = client.post(
+                f"https://graph.instagram.com/v18.0/{acct.platform_user_id}/media",
+                params={
+                    "video_url": project.video_url,
+                    "caption": full_caption,
+                    "media_type": "REELS",
+                    "access_token": access_token,
+                },
+            )
+            container_data = container_resp.json()
+            container_id = container_data.get("id")
+            if not container_id:
+                raise Exception(f"Failed to create IG container: {container_data}")
+
+            # Poll until FINISHED
+            for _ in range(30):
+                time.sleep(5)
+                status_resp = client.get(
+                    f"https://graph.instagram.com/v18.0/{container_id}",
+                    params={"fields": "status_code,status", "access_token": access_token},
+                )
+                status_data = status_resp.json()
+                if status_data.get("status_code") == "FINISHED":
+                    break
+                if status_data.get("status_code") == "ERROR":
+                    raise Exception(f"IG container error: {status_data}")
+            else:
+                raise Exception("IG container timed out (150s)")
+
+        # Publish (same for all types)
         publish_resp = client.post(
             f"https://graph.instagram.com/v18.0/{acct.platform_user_id}/media_publish",
             params={"creation_id": container_id, "access_token": access_token},

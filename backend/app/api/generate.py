@@ -20,12 +20,16 @@ VALID_CHARACTERS = {"raju_bhaiya", "priya_di", "professor_sharma", "rohit_anchor
 class GenerateRequest(BaseModel):
     prompt: str = Field(..., min_length=10, max_length=500)
     language: str = Field("hi", pattern="^(hi|en|hinglish|kn)$")
-    style: str = Field("motivation", pattern="^(funny|devotional|motivation|business|news|storytelling|mystery|facts|daily_routine|outfit_check|dance_trend|travel_vlog|product_review)$")
+    style: str = Field("motivation", pattern="^(funny|devotional|motivation|business|news|storytelling|mystery|facts|daily_routine|outfit_check|dance_trend|travel_vlog|product_review|motivation_quote|did_you_know|meme|politics|news_image|education_story|anime)$")
     voice_id: str = Field("rohit_m", pattern="^(rohit_m|priya_f|arjun_m|ananya_f|kavya_f|vikram_m)$")
     duration: int = Field(60, ge=30, le=90)
     template_id: str | None = None
     character: str | None = None
     enable_captions: bool = True
+    content_type: str = Field("video", pattern="^(video|image_post|carousel_post)$")
+    image_count: int = Field(1, ge=1, le=5)
+    brand_handle: str | None = None
+    color_theme: str | None = None
 
 
 class GenerateResponse(BaseModel):
@@ -41,6 +45,7 @@ class StatusResponse(BaseModel):
     video_url: str | None = None
     thumbnail_url: str | None = None
     error: str | None = None
+    content_type: str = "video"
 
 
 @router.post("", response_model=GenerateResponse, status_code=status.HTTP_202_ACCEPTED)
@@ -84,6 +89,8 @@ async def start_generation(
         voice_id=body.voice_id,
         duration_target=body.duration,
         template_id=body.template_id,
+        content_type=body.content_type,
+        image_count=body.image_count,
         status="pending",
         title=body.prompt[:80],
     )
@@ -114,6 +121,10 @@ async def start_generation(
         user_plan=current_user.plan,
         character=body.character,
         enable_captions=body.enable_captions,
+        content_type=body.content_type,
+        image_count=body.image_count,
+        brand_handle=body.brand_handle,
+        color_theme=body.color_theme,
         job_timeout=600,
     )
 
@@ -124,7 +135,7 @@ async def start_generation(
 
 
 class IdeaRequest(BaseModel):
-    style: str = Field("motivation", pattern="^(funny|devotional|motivation|business|news|storytelling)$")
+    style: str = Field("motivation")
     language: str = Field("hi", pattern="^(hi|en|hinglish|kn)$")
 
 
@@ -148,7 +159,28 @@ async def generate_idea(
         "business": "business and entrepreneurship tips for Indian small businesses and startups",
         "news": "news and current affairs commentary for Indian audiences",
         "storytelling": "emotional short stories for Indian audiences — personal journeys, slice-of-life, real human moments with a strong narrative arc",
+        # Image post styles
+        "motivation_quote": "powerful motivational quote with context — an inspiring sentence or two that will work as an Instagram quote card for Indian audiences",
+        "did_you_know": "surprising fact or trivia — a single mind-blowing fact about science, history, or Indian culture that works as a 'Did You Know?' image card",
+        "meme": "funny relatable Indian meme concept — describe the image and bold text caption that will make Indians laugh or nod",
+        "politics": "bold opinion or commentary on Indian politics or current affairs — an angle that sparks discussion",
+        "news_image": "breaking news or current event headline — a punchy news-style statement about India or world events",
+        "education_story": "short educational story or explanation — a concept taught through a simple relatable story or step-by-step breakdown",
     }
+
+    # Fallback for any unknown style
+    if body.style not in style_map:
+        style_map[body.style] = f"{body.style} content for Indian audiences"
+    is_image_style = body.style in ("motivation_quote", "did_you_know", "meme", "politics", "news_image", "education_story")
+    system_prompt = (
+        "You write creative, specific image post prompt ideas for Indian Instagram creators. "
+        "A good prompt describes the visual content, text overlay, and emotional hook for a single image card. "
+        "Return ONLY the prompt text — one to two sentences, no labels, no quotes."
+        if is_image_style else
+        "You write creative, specific reel prompt ideas for Indian short-video creators. "
+        "A good prompt describes WHAT happens in the video, the angle, and the emotional hook. "
+        "Return ONLY the prompt text — one sentence to one paragraph, no labels, no quotes."
+    )
 
     client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
     resp = await client.chat.completions.create(
@@ -156,16 +188,12 @@ async def generate_idea(
         messages=[
             {
                 "role": "system",
-                "content": (
-                    "You write creative, specific reel prompt ideas for Indian short-video creators. "
-                    "A good prompt describes WHAT happens in the video, the angle, and the emotional hook. "
-                    "Return ONLY the prompt text — one sentence to one paragraph, no labels, no quotes."
-                ),
+                "content": system_prompt,
             },
             {
                 "role": "user",
                 "content": (
-                    f"Generate a single fresh, specific reel idea for the style: {style_map[body.style]}. "
+                    f"Generate a single fresh, specific idea for the style: {style_map[body.style]}. "
                     f"Language: {lang_map[body.language]}. "
                     "Be creative, specific, and ready-to-use. Not generic. One idea only."
                 ),

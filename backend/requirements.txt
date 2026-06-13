@@ -22,3 +22,4 @@ razorpay>=1.4.2
 setuptools==67.8.0
 email-validator==2.1.1
 apscheduler==3.10.4
+Pillow>=10.0.0

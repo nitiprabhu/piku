@@ -19,6 +19,8 @@ class Project(Base):
     voice_id: Mapped[str | None] = mapped_column(String(50), nullable=True)
     duration_target: Mapped[int | None] = mapped_column(Integer, nullable=True)
     template_id: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    content_type: Mapped[str] = mapped_column(String(20), default="video", server_default="video")
+    image_count: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
 
     # Status
     status: Mapped[str] = mapped_column(String(20), default="pending")

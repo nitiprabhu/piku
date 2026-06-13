@@ -390,6 +390,12 @@ async def youtube_publish(
     if not project or not project.video_url:
         raise HTTPException(status_code=404, detail="Project not found or video not ready")
 
+    if getattr(project, "content_type", "video") != "video":
+        raise HTTPException(
+            status_code=400,
+            detail="YouTube publishing is not supported for image posts. Only video reels can be published to YouTube.",
+        )
+
     pj = PublishJob(
         project_id=project.id,
         user_id=current_user.id,

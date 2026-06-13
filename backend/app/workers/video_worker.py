@@ -37,6 +37,10 @@ def process_video_job(
     series_type: str = "regular",
     character_profile: dict | None = None,
     episode_number: int = 1,
+    content_type: str = "video",
+    image_count: int = 1,
+    brand_handle: str | None = None,
+    color_theme: str | None = None,
 ):
     """Main RQ worker function — orchestrates full video generation pipeline."""
     from app.database import AsyncSessionLocal
@@ -66,6 +70,108 @@ def process_video_job(
 
     tmp_dir = Path(tempfile.mkdtemp())
 
+    async def _run_image_post_workflow(project, db):
+        """Image post workflow — single image or carousel."""
+        from app.services.ai.script_generator import generate_script
+        from app.services.ai.image_service import generate_image_for_scene
+        from app.services.ai.image_compositor import composite_image, extract_compositor_content, extract_compositor_content_for_scene, IMAGE_STYLES
+        from app.services.storage.r2_client import upload_to_r2
+        from app.services.viral_score import calculate_viral_score
+
+        publish_progress(job_id, "generating_script", 10)
+        num_scenes = image_count
+        script = await generate_script(
+            prompt,
+            language,
+            style,
+            duration=30,
+            character=character,
+            num_scenes=num_scenes,
+            series_type=series_type,
+            character_profile=character_profile,
+            content_type=content_type,
+        )
+        project.script_json = script
+        db.commit()
+        publish_progress(job_id, "script_done", 30)
+
+        publish_progress(job_id, "generating_image", 50)
+        _scenes = script.get("scenes", [])[:num_scenes]
+        _visuals = (
+            [s.get("visual", prompt) for s in _scenes]
+            if (_scenes and _scenes[0].get("visual"))
+            else script.get("visual_keywords", [prompt])[:num_scenes]
+        )
+        while len(_visuals) < num_scenes:
+            _visuals.append(prompt)
+
+        image_paths = await asyncio.gather(*[
+            generate_image_for_scene(
+                scene_visual=visual,
+                style=style,
+                series_type=series_type,
+                character_profile=character_profile,
+                brand_handle=brand_handle,
+                color_theme=color_theme,
+            )
+            for visual in _visuals
+        ])
+        publish_progress(job_id, "image_done", 80)
+
+        # Apply PIL text compositor for image post styles — per-slide content
+        composed_paths = []
+        for i, img_path in enumerate(image_paths):
+            if style in IMAGE_STYLES:
+                scene = _scenes[i] if i < len(_scenes) else {}
+                # Use per-scene slide_headline/slide_body if present, else fall back to narration-level
+                if scene.get("slide_headline"):
+                    slide_content = extract_compositor_content_for_scene(scene, style)
+                else:
+                    slide_content = extract_compositor_content(script, style)
+                composed = await asyncio.to_thread(
+                    composite_image,
+                    img_path,
+                    style,
+                    slide_content,
+                    brand_handle or "",
+                )
+                composed_paths.append(composed)
+            else:
+                composed_paths.append(img_path)
+
+        image_urls = []
+        for i, img_path in enumerate(composed_paths):
+            url = await upload_to_r2(img_path, f"images/{project_id}/slide_{i}.jpg")
+            image_urls.append(url)
+
+        _cogs_inr = round(len(image_urls) * 0.25 + 0.04, 2)
+        print(f"[cost] project={project_id} type={content_type} imgs={len(image_urls)} cogs=₹{_cogs_inr}")
+
+        project.status = "completed"
+        project.video_url = image_urls[0]
+        project.thumbnail_url = image_urls[0]
+        project.viral_score = calculate_viral_score(script, 30, style)
+        project.caption_text = script.get("caption", "")
+        project.hashtags = script.get("hashtags", [])
+
+        if content_type == "carousel_post":
+            project.script_json = script | {"image_urls": image_urls}
+        else:
+            project.script_json = script
+
+        db.commit()
+
+        publish_progress(
+            job_id,
+            "completed",
+            100,
+            event="completed",
+            video_url=image_urls[0],
+            thumbnail_url=image_urls[0],
+            viral_score=project.viral_score,
+            content_type=content_type,
+        )
+
     async def run_workflow():
         try:
             project = db.query(Project).filter(Project.id == project_id).first()
@@ -75,6 +181,10 @@ def process_video_job(
             project.status = "processing"
             project.job_id = job_id
             db.commit()
+
+            # Branch on content_type
+            if content_type in ("image_post", "carousel_post"):
+                return await _run_image_post_workflow(project, db)
 
             use_premium = False  # WAN 1.3B for all plans
 
