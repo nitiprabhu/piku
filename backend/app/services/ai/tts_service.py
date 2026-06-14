@@ -99,7 +99,7 @@ def _concat_wavs(wav_bytes_list: list[bytes]) -> Path:
     return out
 
 
-async def _sarvam_tts(text: str, voice_id: str, speed: float) -> str:
+async def _sarvam_tts(text: str, voice_id: str, pace: float, pitch: float) -> str:
     """Sarvam AI TTS. Returns mp3 path."""
     cfg = _SARVAM_VOICE_MAP[voice_id]
     chunks = _chunk_text(text, max_chars=500)
@@ -120,7 +120,8 @@ async def _sarvam_tts(text: str, voice_id: str, speed: float) -> str:
                     "model": "bulbul:v2",
                     "speech_sample_rate": 22050,
                     "enable_preprocessing": True,
-                    "pace": max(0.5, min(2.0, speed * 1.15)),
+                    "pace": max(0.5, min(2.0, pace)),
+                    "pitch": max(-2.0, min(2.0, pitch)),
                 },
             )
             if not resp.is_success:
@@ -168,23 +169,6 @@ async def _openai_tts(text: str, voice_id: str, speed: float) -> str:
     return str(tmp_path)
 
 
-def _deepen_voice(mp3_path: str) -> str:
-    """
-    Deepen voice using EQ — boosts bass frequencies, cuts highs.
-    No pitch shifting (avoids speed/quality artifacts).
-    Uses equalizer filter: boost 80-200Hz, cut 3k-8kHz.
-    """
-    out_path = Path(tempfile.mktemp(suffix=".mp3"))
-    # Boost bass (+6dB at 120Hz), slightly cut upper mids (-3dB at 5kHz)
-    af = "equalizer=f=120:t=o:w=1:g=6,equalizer=f=5000:t=o:w=2:g=-3"
-    subprocess.run(
-        ["ffmpeg", "-y", "-i", mp3_path, "-af", af, "-codec:a", "libmp3lame", "-q:a", "2", str(out_path)],
-        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-    )
-    Path(mp3_path).unlink(missing_ok=True)
-    return str(out_path)
-
-
 def _silent_audio(duration: int) -> str:
     tmp_path = Path(tempfile.mktemp(suffix=".mp3"))
     try:
@@ -197,7 +181,7 @@ def _silent_audio(duration: int) -> str:
     return str(tmp_path)
 
 
-async def generate_voice(text: str, voice_id: str, speed: float = 1.0) -> str:
+async def generate_voice(text: str, voice_id: str, speed: float = 1.0, style: str = "motivation") -> str:
     """
     Generate TTS.
 
@@ -209,6 +193,32 @@ async def generate_voice(text: str, voice_id: str, speed: float = 1.0) -> str:
     words = text.split()
     estimated_duration = max(int(len(words) / 2.5), 3)
 
+    # Dynamic speaking styles
+    base_pace = 1.0
+    base_pitch = 0.0
+    if style in ["news", "business"]:
+        base_pace = 1.15
+        base_pitch = 0.0
+    elif style in ["devotional", "storytelling"]:
+        base_pace = 0.90
+        base_pitch = -0.5
+    elif style == "motivation":
+        base_pace = 1.05
+        base_pitch = 0.2
+    elif style in ["mystery", "scary"]:
+        base_pace = 0.95
+        base_pitch = -0.3
+    elif style == "funny":
+        base_pace = 1.10
+        base_pitch = 0.3
+    
+    final_pace = base_pace * speed
+    final_pitch = base_pitch
+
+    if settings.MOCK_AI:
+        print(f"⚠️ MOCK_AI enabled. Generating {estimated_duration}s silent audio for TTS.")
+        return _silent_audio(estimated_duration)
+
     sarvam_ok = bool(
         settings.SARVAM_API_KEY
         and settings.SARVAM_API_KEY not in ("", "sk-...")
@@ -217,15 +227,13 @@ async def generate_voice(text: str, voice_id: str, speed: float = 1.0) -> str:
 
     if sarvam_ok:
         try:
-            path = await _sarvam_tts(text, voice_id, speed)
-            return _deepen_voice(path)
+            return await _sarvam_tts(text, voice_id, final_pace, final_pitch)
         except Exception as e:
             print(f"⚠️ Sarvam TTS failed: {e}. Falling back to OpenAI.")
 
     if settings.OPENAI_API_KEY:
         try:
-            path = await _openai_tts(text, voice_id, speed)
-            return _deepen_voice(path)
+            return await _openai_tts(text, voice_id, speed)
         except Exception as e:
             print(f"⚠️ OpenAI TTS failed: {e}. Falling back to silent audio.")
 

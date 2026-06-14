@@ -14,13 +14,16 @@ async def generate_image_clip(
     scene_index: int = 0,
     series_type: str = "regular",
     character_profile: dict | None = None,
+    plan: str = "free",
+    first_scene_visual: str | None = None,
 ) -> str:
     """Generate a clip via AI image + Ken Burns effect. ~$0.003/scene vs $0.09 for WAN2.1."""
     from app.services.ai.image_service import generate_image_for_scene
     from app.services.video.ken_burns import image_to_clip
 
     image_path = await generate_image_for_scene(
-        scene_visual, style, series_type=series_type, character_profile=character_profile
+        scene_visual, style, series_type=series_type, character_profile=character_profile,
+        plan=plan, scene_index=scene_index, first_scene_visual=first_scene_visual
     )
     # Ken Burns is CPU-bound subprocess — run in thread to not block event loop
     return await asyncio.to_thread(image_to_clip, image_path, duration, scene_index)
@@ -163,12 +166,15 @@ async def generate_all_clips(
     durations = scene_durations[:max_clips]
     print(f"[video] plan={plan} max_clips={max_clips} provider={settings.VIDEO_PROVIDER} generating {len(keywords)} clips")
 
+    first_scene_visual = keywords[0] if keywords else None
+
     # Image + Ken Burns pipeline: ~$0.003/clip vs $0.09 for WAN2.1
     if settings.VIDEO_PROVIDER.lower() == "image":
         tasks = [
             generate_image_clip(
                 kw, dur, style, image_style, i,
-                series_type=series_type, character_profile=character_profile
+                series_type=series_type, character_profile=character_profile,
+                plan=plan, first_scene_visual=first_scene_visual
             )
             for i, (kw, dur) in enumerate(zip(keywords, durations))
         ]

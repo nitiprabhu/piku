@@ -214,7 +214,7 @@ def process_video_job(
             publish_progress(job_id, "generating_voice", 25)
 
             voice_path, music_path = await asyncio.gather(
-                generate_voice(script["narration"], voice_id),
+                generate_voice(script["narration"], voice_id, speed=1.0, style=style),
                 generate_background_music(style, duration),
             )
 

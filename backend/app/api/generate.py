@@ -220,6 +220,8 @@ async def get_job_status(
     cached = redis_conn.get(f"job_status:{job_id}")
     if cached:
         data = json.loads(cached)
+        if "status" not in data:
+            data["status"] = "processing" if data.get("event") == "progress" else data.get("event", "pending")
         return StatusResponse(**data)
 
     # Fallback: check project in DB

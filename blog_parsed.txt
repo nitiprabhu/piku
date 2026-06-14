@@ -1,0 +1,308 @@
+Title: Live Content
+
+Description: Fetched live
+
+Source: https://www.imagine.art/blogs/ai-video-prompts
+
+---
+74 AI Video Prompts Every Content Creator Should Try | ImagineArt
+Try the New ImagineArt! 🎉 Smarter, Faster, Better!
+Try now
+Blog
+Tools
+Editing Tools
+AI Video Editor
+Create and edit videos with AI transitions and effects.
+AI Image Editor
+Edit, retouch, and transform images with AI tools.
+Kling AI Motion Control
+Add dynamic motion to static images with AI-powered animation controls.
+AI Image Generator
+BG Remover
+AI Anime Generator
+AI Image Combiner
+AI Image Face Swap
+AI Image Replace
+AI Video Generator
+AI Heygen Avatar
+AI Animation Generator
+AI Product Video Maker
+AI Video Object Removal
+AI Video Recolor
+AI Video background Changer
+AI Models
+Seedance 2.0
+Kling 3.0
+Seedream 5.0
+Recraft V4
+Runway Gen 4.5
+Imagen V3
+Explore All
+Community
+Connect
+Unlock the future of creativity with our Generative AI community—where art, video, and images are born from the power of AI imagination!
+Discord
+Facebook
+Instagram
+Pinterest
+Reddit
+Snapchat
+Twitter
+YouTube
+WhatsApp
+Affiliate
+API
+Creators
+Pricing
+Launch App
+Home
+Blogs
+Ai-video-prompts
+74 AI Video Prompts Every Content Creator Should Try | ImagineArt
+Looking for AI video prompts for ads, tutorials, cinematic, social media, and more? Explore 74 prompts to turn your ideas into stunning AI videos.
+Create AI Videos
+Tooba Siddiqui
+Fri Feb 20 2026
+• Updated Wed Jun 03 2026
+18
+mins Read
+ON THIS PAGE
+Essential Prompt Writing Tips
+74 AI Video Prompts to Inspire Your Next Video
+Product Ad Videos
+Cinematic Videos
+Realistic Videos
+Marketing Videos
+Explainer Videos
+AI Avatar Videos
+Editorial Videos
+Social Media Videos
+ASMR Videos
+Educational Videos
+Food Videos
+Seasonal Videos
+UGC Videos
+Animate these AI video prompts with ImagineArt
+Copy link
+Generating an AI video that reflects your imagined concept can be tricky. The narrative doesn’t flow well, the scenes don’t transition correctly, or the entire composition just misses the mark.
+The quality of
+AI video generation
+depends on the quality of prompt. Prompting bridges your imagination and AI video creation. That’s why understanding AI video prompts is important. I have compiled a list of 74 prompts divided into different categories to help you experiment and create production-ready clips.
+Essential Prompt Writing Tips
+In essence, prompt works as a blueprint for AI video generation. It tells AI video generator what to compose, how to frame, and how to move camera or light the scene. An effective AI video prompt is clear, detailed, and creative. Write an abstract prompt, and AI video tool will struggle to create anything useful. Make your prompt too cluttered, and AI will misinterpret your creative vision.
+Here’s a prompt template that you can use for effective AI video prompting:
+[Subject/Action] in [Environment/Setting], [Camera angle/movement], [Lighting/Mood], [Style/Genre], [Additional Details/Effects]
+However, different AI video models handle prompts in different ways. For example:
+Veo 3.1 accepts JSON-style prompts, which lets you structure multiple elements like camera angles, lighting, and effects in a single, organized input.
+Seedance 2.0 supports multi-shot prompting, so you can describe several consecutive shots in one prompt for dynamic storytelling.
+Kling 3.0 also accepts multi-shot prompts, but it can produce equally great results even with simpler prompts, making it great for beginners or fast iterations.
+Here are some best practices for AI video generation prompts:
+1. Start With Clarity
+Define exactly what’s happening. Have a clear idea about your characters, scenes, and overall the theme and visual style of your AI video.
+2. Add Cinematic Language
+Include these terms in your AI video prompt:
+Slow dolly-in
+Tracking shot
+Crane shot
+Handheld camera
+Macro close-up
+360° orbit
+These camera movements dramatically improve storytelling and add visual depth to your video content.
+3. Define Lighting
+The realism of your AI video depends heavily on lighting:
+Soft diffused lighting
+Golden hour glow
+Neon cyberpunk lighting
+High-contrast studio lighting
+4. Specify Visual Style
+Mentioning visual style guides AI about the scene composition and desired theme of your AI video. Use words like cinematic, realistic, documentary, editorial, UGC-style, hyper-detailed, etc.
+Recommended read:
+JSON Prompting for AI Video Generation
+74 AI Video Prompts to Inspire Your Next Video
+Product Ad Videos
+These video prompts help you portray your products with cinematic flair. Experiment with different camera movements and angles to get the best shot of your product. You can use these AI video prompts to as templates or refine them to fit your brand voice.
+Create a cinematic luxury skincare advertisement featuring a transparent glass serum bottle placed on polished white marble. Tiny water droplets slide down the bottle surface. Begin with an extreme macro close-up of the brand logo, then perform a slow dolly-out revealing the full product. Use soft diffused studio lighting with subtle golden highlights. Add shallow depth of field, ultra-realistic textures, and elegant minimalist background. Mood: premium, clean, aspirational.
+Open on a dark screen with subtle ambient electronic sound. A beam of neon blue light reveals a sleek smartwatch floating in mid-air. Perform a 360° orbit camera movement around the watch while the screen interface animates. Use dramatic rim lighting and cyberpunk color accents (blue and purple). End with a slow zoom-in on the watch face in ultra-detailed 4K.
+Show coffee beans falling in slow motion onto a rustic wooden table. Transition into a cinematic close-up of hot coffee being poured into a ceramic mug with steam rising naturally. Use warm golden hour lighting streaming through a window. Include smooth tracking shots and shallow depth of field for realism. Mood: comforting, cozy, morning ritual.
+Set on a rooftop at sunset overlooking a city skyline. Start with macro close-ups of sneaker texture and stitching. Cut to a low-angle tracking shot of a model lacing the shoes. Transition into a dynamic running sequence using steady cam motion. Vibrant orange sky lighting, energetic tone.
+Black reflective studio floor. Spotlight glides slowly across a crystal perfume bottle. Begin with a crane shot descending from darkness to product level. Use high-contrast lighting and dramatic shadows. Add soft fog in background for depth.
+Ultra-modern tech lab environment. Phone rotates slowly in mid-air while holographic UI projections appear around it. Smooth orbit camera movement, cool white lighting, clean aesthetic, hyper-detailed textures.
+Recommended read
+:
+How to Make Video Ads
+Generate AI Product Ad Videos
+Cinematic Videos
+Cinematic videos are all about storytelling, mood, visual depth. With the right prompt, you can direct like a filmmaker, controlling the camera movements, scene composition, lighting, and visual effects. Use these prompts if you want to create short-films, emotionally-driven narratives, or film trailers. You can add your own character and scene details to refine these prompts. Pair these prompts with ImagineArt's
+AI film studio
+to take your idea from a single shot to a finished short film.
+Capture a hyper-realistic, cinematic image of a soldier running through a war-torn battlefield. The soldier, dressed in a dirty, weathered World War I uniform, is sprinting with determination. His face is covered in grime, with intense, fearful eyes. Explosions and flying debris illuminate the background, casting dramatic lighting on the soldier. The environment is chaotic, with smoke, fire, and destruction all around, emphasizing the urgency and intensity of the moment.
+Crowded train station at golden hour. Two characters lock eyes across the platform. Use slow-motion movement as they embrace. Start with medium framing, then execute a slow dolly-in to capture facial emotion. Warm color grading.
+Nighttime futuristic city filled with neon billboards and flying vehicles. Aerial drone-style camera glides between skyscrapers. Wet reflective streets below. Blue-pink lighting palette.
+Wide-angle lens capturing endless desert dunes at sunset. A lone silhouette walks toward the horizon. Slow cinematic zoom. Lens flare from sun. Epic, atmospheric tone.
+Dimly lit hallway with flickering fluorescent lights. Camera follows character using handheld subtle shake. Slow forward movement. Shadows deepen tension.
+Close-up of a person sitting beside a rain-covered window at night. City lights blurred in background. Slow dolly-in. Soft blue lighting. Emotional and intimate.
+Recommended read:
+How to Make Cinematic Video with AI
+Generate Cinematic AI Videos
+Realistic Videos
+Realistic AI videos focus on capturing the natural lighting, subtleties of expressions, shift in camera focus and motion. The framing and environment need to be believeable with realistic detailing. If you want to create videos that look life and authentic, try these prompts.
+A mother prepares breakfast in a sunlit kitchen, gently arranging plates and utensils. Natural window light spills across counters, highlighting textures. Handheld documentary-style camera follows her movements, with slight subtle pans and natural ambient sounds implied. Mood: warm, authentic, and intimate, emphasizing everyday domestic life.
+Outdoor city plaza with people passing in soft focus. Interview subject speaks naturally, using small expressive gestures. Camera performs a gentle pan, maintaining focus on the speaker. Soft daylight illuminates face evenly, while background pedestrians are blurred realistically. Mood: approachable, authentic, and documentary-style.
+Modern boardroom with team collaborating around a table. Individuals gesture, take notes, and engage in discussion. Smooth side-to-side pan captures expressions and interactions. Neutral overhead lighting ensures clarity, with subtle shadows for depth. Mood: professional, focused, and relatable corporate atmosphere.
+Golden retriever runs joyfully through a sunlit grassy park. Slow-motion capture emphasizes movement and playful energy. Warm golden light highlights fur and surrounding grass. Camera tracks dog with slight follow-pan, shallow depth of field blurring background. Mood: cheerful, natural, and lively, capturing candid outdoor moments.
+Two friends laugh and converse at a cozy café table. Warm ambient lighting reflects on wooden surfaces. Gentle tracking shot circles the table, capturing interactions from multiple angles. Background softly blurred to maintain focus on subjects. Mood: relaxed, sociable, and authentic lifestyle content.
+Young professional working on a laptop in a minimalist apartment. Subtle gestures like typing, glancing at notes, or sipping coffee. Soft natural light streams through windows, illuminating the workspace. Static cinematic framing with occasional slight camera tilt for realism. Mood: calm, focused, and relatable modern lifestyle.
+Recommended read
+:
+How to Make Realistic Videos with AI
+Generate AI Realistic Videos
+Marketing Videos
+Marketing videos are a blend of storytelling and strategy. A great AI video prompt for marketing content showcases the product features and highlights the problem and solution. With dynamic camera movements and targeted content, these prompts are perfect for promotional content, ads, and more.
+Show a messy desk transforming into an organized digital workspace. Begin with a wide split-screen, then perform a smooth zoom merging both sides. Bright optimistic lighting enhances clarity. Include subtle hand gestures, soft focus on key items, and natural reflections on surfaces for a polished professional feel.
+Gym scene starting with low-energy warm-up. Transition into high-intensity training montage with tracking shots following athletes. Include dynamic close-ups of motion and sweat droplets. Use bright lighting and vibrant gym colors. Pacing: energetic, motivational, fast cuts between exercises. Mood: empowering, aspirational, and inspiring action.
+Feature a product in center-frame with dynamic zoom cuts highlighting textures and features. Background: bright and colorful with subtle gradient lighting. Include slow-motion sequences and camera pans over intricate product details. Mood: eye-catching, fun, and persuasive. Perfect for social media or e-commerce campaigns.
+Cinematic montage of entrepreneurs working late at modern offices. Use slow-motion and subtle dolly-ins to emphasize focus and determination. Lighting: warm ambient lamps contrasting with soft computer screens. Include tracking shots across desks and subtle motion graphics of charts. Mood: inspiring, professional, aspirational.
+Medium shot of a confident customer speaking naturally in their environment. Soft window light illuminates face with warm reflections. Use subtle dolly-in during key moments, occasional over-the-shoulder angles for context. Include minor hand gestures and natural background blur for authenticity. Mood: relatable, trustworthy, and engaging.
+Model interacts with product in a natural daylight setting—could be a park, café, or home. Smooth handheld camera tracks motion for realistic feel. Include macro close-ups of the product in use. Lighting: natural and balanced with soft shadows. Mood: approachable, practical, and relatable.
+Generate AI Marketing Videos
+Explainer Videos
+Explainer videos created to simplify complicated concepts using engaging visuals and audio. These prompts can be used to create online guide, video animations, tutorials, or even educational videos.
+Floating digital blocks connect dynamically in a dark futuristic space. Smooth orbit camera movement rotates around the structure, revealing 3D depth. Blue neon glow illuminates edges, subtle reflections add realism. Background is minimal and sleek. Motion: flowing and continuous. Mood: high-tech, futuristic, and visually immersive.
+Close-up of a smartphone displaying an interactive dashboard. UI elements animate smoothly with transitions highlighting metrics and notifications. Clean white background emphasizes clarity. Subtle camera pan over the interface for dynamic storytelling. Include reflections on glass surface and soft shadows. Mood: modern, professional, and instructive.
+Overhead camera captures step-by-step ingredient mixing in a bright kitchen. Smooth transitions focus on utensils, bowls, and food textures. Clean instructional style with shallow depth of field on hands and ingredients. Lighting: natural and soft to enhance colors. Motion: slow, deliberate, and easy to follow. Mood: educational, approachable.
+Minimal white background with animated drawings appearing as the speaker explains concepts. Camera slowly pans across illustrations to guide attention. Include smooth transitions between elements and subtle shadowing for depth. Motion: fluid and logical. Mood: clean, instructional, and engaging, ideal for educational or corporate presentations.
+3D animated human heart beats realistically in mid-frame. Slow rotation camera movement reveals anatomy from multiple angles. Clean medical lighting emphasizes details and textures. Background: dark neutral for contrast. Motion: smooth and anatomically accurate. Mood: professional, informative, and visually immersive for medical education.
+Animated flowchart transforms from text into moving icons. Smooth camera pan across elements highlights process stages. Each icon subtly animates to indicate activity. Background: neutral with soft gradient. Lighting: subtle reflections to add depth. Motion: continuous and organized. Mood: professional, clear, and instructional for tech demonstrations.
+Generate AI Explainer Videos
+AI Avatar Videos
+AI avatars are generally used to create digital presenters to deliver information in an engaging and human way. Define the facial features, backgrounds, gestures, camera movements, framing, and appearances to make your
+AI avatar videos
+natural and believable. These prompts for perfect for educational content, training, and even news updates.
+Generate a professional AI avatar delivering breaking news in a sleek, modern studio. The avatar has realistic facial features, expressive eyes, and subtle hand gestures while speaking. Use a slow camera push-in from a medium shot to a close-up for emphasis. Neutral broadcast lighting illuminates the face evenly, with soft rim lighting to separate the avatar from the background. Include animated ticker graphics at the bottom and a clean, minimalist studio backdrop.
+Create a smiling AI teacher avatar explaining a math concept on a virtual whiteboard. The avatar should have approachable facial features, natural lip-syncing, and animated hand gestures pointing at diagrams. Use bright, soft classroom lighting to create a cheerful, educational mood. The camera slowly pans from a three-quarter angle to a frontal medium shot to capture expressions. Include subtle background animations like floating numbers or geometric shapes.
+Produce a confident AI avatar presenting growth charts and business data in a professional studio. Facial expressions should convey authority and engagement. Use mid-shot framing with smooth side-to-side tracking camera movement. Background: minimalist corporate office with clean surfaces and subtle motion graphics displaying charts and infographics. Lighting: soft key light with a gentle backlight for depth. Mood: authoritative, polished, and professional.
+Generate an AI influencer avatar applying a skincare product in a soft, aesthetic environment. Facial features should be realistic and expressive, with natural hand movements demonstrating the product. Background: pastel-colored vanity setup with subtle bokeh lighting. Camera: slow dolly-in from medium to close-up to highlight product details and application. Mood: friendly, calm, and aspirational.
+Create a glowing blue holographic AI character speaking in a sci-fi lab. Facial expressions should be clear and engaging despite the holographic effect. Include subtle hand gestures to emphasize points. Background: dark, futuristic lab with floating UI panels, holographic screens, and neon accents. Camera: smooth orbit movement around the avatar, with occasional slow zoom-in for dramatic effect. Lighting: cool blue and cyan tones with soft reflections. Mood: high-tech, immersive, and visionary.
+Generate a professional AI avatar hosting a podcast in a modern studio setup. Facial features: neutral yet expressive, with occasional nods or subtle smiles. Include hand gestures to simulate natural conversation. Camera: medium shot with a gentle push-in during key moments, occasionally cutting to side angles for dynamic framing. Background: studio desk, microphone, soft acoustic panels. Lighting: warm softbox key lighting with subtle rim light for depth. Mood: approachable, professional, and conversational.
+Generate AI Avatar Videos
+Editorial Videos
+Editorial videos focus on aesthetics, fashion, lifestyle, and storytelling through composition. These prompts emphasize dramatic lighting, stylized camera movements, and high-production visuals. Perfect for magazine-style shoots, brand storytelling, and luxury campaigns.
+Slow-motion runway walk under dramatic spotlight lighting. Cinematic tracking shot follows model, capturing fabric movement, textures, and expressions. Background softly blurred to emphasize elegance and style. Mood: luxurious, dynamic, professional.
+Handheld camera capturing urban fashion moments on city streets. Natural daylight illuminates subjects. Slight camera shakes add realism. Focus on textures, movement, and casual authenticity. Mood: vibrant, stylish, relatable.
+Studio portrait with rotating spotlight casting dramatic shadows. Camera performs slow push-in to emphasize facial expression and outfit details. Mood: sophisticated, striking, editorial.
+Wide landscape shots of mountains with slow cinematic pans. Camera glides smoothly, capturing natural textures, atmospheric lighting, and scenic depth. Mood: serene, majestic, immersive.
+Golden hour lighting illuminates a yacht on calm water. Smooth crane shot captures exterior and deck activity. Background: soft horizon glow. Mood: aspirational, luxurious, cinematic.
+Macro close-ups of moving watch gears with intricate detail. Subtle lighting highlights metallic textures. Camera slowly rotates around components for depth. Mood: precise, technical, high-end editorial.
+Or you can skip the prompting part and create stunning editorial videos on ImagineArt
+Fashion Editorial
+App using image references only.
+Generate AI Editorial Videos
+Social Media Videos
+Social media videos are created for impact and quick conversions. These AI video prompts focus on catchy hooks, dynamic shots, zooms, and short-form pacing. Clarity and energetic vibes are crucial for creating high-performing social media videos. These prompts are ideal for creating Reels, Shorts, TikToks, any other short-form content.
+Start with an extreme close-up zoom on subject or product. Sudden camera movement within first 2 seconds grabs attention. Background slightly blurred. Mood: energetic, bold, highly engaging.
+Messy bedroom transforms into a clean, aesthetic space using snap transitions. Camera: smooth before-and-after tracking. Lighting: bright, natural. Mood: satisfying, relatable, visually compelling.
+Sunrise over mountains. Slow forward zoom captures natural light and landscape depth. Background: soft atmospheric haze. Mood: inspiring, cinematic, uplifting.
+Handheld camera captures fast-paced movement of dancer or subject. Slight camera shake adds realism. Background slightly blurred to emphasize motion. Mood: lively, dynamic, attention-grabbing.
+Rotating product in seamless loop on clean, minimal background. Camera slowly orbits to highlight textures and details. Lighting: soft, neutral, evenly lit. Mood: polished, modern, professional.
+Split screen reveals before-and-after or dual comparison. Smooth transitions synchronize movement across both sides. Lighting: balanced and bright. Mood: visually striking, clear, shareable.
+Generate Social Media Videos
+ASMR Videos
+ASMR videos focus on close-up details, intentional movements, slower pace, and realistic textures. The audio-visual synchronization is crucial for creating ASMR videos. The prompt should include macro shots, realistic materials, subtle lighting, and sound effects to elevate the sensory appeal of an ASMR video.
+Extreme close-up of knife slicing glossy chocolate. Ultra-detailed texture visible. Smooth slow motion captures each cut. Lighting: crisp and reflective. Mood: satisfying, tactile, indulgent.
+Crisp lighting highlights slow, deliberate slices of soap or similar material. Camera: macro close-up with slight pan. Motion: steady and soothing. Mood: calming, tactile, visually satisfying.
+Golden honey flows from a spoon in ultra-slow motion. Camera tracks liquid’s path, highlighting glossy texture. Lighting: warm and soft. Mood: indulgent, smooth, sensory-rich.
+Mechanical keyboard in shallow focus. Fingers type with realistic motion. Close-up on keys with subtle reflections. Lighting: neutral softbox. Mood: rhythmic, detailed, ASMR-friendly.
+Macro shot of ice cube cracking in glass. Slow-motion emphasizes texture and sound cues. Lighting: reflective, cold tones. Mood: crisp, satisfying, immersive.
+Slow-motion raindrops sliding down a nighttime window. Camera: close-up tracking droplets. Background softly blurred with city lights. Mood: calm, atmospheric, immersive.
+Recommended read:
+How to Create ASMR Videos
+Generate AI ASMR Videos
+Educational Videos
+Educational videos aim to inform while keeping viewers engaged visually. Prompts in this category focus on structured explanations, animated diagrams, infographics, and smooth camera movements. Clarity, pacing, and logical flow are essential here.
+Camera travels between planets in realistic space. Star field in background. Smooth orbit reveals scale and distance. Lighting: soft planetary glows. Mood: immersive, scientific, educational.
+Wide battlefield scene with cinematic pans. Soldiers in formation, subtle smoke effects. Camera sweeps across terrain to show scale. Lighting: dramatic daylight with shadows. Mood: epic, informative, immersive.
+Animated particles collide in slow motion with clear trajectories. Camera gently pans to follow motion. Background: dark for contrast. Lighting: subtle highlights on particles. Mood: precise, visual, educational.
+Zooming transitions between continents on a stylized map. Camera pans and tilts to highlight regions. Smooth animations of text labels and icons. Lighting: flat, clear, and instructional. Mood: informative, easy-to-follow.
+Close-up of bubbling reaction in glass beaker. Camera focuses on chemical changes and texture. Lighting: bright, reflective to enhance detail. Mood: scientific, detailed, educational.
+3D rotating human skeleton model with smooth orbiting camera. Lighting: neutral, highlighting bones and joints. Motion: continuous rotation showing multiple angles. Mood: professional, informative, immersive.
+Recommended read:
+How to Make Educational Videos
+Generate AI Educational Videos
+Food Videos
+Food videos focus on the texture of the food item, natural lighting, dynamic shots, and subtle motion. Detailed prompts emphasize slow-motion pours, macro close-ups, and warm cinematic tones. These AI video prompts are perfect for creating content for restaurants, recipe videos, and
+food business
+and brand promotions.
+Slow-motion shots of burger being assembled. Layered ingredients, melted cheese dripping. Warm golden lighting highlights textures. Camera pans from top-down to angled close-ups. Mood: appetizing, cinematic, mouthwatering.
+Close-up of fork twirling freshly cooked pasta. Shallow depth of field focuses on strands and sauce. Soft warm lighting enhances colors. Camera slightly rotates for dynamic perspective. Mood: elegant, delicious, visually appealing.
+Handheld camera captures flames, sizzling pans, and chef’s actions. Natural daylight and warm kitchen tones. Camera pans and tilts to emphasize movement and energy. Mood: authentic, lively, immersive.
+Elegant plated dessert revealed with slow zoom. Focus on textures, colors, and garnishes. Soft warm lighting enhances appeal. Camera slightly orbits for cinematic effect. Mood: refined, appetizing, visually satisfying.
+Generate AI Food Videos
+Seasonal Videos
+Seasonal videos are all about mood and celebration, be it Christmas glee or summer vibrance. These AI video prompts focus on color palettes, atmospheric lighting, and emotional storytelling. Such AI videos work well for campaign-based marketing.
+Christmas product commercial in cozy living room. Fireplace glows warmly, ornaments reflect soft light. Camera pans slowly across scene. Mood: festive, warm, inviting.
+Cinematic close-up of glowing Ramadan lanterns. Warm golden light illuminates surroundings. Slow camera dolly emphasizes lantern details and ambiance. Mood: serene, spiritual, festive.
+Bright, vibrant beach scene. Sunlight reflects on waves, sand glows golden. Camera pans and slightly tilts to capture activity and ocean horizon. Mood: lively, fun, aspirational.
+Dark hallway with flickering candlelight and subtle fog. Camera slowly tracks forward, revealing decorations. Shadows create tension. Mood: eerie, mysterious, atmospheric.
+Aerial shot of fireworks over cityscape at night. Camera slowly pans and tilts to capture bursts. Reflections on water add depth. Mood: celebratory, vibrant, exciting.
+Generate Seasonal Campaign Videos
+UGC Videos
+AI UGC videos prioritize authenticity over polish. These AI video prompts focus on handheld framing, natural lighting, and natural everyday settings.
+AI UGC videos
+are more about relatability and building trust. These are highly effective for social proof campaigns.
+Handheld selfie-style video of a person reviewing a product. Natural daylight illuminates face, slight camera shake adds realism. Subtle gestures and facial expressions emphasize opinions. Mood: authentic, relatable, trustworthy.
+Casual unboxing on a bedroom desk. Camera slightly wobbles to mimic handheld style. Natural window light illuminates product. Hands interact naturally with items. Mood: approachable, informal, engaging.
+Close-up testimonial showing skincare results before-and-after. Handheld camera pans subtly across face. Soft natural lighting enhances realism. Expressions convey satisfaction and honesty. Mood: genuine, relatable, persuasive.
+Vlog-style sequence of daily routine activities. Handheld camera captures moments like commuting, coffee, and work. Natural lighting with occasional quick pans. Mood: casual, relatable, immersive.
+Front-facing handheld video capturing genuine reaction to product or experience. Natural lighting emphasizes facial expressions. Camera occasionally shifts with natural movement. Mood: authentic, engaging, and relatable for social proof.
+Or you can skip the prompting part and create realistic AI UGC videos on ImagineArt
+Product Review
+App using image references only.
+Recommended read:
+How to Make UGC Ads with AI
+Generate AI UGC Videos
+Animate these AI video prompts with ImagineArt
+Mastering the best practices for AI video generation prompts gives you director-level control using just a few sentences. Experiment, refine, and iterate, and your next viral video might just be a well-crafted prompt away.
+Tooba Siddiqui
+Tooba Siddiqui is a content marketer with a strong focus on AI trends and product innovation. She explores generative AI with a keen eye. At ImagineArt, she develops marketing content that translates cutting-edge innovation into engaging, search-driven narratives for the right audience.
+Copy link
+Endless Possibilities. Just Imagine.
+Product
+Audio Studio
+AI Film Studio
+AI Ad Studio
+Lipsync Studio
+AI Workflows
+Features
+Enterprise
+Apps
+API Docs
+Image
+AI Image Generator
+ImagineArt 1.5
+ImagineArt 2.0
+GPT Image 2
+Nano Banana 2
+Image Upscaler
+Flux 2
+Video
+AI Video Generator
+AI Video Editor
+Seedance 2.0
+Sora 2
+Veo 3.1
+Kling 3.0
+Pixverse v6
+Wan 2.6
+Resources
+Blogs
+Enterprise Resources
+Community
+Pricing
+Creator Program
+Contact Sales
+ImagineArt
+Privacy Policy
+Terms & Conditions
+Help Center
+Career
+All rights reserved.

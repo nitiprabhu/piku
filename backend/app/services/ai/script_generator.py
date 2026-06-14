@@ -238,6 +238,26 @@ def _build_prompt(
             "Is story mein ek aisa twist hai jo koi predict nahi kar sakta — brace yourself.",
             "[Character] 5 saal baad wapas aaya — aur ab koi nahi rok sakta.",
         ],
+        "cinematic": [
+            "A visually stunning opening shot with a deep, emotional statement.",
+            "The world changed in an instant — [epic narrative hook].",
+            "This isn't just a story, it's a feeling — [dramatic opening].",
+        ],
+        "asmr": [
+            "Listen closely... [focus on specific texture/sound].",
+            "Just relax and watch this satisfying [process/texture].",
+            "The most satisfying 30 seconds of your day — pure sensory focus.",
+        ],
+        "ugc": [
+            "Guys, you have to see this — literally the best thing I've found.",
+            "Get ready with me while I tell you about [casual topic].",
+            "I didn't believe the hype until I tried it myself — look at this.",
+        ],
+        "marketing": [
+            "Stop scrolling if you are tired of [specific pain point]!",
+            "This one simple trick will completely change your [industry/task].",
+            "Don't buy [competitor product] until you watch this video.",
+        ],
     }
 
     # ── Format-specific scene structures ──────────────────────────────────────
@@ -325,6 +345,30 @@ def _build_prompt(
             f"Scenes 2–{max(2, num_scenes-2)}: ORIGIN & STRUGGLE — backstory reveal, training montage, escalating challenge.\n"
             f"Scene {num_scenes-1}: PEAK MOMENT — climax battle, emotional resolution or transformation reveal.\n"
             f"Scene {num_scenes}: CTA — 'Follow karo next episode ke liye — kahani abhi khatam nahi hui!'"
+        ),
+        "cinematic": (
+            f"Scene 1: DRAMATIC HOOK — wide establishing shot, profound statement.\n"
+            f"Scenes 2–{max(2, num_scenes-2)}: EMOTIONAL BUILD — slow pacing, striking visuals, narrative tension.\n"
+            f"Scene {num_scenes-1}: CLIMAX — beautiful lighting, resolution of the narrative arc.\n"
+            f"Scene {num_scenes}: REFLECTIVE CTA — fading out slowly."
+        ),
+        "asmr": (
+            f"Scene 1: TACTILE HOOK — extreme macro close-up of texture, slow movement.\n"
+            f"Scenes 2–{max(2, num_scenes-2)}: SATISFYING PROCESS — hyper-detailed, slow motion, crisp focus on interaction.\n"
+            f"Scene {num_scenes-1}: THE RELEASE — the most satisfying visual beat, smooth.\n"
+            f"Scene {num_scenes}: GENTLE CTA — soft ending."
+        ),
+        "ugc": (
+            f"Scene 1: RELATABLE HOOK — selfie style, talking directly to camera naturally.\n"
+            f"Scenes 2–{max(2, num_scenes-2)}: AUTHENTIC STORY — slightly shaky cam, showing environment or process casually.\n"
+            f"Scene {num_scenes-1}: HONEST REACTION — genuine emotion or verdict.\n"
+            f"Scene {num_scenes}: ENGAGEMENT CTA — 'What do you guys think? Let me know.'"
+        ),
+        "marketing": (
+            f"Scene 1: SCROLL-STOPPING HOOK — high energy, addressing pain point directly.\n"
+            f"Scenes 2–{max(2, num_scenes-2)}: SOLUTION SHOWCASE — dynamic zoom cuts, bright lighting, showing features.\n"
+            f"Scene {num_scenes-1}: PROOF & BENEFIT — showing clear results or testimonials.\n"
+            f"Scene {num_scenes}: URGENT CTA — 'Link in bio, get yours before it sells out!'"
         ),
     }
 
@@ -730,7 +774,8 @@ async def generate_script(
 ) -> dict:
     """Generate video script using GPT-4o-mini with structured scene-by-scene format."""
     is_unconfigured = (
-        not settings.OPENAI_API_KEY
+        settings.MOCK_AI
+        or not settings.OPENAI_API_KEY
         or settings.OPENAI_API_KEY.startswith("sk-your")
         or len(settings.OPENAI_API_KEY) < 10
     )

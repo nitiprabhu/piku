@@ -10,13 +10,15 @@ import AppShell from "@/components/AppShell";
 const STEP_LABELS: Record<string, string> = {
   connecting: "Connecting...",
   generating_script: "Writing your script with AI...",
-  script_done: "Script ready! Generating voice...",
+  script_done: "Script ready! Generating image...",
   generating_voice: "Creating AI voiceover...",
   voice_done: "Voice done! Generating video clips...",
+  generating_image: "Generating image with AI...",
+  image_done: "Image done! Uploading...",
   generating_visuals: "Generating cinematic video clips...",
   visuals_done: "Clips ready! Composing final video...",
   composing: "Mixing everything with FFmpeg...",
-  completed: "Your reel is ready! 🎉",
+  completed: "Your content is ready! 🎉",
   failed: "Generation failed",
   error: "Connection error",
 };
@@ -68,9 +70,12 @@ interface Project {
   like_count: number | null;
   caption_text: string | null;
   hashtags: string[] | null;
+  content_type: string;
+  image_count: number;
   script_json: {
     hook?: string;
     narration?: string;
+    image_urls?: string[];
   } | null;
 }
 
@@ -266,17 +271,44 @@ export default function ProjectPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <div className="phone-frame" style={{ width: "100%" }}>
               {videoUrl ? (
-                <video
-                  src={resolveMediaUrl(videoUrl)}
-                  controls
-                  playsInline
-                  style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "calc(var(--r-lg) - 2px)" }}
-                  poster={project?.thumbnail_url ? resolveMediaUrl(project.thumbnail_url) : undefined}
-                />
+                project?.content_type === "image_post" || project?.content_type === "carousel_post" ? (
+                  <img
+                    src={resolveMediaUrl(videoUrl)}
+                    alt="Generated image"
+                    style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "calc(var(--r-lg) - 2px)" }}
+                  />
+                ) : (
+                  <video
+                    src={resolveMediaUrl(videoUrl)}
+                    controls
+                    playsInline
+                    style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "calc(var(--r-lg) - 2px)" }}
+                    poster={project?.thumbnail_url ? resolveMediaUrl(project.thumbnail_url) : undefined}
+                  />
+                )
               ) : (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", fontSize: 48 }}>🎬</div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", fontSize: 48 }}>
+                  {project?.content_type === "image_post" ? "📸" : project?.content_type === "carousel_post" ? "🎠" : "🎬"}
+                </div>
               )}
             </div>
+
+            {/* Carousel strip */}
+            {project?.content_type === "carousel_post" && project.script_json?.image_urls && project.script_json.image_urls.length > 1 && (
+              <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
+                {project.script_json.image_urls.map((url, i) => (
+                  <img
+                    key={i}
+                    src={resolveMediaUrl(url)}
+                    alt={`Slide ${i + 1}`}
+                    style={{
+                      width: 72, height: 128, objectFit: "cover", flexShrink: 0,
+                      borderRadius: 6, border: "2px solid var(--ink)",
+                    }}
+                  />
+                ))}
+              </div>
+            )}
 
             {viralScore != null && (
               <div className="card" style={{ padding: 20 }}>
@@ -314,11 +346,11 @@ export default function ProjectPage() {
                 {videoUrl && (
                   <a
                     href={videoUrl}
-                    download={`reelcraft-${projectId}.mp4`}
+                    download={`reelcraft-${projectId}${project?.content_type === "video" ? ".mp4" : ".jpg"}`}
                     className="btn-hard"
                     style={{ fontSize: 14, padding: "10px 16px", justifyContent: "center", textDecoration: "none", display: "flex", alignItems: "center" }}
                   >
-                    ⬇️ Download MP4
+                    {project?.content_type === "video" ? "⬇️ Download MP4" : "⬇️ Download JPG"}
                   </a>
                 )}
                 <Link
@@ -338,11 +370,17 @@ export default function ProjectPage() {
                 </button>
                 <button
                   className="btn-hard"
-                  style={{ fontSize: 14, padding: "10px 16px", justifyContent: "center", gridColumn: "1 / -1", background: "#FF0000" }}
-                  onClick={() => setPublishModal("youtube")}
-                  disabled={!videoUrl}
+                  style={{
+                    fontSize: 14, padding: "10px 16px", justifyContent: "center", gridColumn: "1 / -1",
+                    background: project?.content_type !== "video" ? "var(--bg-2)" : "#FF0000",
+                    opacity: project?.content_type !== "video" ? 0.5 : 1,
+                    cursor: project?.content_type !== "video" ? "not-allowed" : "pointer",
+                  }}
+                  onClick={() => project?.content_type === "video" && setPublishModal("youtube")}
+                  disabled={!videoUrl || project?.content_type !== "video"}
+                  title={project?.content_type !== "video" ? "YouTube publishing is not supported for image posts" : undefined}
                 >
-                  ▶️ Post to YouTube Shorts
+                  ▶️ Post to YouTube Shorts{project?.content_type !== "video" ? " (N/A)" : ""}
                 </button>
                 {publishSuccess && (
                   <div style={{

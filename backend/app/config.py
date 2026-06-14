@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://redis:6379/0"
 
     # AI APIs
+    MOCK_AI: bool = False
     OPENAI_API_KEY: str = ""
     SARVAM_API_KEY: str = ""  # Sarvam AI — native Kannada/Indic TTS (sarvam.ai)
 

@@ -88,7 +88,7 @@ def compose_video(
     4. Overlay watermark (if provided)
     5. Mix voice (100%) + music (12% ducked)
     """
-    srt_path = generate_srt(script.get("narration", ""), voice_path, caption_mode) if enable_captions else None
+    srt_path = generate_srt(script.get("narration", ""), voice_path, caption_mode, style) if enable_captions else None
 
     # Measure voice duration; extend last clip if video total would be shorter
     voice_dur = _get_duration(voice_path)
@@ -110,16 +110,39 @@ def compose_video(
     clips_total = sum(_get_duration(c) for c in video_clips)
     pad_extra = max(0.0, voice_dur - clips_total + 1.0)  # +1s buffer
 
+    # Crossfade transition duration (seconds)
+    XFADE_DUR = 0.4
+    XFADE_STYLES = ["fade", "fadeblack", "smoothleft", "smoothright"]
+
     scale_parts = []
     for i in range(n):
         tpad = f"tpad=stop_mode=clone:stop_duration={pad_extra:.2f}," if (i == n - 1 and pad_extra > 0) else ""
         scale_parts.append(
             f"[{i}:v]scale=1080:1920:force_original_aspect_ratio=increase,"
-            f"crop=1080:1920,setsar=1,{tpad}setpts=PTS-STARTPTS[v{i}]"
+            f"crop=1080:1920,setsar=1,{tpad}setpts=PTS-STARTPTS,fps=30[v{i}]"
         )
 
-    concat_in = "".join(f"[v{i}]" for i in range(n))
-    concat_filter = f"{concat_in}concat=n={n}:v=1:a=0[vcat]"
+    # Build crossfade chain between clips (or simple concat if only 1 clip)
+    if n == 1:
+        concat_filter = "[v0]copy[vcat]"
+    else:
+        xfade_parts = []
+        clip_durations = [_get_duration(c) for c in video_clips]
+        # Pad last clip duration if needed
+        if pad_extra > 0:
+            clip_durations[-1] += pad_extra
+        prev_label = "v0"
+        running_offset = 0.0
+        for i in range(1, n):
+            running_offset += clip_durations[i - 1] - XFADE_DUR
+            style_name = XFADE_STYLES[i % len(XFADE_STYLES)]
+            out_label = "vcat" if i == n - 1 else f"xf{i}"
+            xfade_parts.append(
+                f"[{prev_label}][v{i}]xfade=transition={style_name}:"
+                f"duration={XFADE_DUR}:offset={running_offset:.3f},fps=30[{out_label}]"
+            )
+            prev_label = out_label
+        concat_filter = ";".join(xfade_parts)
 
     # Captions with Noto Sans (supports Hindi/Devanagari) — skipped if enable_captions=False
     if srt_path:
@@ -131,29 +154,29 @@ def compose_video(
         if caption_mode == "keyword_pop":
             caption_filter = (
                 f"[vcat]subtitles={srt_escaped}:"
-                f"force_style='FontName={font_name},FontSize=24,"
+                f"force_style='FontName={font_name},FontSize=18,"
                 f"PrimaryColour={caption_color},Bold=1,"
-                f"OutlineColour=&H00000000,Outline=5,Shadow=2,BorderStyle=1,"
-                f"Alignment=5,MarginV=0,MarginL=0,MarginR=0,"
+                f"OutlineColour=&H00000000,Outline=2,Shadow=1,BorderStyle=1,"
+                f"Alignment=2,MarginV=30,MarginL=30,MarginR=30,"
                 f"WrapStyle=1'[vcap]"
             )
         else:
             caption_filter = (
                 f"[vcat]subtitles={srt_escaped}:"
-                f"force_style='FontName={font_name},FontSize=19,"
+                f"force_style='FontName={font_name},FontSize=14,"
                 f"PrimaryColour={caption_color},Bold=1,"
-                f"OutlineColour=&H00000000,Outline=4,Shadow=2,BorderStyle=1,"
-                f"Alignment=2,MarginV=60,MarginL=80,MarginR=80,"
+                f"OutlineColour=&H00000000,Outline=2,Shadow=1,BorderStyle=1,"
+                f"Alignment=2,MarginV=20,MarginL=40,MarginR=40,"
                 f"WrapStyle=1'[vcap]"
             )
     else:
         caption_filter = "[vcat]copy[vcap]"
 
-    # Audio: voice full vol, music ducked to 12%
+    # Audio: voice full vol, music ducked to 22%
     if music_idx is not None:
         audio_filter = (
             f"[{voice_idx}:a]volume=1.0[voice];"
-            f"[{music_idx}:a]volume=0.12[music];"
+            f"[{music_idx}:a]volume=0.22[music];"
             f"[voice][music]amix=inputs=2:duration=first:dropout_transition=2[aout]"
         )
     else:
@@ -224,7 +247,7 @@ def compose_video(
         "-map", "[aout]",
         "-c:v", "libx264",
         "-preset", "fast",
-        "-crf", "23",
+        "-crf", "18",
         "-c:a", "aac",
         "-b:a", "192k",
         "-movflags", "+faststart",

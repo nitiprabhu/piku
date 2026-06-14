@@ -5,23 +5,24 @@ from pathlib import Path
 # 6 distinct motion effects, cycled by scene index for variety
 # z = zoom expression, x/y = pan position expressions
 # 'd' is replaced with actual frame count at call time
+# Scales are kept small (1.1 to 1.15) for smooth cinematic drift.
 _EFFECTS = [
-    # Dramatic zoom in (hook scene — pulls viewer in)
-    ("1+0.40*on/d", "iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)"),
-    # Zoom out reveal (mystery build — starts tight, pulls back)
-    ("1.40-0.35*on/d", "iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)"),
-    # Pan left → right with zoom
-    ("1.25", "(iw-iw/zoom)*on/d", "ih/2-(ih/zoom/2)"),
-    # Pan right → left with zoom
-    ("1.25", "(iw-iw/zoom)*(1-on/d)", "ih/2-(ih/zoom/2)"),
-    # Pan top → bottom (descend into scene)
-    ("1.25", "iw/2-(iw/zoom/2)", "(ih-ih/zoom)*on/d"),
+    # Dramatic slow zoom in
+    ("1+0.12*on/d", "iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)"),
+    # Zoom out reveal
+    ("1.12-0.12*on/d", "iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)"),
+    # Pan left → right with slight zoom
+    ("1.10", "(iw-iw/zoom)*on/d", "ih/2-(ih/zoom/2)"),
+    # Pan right → left with slight zoom
+    ("1.10", "(iw-iw/zoom)*(1-on/d)", "ih/2-(ih/zoom/2)"),
+    # Pan top → bottom
+    ("1.10", "iw/2-(iw/zoom/2)", "(ih-ih/zoom)*on/d"),
     # Cinematic dolly-in diagonal
-    ("1+0.30*on/d", "(iw-iw/zoom)*on/d/2", "(ih-ih/zoom)*on/d/2"),
-    # Slow float up (ethereal spiritual feel)
-    ("1.20", "iw/2-(iw/zoom/2)", "(ih-ih/zoom)*(1-on/d)"),
-    # Push in bottom-center (face/subject focus)
-    ("1+0.35*on/d", "iw/2-(iw/zoom/2)", "(ih-ih/zoom)*0.7"),
+    ("1+0.10*on/d", "(iw-iw/zoom)*on/d/2", "(ih-ih/zoom)*on/d/2"),
+    # Slow float up
+    ("1.10", "iw/2-(iw/zoom/2)", "(ih-ih/zoom)*(1-on/d)"),
+    # Push in bottom-center
+    ("1+0.12*on/d", "iw/2-(iw/zoom/2)", "(ih-ih/zoom)*0.7"),
 ]
 
 
@@ -42,6 +43,9 @@ def image_to_clip(image_path: str, duration: int = 5, scene_index: int = 0) -> s
         f"zoompan=z='{z}':x='{x}':y='{y}'"
         f":d={frames}:s=1080x1920:fps={fps}"
     )
+    
+    # Adding subtle noise (film grain) and vignette
+    cinematic_filters = "noise=alls=2:allf=t+u,vignette=PI/4"
 
     out = Path(tempfile.mktemp(suffix=".mp4"))
     cmd = [
@@ -53,12 +57,13 @@ def image_to_clip(image_path: str, duration: int = 5, scene_index: int = 0) -> s
             "scale=2160:3840:force_original_aspect_ratio=increase,"
             "crop=2160:3840,"
             f"{zoompan},"
+            f"{cinematic_filters},"
             "format=yuv420p"
         ),
         "-t", str(duration),
         "-c:v", "libx264",
-        "-preset", "fast",
-        "-crf", "23",
+        "-preset", "medium",
+        "-crf", "18",
         str(out),
     ]
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import api, { resolveMediaUrl } from "@/lib/api";
 import AppShell from "@/components/AppShell";
 
-const REGULAR_STYLES = ["storytelling", "motivation", "funny", "devotional", "business", "news"];
+const REGULAR_STYLES = ["storytelling", "motivation", "funny", "devotional", "business", "news", "cinematic", "asmr", "ugc", "marketing"];
 const INFLUENCER_STYLES = ["daily_routine", "outfit_check", "dance_trend", "travel_vlog", "product_review"];
 const LANGUAGES = [
   { value: "hi",       label: "हिंदी" },

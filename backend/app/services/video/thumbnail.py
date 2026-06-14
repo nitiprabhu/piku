@@ -12,8 +12,8 @@ def extract_thumbnail(video_path: str, output_path: str, at_second: float = 2.0)
             "-ss", str(ts),
             "-i", video_path,
             "-vframes", "1",
-            "-vf", "scale=540:960",
-            "-q:v", "3",
+            "-vf", "scale=1080:1920",
+            "-q:v", "2",
             output_path,
         ]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)

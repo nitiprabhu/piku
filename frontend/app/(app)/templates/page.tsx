@@ -11,6 +11,10 @@ const CATEGORY_META: Record<string, { emoji: string; label: string }> = {
   business:     { emoji: "💼", label: "Business & Startup" },
   news:         { emoji: "📰", label: "News & Affairs" },
   storytelling: { emoji: "📖", label: "Storytelling" },
+  cinematic:    { emoji: "🎥", label: "Cinematic Epic" },
+  asmr:         { emoji: "🤤", label: "ASMR & Sensory" },
+  ugc:          { emoji: "🤳", label: "UGC & Authentic" },
+  marketing:    { emoji: "📈", label: "Marketing Ad" },
 };
 
 type TemplateStyleConfig = {
@@ -346,9 +350,13 @@ const INSPO_GRAD: Record<string, string> = {
   devotional: "linear-gradient(135deg,#B7791F,#F6E05E)",
   news: "linear-gradient(135deg,#1A365D,#2B6CB0)",
   storytelling: "linear-gradient(135deg,#6D28D9,#8B5CF6)",
+  cinematic: "linear-gradient(135deg,#1F2937,#111827)",
+  asmr: "linear-gradient(135deg,#F472B6,#BE185D)",
+  ugc: "linear-gradient(135deg,#10B981,#047857)",
+  marketing: "linear-gradient(135deg,#F59E0B,#B45309)",
 };
 const INSPO_EMOJI: Record<string, string> = {
-  funny: "😂", motivation: "🔥", business: "💼", devotional: "🙏", news: "📰", storytelling: "📖",
+  funny: "😂", motivation: "🔥", business: "💼", devotional: "🙏", news: "📰", storytelling: "📖", cinematic: "🎥", asmr: "🤤", ugc: "🤳", marketing: "📈"
 };
 
 function InspirationCard({ video, onTry }: { video: InspirationVideo; onTry: (v: InspirationVideo) => void }) {

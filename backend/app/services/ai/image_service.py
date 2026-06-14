@@ -19,6 +19,10 @@ _STYLE_SUFFIX = {
     "dance_trend": "high energy motion blur, neon accent lighting, trendy urban street or studio background, dynamic action capture, portrait vertical 9:16",
     "travel_vlog": "cinematic travel photography, scenic outdoor landmark background, golden hour sunlight, adventurous cinematic feel, portrait vertical 9:16",
     "product_review": "clean product display, professional soft box lighting, blurred studio background, close-up details, portrait vertical 9:16",
+    "cinematic": "epic narrative scale, dramatic cinematic color grading, wide-angle lens, film grain, portrait vertical 9:16",
+    "asmr": "ultra-detailed macro photography, extremely crisp lighting, tactile texture focus, shallow depth of field, portrait vertical 9:16",
+    "ugc": "handheld selfie camera look, slight blur, natural daylight, authentic casual environment, portrait vertical 9:16",
+    "marketing": "dynamic commercial photography, bright optimistic lighting, high contrast vibrant colors, clean aesthetic, portrait vertical 9:16",
     # Image post styles — background ONLY, text overlaid by PIL compositor
     "motivation_quote": (
         "breathtaking sunrise mountain landscape, warm golden-amber light rays, "
@@ -138,46 +142,57 @@ def _build_image_prompt(
         clothing = character_profile.get("clothing_style")
         if clothing and not has_custom_clothing:
             anchor = f"{anchor}, wearing {clothing}"
-        return f"Portrait vertical 9:16 shot of {anchor}. {scene_visual}. {suffix}{brand_str}. Ultra detailed, photorealistic, 4K."
+        return f"Portrait vertical 9:16 shot of {anchor}, professional studio lighting, shallow depth of field. {scene_visual}. {suffix}{brand_str}. Ultra detailed, photorealistic, cinematic color grading, 4K."
 
-    return f"{scene_visual}. {suffix}{brand_str}. Ultra detailed, photorealistic, 4K."
+    # Cinematic camera direction for richer, more dynamic visuals
+    CAMERA_ANGLES = [
+        "Shot on 35mm lens, dramatic rim lighting, shallow depth of field",
+        "Wide-angle cinematic composition, golden hour lighting, lens flare",
+        "Close-up portrait shot, Rembrandt lighting, bokeh background",
+        "Aerial establishing shot, moody atmosphere, volumetric fog",
+        "Low-angle dramatic shot, strong backlight, silhouette edges",
+        "Medium shot, soft diffused lighting, film grain texture",
+    ]
+    import hashlib
+    angle_idx = int(hashlib.md5(scene_visual.encode()).hexdigest(), 16) % len(CAMERA_ANGLES)
+    camera = CAMERA_ANGLES[angle_idx]
+    
+    # Crucial directive for Ken Burns panning: we need negative space so the zoom doesn't crop the subject
+    composition_directive = "Center-weighted composition with ample negative space around the subject. No text, no fonts, no UI elements, no watermarks."
+    
+    return f"{camera}. {scene_visual}. {suffix}{brand_str}. {composition_directive} Ultra detailed, photorealistic, cinematic color grading, 8K resolution."
 
 
-async def _gpt_image_1(prompt: str) -> str:
-    """Generate image via gpt-image-1-mini, return local jpg path.
-
-    gpt-image-1-mini: ~4x cheaper output tokens vs gpt-image-1.
-    Portrait size: 1024x1536 (closest supported 9:16 ratio).
+async def _falai_flux_schnell(prompt: str) -> str:
+    """Generate image via fal.ai Flux.1 [schnell], return local jpg path.
+    Cost: ~$0.003 per image. Speed: <1s.
     """
     import base64
+    if not settings.FALAI_API_KEY:
+        raise Exception("FALAI_API_KEY is missing in .env")
+
     async with httpx.AsyncClient(timeout=90) as client:
         resp = await client.post(
-            "https://api.openai.com/v1/images/generations",
+            "https://queue.fal.run/fal-ai/flux/schnell",
             json={
-                "model": "gpt-image-1-mini",
                 "prompt": prompt,
-                "n": 1,
-                "size": "1024x1536",
-                "quality": "low",
+                "image_size": "portrait_16_9",
+                "num_inference_steps": 4
             },
             headers={
-                "Authorization": f"Bearer {settings.OPENAI_API_KEY}",
+                "Authorization": f"Key {settings.FALAI_API_KEY}",
                 "Content-Type": "application/json",
             },
         )
         if not resp.is_success:
-            raise Exception(f"gpt-image-1-mini error {resp.status_code}: {resp.text[:300]}")
-        data = resp.json()["data"][0]
-        # gpt-image-1 returns b64_json; older models return url
-        b64 = data.get("b64_json") or data.get("b64")
-        if b64:
-            img_bytes = base64.b64decode(b64)
-        else:
-            # Fallback: URL-based response (shouldn't happen with gpt-image-1)
-            url = data["url"]
-            img_resp = await client.get(url)
-            img_resp.raise_for_status()
-            img_bytes = img_resp.content
+            raise Exception(f"Flux error {resp.status_code}: {resp.text[:300]}")
+        data = resp.json()
+        img_url = data["images"][0]["url"]
+        
+        # Download the image
+        img_resp = await client.get(img_url)
+        img_resp.raise_for_status()
+        img_bytes = img_resp.content
 
     tmp = Path(tempfile.mktemp(suffix=".jpg"))
     tmp.write_bytes(img_bytes)
@@ -210,15 +225,52 @@ async def generate_image_for_scene(
     character_profile: dict | None = None,
     brand_handle: str | None = None,
     color_theme: str | None = None,
+    plan: str = "free",
+    scene_index: int = 0,
+    first_scene_visual: str | None = None,
 ) -> str:
-    """Generate a 1024x1536 (9:16) image via gpt-image-1. Returns local jpg path."""
-    if not settings.OPENAI_API_KEY:
+    """Generate a 1080x1920 (9:16) image via Flux.1 Schnell. Returns local jpg path."""
+    if not settings.FALAI_API_KEY and not settings.MOCK_AI:
         return _gradient_fallback(style)
 
+    # Visual consistency: reference first scene's palette for scenes 2+
+    if scene_index > 0 and first_scene_visual:
+        scene_visual = f"{scene_visual}. Maintain consistent color palette, lighting style, and visual tone matching this scene: {first_scene_visual[:100]}"
+
     prompt = _build_image_prompt(scene_visual, style, series_type, character_profile, brand_handle, color_theme)
-    print(f"[image] gpt-image-1: {prompt[:80]}...")
+    
+    if settings.MOCK_AI:
+        print(f"[image] MOCK_AI enabled. Searching Pexels for: {scene_visual[:40]} (Page {scene_index + 1})")
+        query = " ".join(scene_visual.replace(",", "").split()[:4])
+        try:
+            async with httpx.AsyncClient(timeout=10) as client:
+                resp = await client.get(
+                    f"https://api.pexels.com/v1/search?query={query}&orientation=portrait&per_page=1&page={scene_index + 1}",
+                    headers={"Authorization": "F1DT3STe9ZgiQal4X9ABmbonXm2vUeFvwxr9j5TdhWqDFzDfmlJPvshE"}
+                )
+                data = resp.json()
+                if "photos" in data and len(data["photos"]) > 0:
+                    img_url = data["photos"][0]["src"]["large2x"]
+                else:
+                    # Fallback to general aesthetic query if no results
+                    resp = await client.get(
+                        f"https://api.pexels.com/v1/search?query=aesthetic&orientation=portrait&per_page=1&page={scene_index + 1}",
+                        headers={"Authorization": "F1DT3STe9ZgiQal4X9ABmbonXm2vUeFvwxr9j5TdhWqDFzDfmlJPvshE"}
+                    )
+                    img_url = resp.json()["photos"][0]["src"]["large2x"]
+                
+                img_resp = await client.get(img_url)
+                img_bytes = img_resp.content
+                tmp = Path(tempfile.mktemp(suffix=".jpg"))
+                tmp.write_bytes(img_bytes)
+                return str(tmp)
+        except Exception as e:
+            print(f"[image] Pexels mock failed: {e}. Falling back to gradient.")
+            return _gradient_fallback(style)
+
+    print(f"[image] Flux.1 Schnell: {prompt[:80]}...")
     try:
-        path = await _gpt_image_1(prompt)
+        path = await _falai_flux_schnell(prompt)
         print(f"[image] done → {path}")
         return path
     except Exception as e:
